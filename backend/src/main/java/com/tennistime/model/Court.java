@@ -7,11 +7,11 @@ import javax.persistence.Id;
 
 @Entity
 public class Court {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private boolean available;
 
     // getters and setters
 }

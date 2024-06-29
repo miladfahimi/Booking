@@ -1,24 +1,26 @@
 package com.tennistime.controller;
 
-import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 import com.tennistime.model.Court;
 import com.tennistime.service.CourtService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/courts")
+@RequestMapping("/courts")
 public class CourtController {
+
     @Autowired
     private CourtService courtService;
 
     @GetMapping
     public List<Court> getAllCourts() {
-        return courtService.getAllCourts();
+        return courtService.findAll();
     }
 
     @PostMapping
     public Court createCourt(@RequestBody Court court) {
-        return courtService.saveCourt(court);
+        return courtService.save(court);
     }
 }
