@@ -4,15 +4,26 @@ services:
   backend:
     build:
       context: ../backend
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_PROFILES_ACTIVE=prod
+    depends_on:
+      - db
+
   frontend:
-    image: node:14
-    working_dir: /app
-    volumes:
-      - ../frontend:/app
-    command: sh -c "npm install && npm start"
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
     ports:
-      - "4200:4200"
+      - "4200:80"
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: tennis_time
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
