@@ -39,5 +39,8 @@ module.exports = function (config) {
         flags: ["--no-sandbox"],
       },
     },
+    singleRun: true, // added to ensure Karma exits after running tests
+    autoWatch: false, // added to ensure Karma doesn't watch files
+    restartOnFileChange: true,
   });
 };
