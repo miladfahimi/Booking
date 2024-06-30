@@ -12,7 +12,7 @@ cache:
     - frontend/node_modules
 
 .build_maven:
-  image: maven:3.9.8-amazoncorretto-11-al2023
+  image: maven:3.8.1-jdk-8
   script:
     - cd backend
     - mvn clean install -DskipTests
