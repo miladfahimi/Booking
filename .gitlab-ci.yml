@@ -14,6 +14,7 @@ cache:
 .build_maven:
   image: maven:3.9.8-amazoncorretto-8-al2023
   script:
+    - cd backend
     - mvn clean install -DskipTests
 
 build-backend:
@@ -21,7 +22,7 @@ build-backend:
   extends: .build_maven
   artifacts:
     paths:
-      - target/*.jar
+      - backend/target/*.jar
 
 build-frontend:
   stage: build
@@ -38,6 +39,7 @@ test-backend:
   stage: test
   extends: .build_maven
   script:
+    - cd backend
     - mvn test
 
 test-frontend:
