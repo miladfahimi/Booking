@@ -1,23 +1,25 @@
-package com.tennistime.backend.service;
+package com.tennistime.backend.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 import com.tennistime.backend.model.Court;
 import com.tennistime.backend.repository.CourtRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
-public class CourtService {
-
+@RestController
+@RequestMapping("/courts")
+public class CourtController {
     @Autowired
     private CourtRepository courtRepository;
 
+    @GetMapping
     public List<Court> getAllCourts() {
         return courtRepository.findAll();
     }
 
-    public Court saveCourt(Court court) {
+    @PostMapping
+    public Court createCourt(@RequestBody Court court) {
         return courtRepository.save(court);
     }
 }

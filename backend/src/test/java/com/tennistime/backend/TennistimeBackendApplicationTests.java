@@ -1,10 +1,10 @@
-package com.tennistime.demo;
+package com.tennistime.backend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class DemoApplicationTests {
+class TennistimeBackendApplicationTests {
 
 	@Test
 	void contextLoads() {

@@ -9,46 +9,23 @@ variables:
 cache:
   paths:
     - .m2/repository
-    - frontend/node_modules
-
-.build_maven:
-  image: maven:3.8.1-jdk-8
-  script:
-    - cd backend
-    - mvn clean install -DskipTests
 
 build-backend:
   stage: build
-  extends: .build_maven
+  image: maven:3.9.8-amazoncorretto-8-al2023
+  script:
+    - cd backend
+    - mvn clean install
   artifacts:
     paths:
       - backend/target/*.jar
 
-build-frontend:
-  stage: build
-  image: node:16
-  script:
-    - cd frontend
-    - npm install
-    - npm run build
-  artifacts:
-    paths:
-      - frontend/dist
-
 test-backend:
   stage: test
-  extends: .build_maven
+  image: maven:3.9.8-amazoncorretto-8-al2023
   script:
     - cd backend
     - mvn test
-
-test-frontend:
-  stage: test
-  image: node:16
-  script:
-    - cd frontend
-    - npm install
-    - npm test
 
 deploy:
   stage: deploy
@@ -57,7 +34,6 @@ deploy:
     - docker:dind
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -t $CI_REGISTRY_IMAGE:latest .
-    - docker push $CI_REGISTRY_IMAGE:latest
+    - docker-compose -f devops/docker-compose.yml up --build -d
   only:
     - main
