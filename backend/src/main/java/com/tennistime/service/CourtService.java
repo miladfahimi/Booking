@@ -1,7 +1,7 @@
-package com.tennistime.service;
+package com.tennistime.backend.service;
 
-import com.tennistime.model.Court;
-import com.tennistime.repository.CourtRepository;
+import com.tennistime.backend.model.Court;
+import com.tennistime.backend.repository.CourtRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,11 +13,11 @@ public class CourtService {
     @Autowired
     private CourtRepository courtRepository;
 
-    public List<Court> findAll() {
+    public List<Court> getAllCourts() {
         return courtRepository.findAll();
     }
 
-    public Court save(Court court) {
+    public Court saveCourt(Court court) {
         return courtRepository.save(court);
     }
 }

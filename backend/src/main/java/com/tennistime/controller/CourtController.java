@@ -1,7 +1,7 @@
-package com.tennistime.controller;
+package com.tennistime.backend.controller;
 
-import com.tennistime.model.Court;
-import com.tennistime.service.CourtService;
+import com.tennistime.backend.model.Court;
+import com.tennistime.backend.service.CourtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,11 +16,11 @@ public class CourtController {
 
     @GetMapping
     public List<Court> getAllCourts() {
-        return courtService.findAll();
+        return courtService.getAllCourts();
     }
 
     @PostMapping
     public Court createCourt(@RequestBody Court court) {
-        return courtService.save(court);
+        return courtService.saveCourt(court);
     }
 }

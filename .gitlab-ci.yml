@@ -11,26 +11,17 @@ cache:
     - .m2/repository
     - frontend/node_modules
 
-before_script:
-  - export GRADLE_USER_HOME=`pwd`/.gradle
-
 .build_maven:
-  image: ubuntu:latest
-  before_script:
-    - apt-get update && apt-get install -y wget openjdk-17-jdk
-    - wget https://dlcdn.apache.org/maven/maven-3/3.9.8/binaries/apache-maven-3.9.8-bin.tar.gz
-    - tar xzvf apache-maven-3.9.8-bin.tar.gz -C /opt
-    - ln -s /opt/apache-maven-3.9.8/bin/mvn /usr/bin/mvn
+  image: maven:3.9.8-amazoncorretto-8-al2023
+  script:
+    - mvn clean install -DskipTests
 
 build-backend:
   stage: build
   extends: .build_maven
-  script:
-    - cd backend
-    - mvn clean install
   artifacts:
     paths:
-      - backend/target/*.jar
+      - target/*.jar
 
 build-frontend:
   stage: build
@@ -47,7 +38,6 @@ test-backend:
   stage: test
   extends: .build_maven
   script:
-    - cd backend
     - mvn test
 
 test-frontend:
@@ -65,6 +55,7 @@ deploy:
     - docker:dind
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker-compose -f devops/docker-compose.yml up --build -d
+    - docker build -t $CI_REGISTRY_IMAGE:latest .
+    - docker push $CI_REGISTRY_IMAGE:latest
   only:
     - main
