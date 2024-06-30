@@ -16,7 +16,7 @@ before_script:
 
 build-backend:
   stage: build
-  image: maven:3.9.8-amazoncorretto-8-al2023
+  image: maven:3.9.8-amazoncorretto-17
   script:
     - cd backend
     - mvn clean install
@@ -37,7 +37,7 @@ build-frontend:
 
 test-backend:
   stage: test
-  image: maven:3.9.8-amazoncorretto-8-al2023
+  image: maven:3.9.8-amazoncorretto-17
   script:
     - cd backend
     - mvn test
