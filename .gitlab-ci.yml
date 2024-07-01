@@ -4,32 +4,33 @@ stages:
   - deploy
 
 variables:
-  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+  GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle"
   CHROME_BIN: "/usr/bin/google-chrome"
 
 cache:
   paths:
-    - .m2/repository
+    - .gradle/wrapper
+    - .gradle/caches
     - frontend/node_modules
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
 
-.build_maven:
-  image: maven:3.9.8-amazoncorretto-17-al2023
+.build_gradle:
+  image: gradle:7.6.2-jdk17-alpine
   before_script:
-    - export JAVA_HOME=/usr/lib/jvm/java-17-amazon-corretto
-    - mvn -version
+    - export JAVA_HOME=/opt/java/openjdk
+    - gradle -version
 
 build-backend:
   stage: build
-  extends: .build_maven
+  extends: .build_gradle
   script:
     - cd backend
-    - mvn clean install
+    - gradle clean build
   artifacts:
     paths:
-      - backend/target/*.jar
+      - backend/build/libs/*.jar
 
 .build_node:
   image: node:16
@@ -56,10 +57,10 @@ build-frontend:
 
 test-backend:
   stage: test
-  extends: .build_maven
+  extends: .build_gradle
   script:
     - cd backend
-    - mvn test
+    - gradle test
 
 test-frontend:
   stage: test

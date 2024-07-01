@@ -1,0 +1,82 @@
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+  CHROME_BIN: "/usr/bin/google-chrome"
+
+cache:
+  paths:
+    - .m2/repository
+    - frontend/node_modules
+
+before_script:
+  - export GRADLE_USER_HOME=`pwd`/.gradle
+
+.build_maven:
+  image: maven:3.9.8-amazoncorretto-17-al2023
+  before_script:
+    - export JAVA_HOME=/usr/lib/jvm/java-17-amazon-corretto
+    - mvn -version
+
+build-backend:
+  stage: build
+  extends: .build_maven
+  script:
+    - cd backend
+    - mvn clean install
+  artifacts:
+    paths:
+      - backend/target/*.jar
+
+.build_node:
+  image: node:16
+  before_script:
+    - apt-get update
+    - apt-get install -y wget gnupg
+    - wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+    - sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list'
+    - apt-get update
+    - apt-get install -y google-chrome-stable
+    - node -v
+    - npm -v
+
+build-frontend:
+  stage: build
+  extends: .build_node
+  script:
+    - cd frontend
+    - npm install
+    - npm run build
+  artifacts:
+    paths:
+      - frontend/dist
+
+test-backend:
+  stage: test
+  extends: .build_maven
+  script:
+    - cd backend
+    - mvn test
+
+test-frontend:
+  stage: test
+  extends: .build_node
+  script:
+    - cd frontend
+    - npm install
+    - npm test
+
+deploy:
+  stage: deploy
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - cd devops
+    - docker-compose up --build -d
+  only:
+    - main
