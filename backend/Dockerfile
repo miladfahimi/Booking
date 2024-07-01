@@ -1,11 +1,11 @@
-# Use the official Gradle image to build the application
-FROM gradle:7.6.2-jdk17-alpine AS build
+# Use the official Maven image to build the application
+FROM maven:3.9.8-amazoncorretto-17-al2023 AS build
 WORKDIR /app
 COPY . .
-RUN gradle clean build -x test
+RUN mvn clean package -DskipTests
 
 # Use the official OpenJDK image to run the application
 FROM amazoncorretto:17
 WORKDIR /app
-COPY --from=build /app/backend/build/libs/*.jar app.jar
+COPY --from=build /app/target/*.jar app.jar
 ENTRYPOINT ["java", "-jar", "app.jar"]
