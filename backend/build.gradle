@@ -27,10 +27,3 @@ test {
 bootJar {
     archiveFileName = 'tennistime-backend.jar'
 }
-
-tasks.withType(Test) {
-    reports {
-        junitXml.enabled = true
-        html.enabled = true
-    }
-}
