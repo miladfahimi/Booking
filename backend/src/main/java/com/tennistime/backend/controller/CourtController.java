@@ -1,7 +1,7 @@
 package com.tennistime.backend.controller;
 
 import com.tennistime.backend.model.Court;
-import com.tennistime.backend.repository.CourtRepository;
+import com.tennistime.backend.service.CourtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,20 +11,15 @@ import java.util.List;
 @RequestMapping("/courts")
 public class CourtController {
 
-    private final CourtRepository courtRepository;
+    private final CourtService courtService;
 
     @Autowired
-    public CourtController(CourtRepository courtRepository) {
-        this.courtRepository = courtRepository;
+    public CourtController(CourtService courtService) {
+        this.courtService = courtService;
     }
 
     @GetMapping
     public List<Court> getAllCourts() {
-        return courtRepository.findAll();
-    }
-
-    @PostMapping
-    public Court createCourt(@RequestBody Court court) {
-        return courtRepository.save(court);
+        return courtService.findAllCourts();
     }
 }
