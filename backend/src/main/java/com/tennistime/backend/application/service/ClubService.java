@@ -9,6 +9,7 @@ import java.util.List;
 
 @Service
 public class ClubService {
+
     private final ClubRepository clubRepository;
 
     @Autowired
@@ -19,9 +20,4 @@ public class ClubService {
     public List<Club> findAllClubs() {
         return clubRepository.findAll();
     }
-
-    public Club saveClub(Club club) {
-        return clubRepository.save(club);
-    }
-
 }

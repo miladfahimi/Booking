@@ -1,25 +1,42 @@
 package com.tennistime.backend.domain.model;
 
-import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
 public class Club {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
     private String address;
     private String phone;
     private String email;
     private String description;
 
-    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Court> courts;
 
-    // Getters and Setters
+    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Feedback> feedbacks;
+
+    // Constructors, getters, and setters
+
+    public Club() {
+    }
+
+    public Club(String name, String address, String phone, String email, String description) {
+        this.name = name;
+        this.address = address;
+        this.phone = phone;
+        this.email = email;
+        this.description = description;
+    }
     public Long getId() {
         return id;
     }
@@ -74,5 +91,13 @@ public class Club {
 
     public void setCourts(List<Court> courts) {
         this.courts = courts;
+    }
+
+    public List<Feedback> getFeedbacks() {
+        return feedbacks;
+    }
+
+    public void setFeedbacks(List<Feedback> feedbacks) {
+        this.feedbacks = feedbacks;
     }
 }

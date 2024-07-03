@@ -20,8 +20,4 @@ public class CourtService {
     public List<Court> findAllCourts() {
         return courtRepository.findAll();
     }
-
-    public Court saveCourt(Court court) {
-        return courtRepository.save(court);
-    }
 }
