@@ -1,4 +1,4 @@
-package com.tennistime.backend.model;
+package com.tennistime.backend.domain.model;
 
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;

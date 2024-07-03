@@ -1,7 +1,7 @@
-package com.tennistime.backend.service;
+package com.tennistime.backend.application.service;
 
-import com.tennistime.backend.model.Court;
-import com.tennistime.backend.repository.CourtRepository;
+import com.tennistime.backend.domain.model.Court;
+import com.tennistime.backend.domain.repository.CourtRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

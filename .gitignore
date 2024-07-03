@@ -1,0 +1,13 @@
+# Exclude all .idea folder contents
+.idea/*
+
+# Include specific .idea files
+!.idea/codeStyles
+!.idea/vcs.xml
+!.idea/modules.xml
+!.idea/misc.xml
+!.idea/runConfigurations
+!.idea/inspectionProfiles
+
+# Exclude workspace file
+.idea/workspace.xml
