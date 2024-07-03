@@ -1,9 +1,9 @@
 package com.tennistime.backend.domain.repository;
 
 import com.tennistime.backend.domain.model.Court;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import java.util.List;
 
-@Repository
-public interface CourtRepository extends JpaRepository<Court, Long> {
+public interface CourtRepository {
+    List<Court> findAll();
+    Court save(Court court);
 }
