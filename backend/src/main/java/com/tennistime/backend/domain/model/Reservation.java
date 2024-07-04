@@ -1,5 +1,6 @@
 package com.tennistime.backend.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -16,10 +17,12 @@ public class Reservation {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonManagedReference
     private AppUser user;
 
     @ManyToOne
     @JoinColumn(name = "court_id")
+    @JsonManagedReference
     private Court court;
 
 

@@ -3,6 +3,7 @@ package com.tennistime.backend.domain.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+
 import java.util.List;
 
 @Entity
@@ -24,6 +25,11 @@ public class Court {
     @OneToMany(mappedBy = "court", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Feedback> feedbacks;
+
+    @OneToMany(mappedBy = "court")
+    @JsonBackReference
+    private List<Reservation> reservations;
+
     // Getters and setters
 
     public Court() {
@@ -82,5 +88,13 @@ public class Court {
 
     public void setFeedbacks(List<Feedback> feedbacks) {
         this.feedbacks = feedbacks;
+    }
+
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
     }
 }

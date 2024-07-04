@@ -1,5 +1,6 @@
 package com.tennistime.backend.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class AppUser {
     private String role;
 
     @OneToMany(mappedBy = "user")
+    @JsonBackReference
     private List<Reservation> reservations;
 
 
