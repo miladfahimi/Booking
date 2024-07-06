@@ -17,7 +17,7 @@ public class OpenApiConfig {
                         .title("Tennis Time API")
                         .version("1.0")
                         .description("API for managing Tennis Time bookings")
-                        .contact(new Contact().name("Your Name").email("your-email@example.com")));
+                        .contact(new Contact().name("Milad Fahimi").email("milad.f@mail.com")));
     }
 
     @Bean

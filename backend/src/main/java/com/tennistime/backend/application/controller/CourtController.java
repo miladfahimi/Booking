@@ -22,4 +22,14 @@ public class CourtController {
     public List<Court> getAllCourts() {
         return courtService.findAllCourts();
     }
+
+    @PostMapping(consumes = "application/json", produces = "application/json")
+    public Court createCourt(@RequestBody Court court) {
+        return courtService.saveCourt(court);
+    }
+
+    @GetMapping("/{id}")
+    public Court getCourtById(@PathVariable Long id) {
+        return courtService.findCourtById(id);
+    }
 }
