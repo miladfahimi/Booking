@@ -1,6 +1,7 @@
 package com.tennistime.backend.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -11,18 +12,25 @@ public class Feedback {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Schema(example = "Great club!")
     private String comment;
+
+    @Schema(example = "5")
     private int rating;
+
+    @Schema(example = "2024-07-04T19:51:35.830Z")
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "club_id")
     @JsonBackReference
+    @Schema(hidden = true)
     private Club club;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "court_id")
     @JsonBackReference
+    @Schema(hidden = true)
     private Court court;
 
     // Constructors, getters, and setters

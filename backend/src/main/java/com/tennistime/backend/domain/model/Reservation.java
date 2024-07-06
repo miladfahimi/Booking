@@ -1,6 +1,7 @@
 package com.tennistime.backend.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -10,9 +11,17 @@ public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Schema(example = "2024-07-04")
     private LocalDate reservationDate;
+
+    @Schema(example = "20:00")
     private LocalTime startTime;
+
+    @Schema(example = "22:00")
     private LocalTime endTime;
+
+    @Schema(example = "confirmed")
     private String status;
 
     @ManyToOne
