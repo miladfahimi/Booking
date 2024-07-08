@@ -1,4 +1,4 @@
-package com.tennistime.backend.infrastructure.persistence.jpa;
+package com.tennistime.backend.infrastructure.persistence;
 
 import com.tennistime.backend.domain.model.Reservation;
 import com.tennistime.backend.domain.repository.ReservationRepository;
