@@ -3,8 +3,16 @@ package com.tennistime.backend.domain.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class Feedback {
 
@@ -32,58 +40,4 @@ public class Feedback {
     @JsonBackReference
     @Schema(hidden = true)
     private Court court;
-
-    // Constructors, getters, and setters
-
-    public Feedback() {
-    }
-
-    public Feedback(String comment, int rating, Club club, Court court, LocalDateTime createdAt) {
-        this.comment = comment;
-        this.rating = rating;
-        this.club = club;
-        this.court = court;
-        this.createdAt = createdAt;
-    }
-
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public int getRating() {
-        return rating;
-    }
-
-    public void setRating(int rating) {
-        this.rating = rating;
-    }
-
-    public Club getClub() {
-        return club;
-    }
-
-    public void setClub(Club club) {
-        this.club = club;
-    }
-
-    public Court getCourt() {
-        return court;
-    }
-
-    public void setCourt(Court court) {
-        this.court = court;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
 }
