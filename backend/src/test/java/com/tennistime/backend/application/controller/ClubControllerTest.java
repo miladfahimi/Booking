@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -23,6 +24,8 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 class ClubControllerTest {
 
@@ -64,15 +67,31 @@ class ClubControllerTest {
     }
 
     @Test
-    void createClub_whenValidClub_thenReturnSavedClub() {
-        Club club = new Club(null, "New Club", "New Address", "1231231234", "newclub@example.com", "New Description", new ArrayList<>(), new ArrayList<>());
-        Club savedClub = new Club(1L, "New Club", "New Address", "1231231234", "newclub@example.com", "New Description", new ArrayList<>(), new ArrayList<>());
-        when(clubService.saveClub(any(Club.class))).thenReturn(savedClub);
+    void createClub_whenValidClub_thenReturnSavedClub() throws Exception {
+        Club club = new Club();
+        club.setName("New Club");
+        club.setAddress("New Address");
+        club.setPhone("1231231234");
+        club.setEmail("newclub@example.com");
+        club.setDescription("New Description");
 
-        ResponseEntity<Club> response = clubController.createClub(club);
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(savedClub, response.getBody());
+        when(clubService.saveClub(any(Club.class))).thenReturn(club);
+
+        String clubJson = "{"
+                + "\"name\": \"New Club\","
+                + "\"address\": \"New Address\","
+                + "\"phone\": \"1231231234\","
+                + "\"email\": \"newclub@example.com\","
+                + "\"description\": \"New Description\","
+                + "\"courts\": [],"
+                + "\"feedbacks\": []"
+                + "}";
+
+        mockMvc.perform(post("/clubs")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(clubJson))
+                .andExpect(status().isCreated())
+                .andExpect(content().json(clubJson));
     }
 
     @Test

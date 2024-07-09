@@ -4,6 +4,8 @@ import com.tennistime.backend.domain.model.Club;
 import com.tennistime.backend.application.service.ClubService;
 import com.tennistime.backend.domain.model.Court;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,12 +32,13 @@ public class ClubController {
         return ResponseEntity.ok(clubService.findClubById(id));
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Club> createClub(@RequestBody Club club) {
-        return ResponseEntity.ok(clubService.saveClub(club));
+        Club createdClub = clubService.saveClub(club);
+        return new ResponseEntity<>(createdClub, HttpStatus.CREATED);
     }
 
-    @PostMapping("/{clubId}/courts")
+    @PostMapping(value = "/{clubId}/courts", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public Club addCourtToClub(@PathVariable Long clubId, @RequestBody Court court) {
         return clubService.addCourtToClub(clubId, court);
     }
