@@ -1,6 +1,5 @@
 package com.tennistime.backend.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -34,11 +33,9 @@ public class Reservation {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonManagedReference
     private AppUser user;
 
     @ManyToOne
     @JoinColumn(name = "court_id")
-    @JsonManagedReference
     private Court court;
 }

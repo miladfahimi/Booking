@@ -1,12 +1,12 @@
 package com.tennistime.backend.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -36,12 +36,10 @@ public class Club {
     private String description;
 
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
     @Schema(hidden = true)
-    private List<Court> courts;
+    private List<Court> courts = new ArrayList<>();;
 
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
     @Schema(hidden = true)
-    private List<Feedback> feedbacks;
+    private List<Feedback> feedbacks =new ArrayList<>();;
 }

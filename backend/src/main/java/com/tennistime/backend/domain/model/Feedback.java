@@ -31,13 +31,13 @@ public class Feedback {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "club_id")
-    @JsonBackReference
+    @JsonBackReference(value = "club-feedbacks")
     @Schema(hidden = true)
     private Club club;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "court_id")
-    @JsonBackReference
+    @JsonBackReference(value = "court-feedbacks")
     @Schema(hidden = true)
     private Court court;
 }
