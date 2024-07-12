@@ -1,14 +1,15 @@
 package com.tennistime.backend.application.controller;
 
-import com.tennistime.backend.domain.model.Court;
+import com.tennistime.backend.application.dto.CourtDTO;
 import com.tennistime.backend.application.service.CourtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/courts")
+@RequestMapping("/api/courts")
 public class CourtController {
 
     private final CourtService courtService;
@@ -19,17 +20,33 @@ public class CourtController {
     }
 
     @GetMapping
-    public List<Court> getAllCourts() {
-        return courtService.findAllCourts();
-    }
-
-    @PostMapping(consumes = "application/json", produces = "application/json")
-    public Court createCourt(@RequestBody Court court) {
-        return courtService.saveCourt(court);
+    public ResponseEntity<List<CourtDTO>> getAllCourts() {
+        List<CourtDTO> courts = courtService.findAll();
+        return ResponseEntity.ok(courts);
     }
 
     @GetMapping("/{id}")
-    public Court getCourtById(@PathVariable Long id) {
-        return courtService.findCourtById(id);
+    public ResponseEntity<CourtDTO> getCourtById(@PathVariable Long id) {
+        CourtDTO court = courtService.findById(id);
+        return court != null ? ResponseEntity.ok(court) : ResponseEntity.notFound().build();
+    }
+
+    @PostMapping
+    public ResponseEntity<CourtDTO> createCourt(@RequestBody CourtDTO courtDTO) {
+        CourtDTO savedCourt = courtService.save(courtDTO);
+        return ResponseEntity.ok(savedCourt);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CourtDTO> updateCourt(@PathVariable Long id, @RequestBody CourtDTO courtDTO) {
+        courtDTO.setId(id);
+        CourtDTO updatedCourt = courtService.save(courtDTO);
+        return ResponseEntity.ok(updatedCourt);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCourt(@PathVariable Long id) {
+        courtService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -1,20 +1,23 @@
 package com.tennistime.backend.application.controller;
 
+import com.tennistime.backend.application.dto.CourtDTO;
 import com.tennistime.backend.application.service.CourtService;
-import com.tennistime.backend.domain.model.Court;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 class CourtControllerTest {
 
@@ -28,40 +31,59 @@ class CourtControllerTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(courtController).build();
     }
 
     @Test
-    void getAllCourts_whenInvoked_thenReturnsCourtList() {
-        Court court = new Court();
-        when(courtService.findAllCourts()).thenReturn(Collections.singletonList(court));
+    void getAllCourts_whenInvoked_thenReturnsCourtList() throws Exception {
+        CourtDTO courtDTO = new CourtDTO(1L, "Court 1", "Clay", true, 1L);
+        when(courtService.findAll()).thenReturn(Collections.singletonList(courtDTO));
 
-        List<Court> courts = courtController.getAllCourts();
+        mockMvc.perform(get("/api/courts")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].name").value("Court 1"))
+                .andExpect(jsonPath("$[0].type").value("Clay"))
+                .andExpect(jsonPath("$[0].availability").value(true))
+                .andExpect(jsonPath("$[0].clubId").value(1L));
 
-        assertEquals(1, courts.size());
-        verify(courtService, times(1)).findAllCourts();
+        verify(courtService, times(1)).findAll();
     }
 
     @Test
-    void createCourt_whenValidCourt_thenReturnsCreatedCourt() {
-        Court court = new Court();
-        when(courtService.saveCourt(any(Court.class))).thenReturn(court);
+    void createCourt_whenValidCourt_thenReturnsCreatedCourt() throws Exception {
+        CourtDTO courtDTO = new CourtDTO(1L, "Court 1", "Clay", true, 1L);
+        when(courtService.save(any(CourtDTO.class))).thenReturn(courtDTO);
 
-        Court createdCourt = courtController.createCourt(court);
+        mockMvc.perform(post("/api/courts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\": \"Court 1\", \"type\": \"Clay\", \"availability\": true, \"clubId\": 1}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.name").value("Court 1"))
+                .andExpect(jsonPath("$.type").value("Clay"))
+                .andExpect(jsonPath("$.availability").value(true))
+                .andExpect(jsonPath("$.clubId").value(1L));
 
-        assertEquals(court, createdCourt);
-        verify(courtService, times(1)).saveCourt(any(Court.class));
+        verify(courtService, times(1)).save(any(CourtDTO.class));
     }
 
     @Test
-    void getCourtById_whenValidId_thenReturnsCourt() {
-        Court court = new Court();
-        when(courtService.findCourtById(1L)).thenReturn(court);
+    void getCourtById_whenValidId_thenReturnsCourt() throws Exception {
+        CourtDTO courtDTO = new CourtDTO(1L, "Court 1", "Clay", true, 1L);
+        when(courtService.findById(1L)).thenReturn(courtDTO);
 
-        Court foundCourt = courtController.getCourtById(1L);
+        mockMvc.perform(get("/api/courts/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.name").value("Court 1"))
+                .andExpect(jsonPath("$.type").value("Clay"))
+                .andExpect(jsonPath("$.availability").value(true))
+                .andExpect(jsonPath("$.clubId").value(1L));
 
-        assertEquals(court, foundCourt);
-        verify(courtService, times(1)).findCourtById(1L);
+        verify(courtService, times(1)).findById(1L);
     }
 }

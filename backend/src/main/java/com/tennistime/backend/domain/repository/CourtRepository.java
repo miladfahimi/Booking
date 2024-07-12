@@ -6,6 +6,7 @@ import java.util.Optional;
 
 public interface CourtRepository {
     List<Court> findAll();
-    Court save(Court court);
     Optional<Court> findById(Long id);
+    Court save(Court court);
+    void deleteById(Long id);
 }
