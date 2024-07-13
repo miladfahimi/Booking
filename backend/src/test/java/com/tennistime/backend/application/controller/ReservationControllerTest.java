@@ -1,14 +1,13 @@
 package com.tennistime.backend.application.controller;
 
+import com.tennistime.backend.application.dto.ReservationDTO;
 import com.tennistime.backend.application.service.ReservationService;
-import com.tennistime.backend.domain.model.Reservation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -17,6 +16,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class ReservationControllerTest {
 
@@ -30,64 +31,75 @@ class ReservationControllerTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(reservationController).build();
     }
 
     @Test
-    void getAllReservations_whenInvoked_thenReturnsReservationList() {
-        Reservation reservation = new Reservation();
-        when(reservationService.findAllReservations()).thenReturn(Collections.singletonList(reservation));
+    void getAllReservations_shouldReturnReservationList() throws Exception {
+        ReservationDTO reservationDTO = new ReservationDTO();
+        when(reservationService.findAll()).thenReturn(Collections.singletonList(reservationDTO));
 
-        ResponseEntity<List<Reservation>> responseEntity = reservationController.getAllReservations();
-        List<Reservation> reservations = responseEntity.getBody();
+        List<ReservationDTO> reservations = reservationController.getAllReservations().getBody();
 
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(1, reservations.size());
-        verify(reservationService, times(1)).findAllReservations();
+        verify(reservationService, times(1)).findAll();
+
+        mockMvc.perform(get("/reservations"))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void createReservation_whenValidReservation_thenReturnsCreatedReservation() {
-        Reservation reservation = new Reservation();
-        when(reservationService.createReservation(any(Reservation.class))).thenReturn(reservation);
+    void getReservationById_shouldReturnReservation() throws Exception {
+        ReservationDTO reservationDTO = new ReservationDTO();
+        when(reservationService.findById(1L)).thenReturn(reservationDTO);
 
-        ResponseEntity<Reservation> responseEntity = reservationController.createReservation(reservation);
+        ReservationDTO reservation = reservationController.getReservationById(1L).getBody();
 
-        assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
-        assertEquals(reservation, responseEntity.getBody());
-        verify(reservationService, times(1)).createReservation(any(Reservation.class));
+        assertEquals(reservationDTO, reservation);
+        verify(reservationService, times(1)).findById(1L);
+
+        mockMvc.perform(get("/reservations/1"))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void getReservationById_whenValidId_thenReturnsReservation() {
-        Reservation reservation = new Reservation();
-        when(reservationService.findReservationById(1L)).thenReturn(reservation);
+    void createReservation_shouldCreateAndReturnReservation() throws Exception {
+        ReservationDTO reservationDTO = new ReservationDTO();
+        when(reservationService.save(any(ReservationDTO.class))).thenReturn(reservationDTO);
 
-        ResponseEntity<Reservation> responseEntity = reservationController.getReservationById(1L);
+        ReservationDTO createdReservation = reservationController.createReservation(reservationDTO).getBody();
 
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(reservation, responseEntity.getBody());
-        verify(reservationService, times(1)).findReservationById(1L);
+        assertEquals(reservationDTO, createdReservation);
+        verify(reservationService, times(1)).save(any(ReservationDTO.class));
+
+        mockMvc.perform(post("/reservations")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}"))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void getReservationById_whenInvalidId_thenReturnsNotFound() {
-        when(reservationService.findReservationById(1L)).thenReturn(null);
+    void deleteReservation_shouldDeleteReservation() throws Exception {
+        doNothing().when(reservationService).deleteById(1L);
 
-        ResponseEntity<Reservation> responseEntity = reservationController.getReservationById(1L);
+        mockMvc.perform(delete("/reservations/1"))
+                .andExpect(status().isNoContent());
 
-        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
-        verify(reservationService, times(1)).findReservationById(1L);
+        verify(reservationService, times(1)).deleteById(1L);
     }
 
     @Test
-    void deleteReservation_whenValidId_thenReturnsNoContent() {
-        doNothing().when(reservationService).deleteReservation(1L);
+    void findReservationsByUserId_shouldReturnReservationList() throws Exception {
+        ReservationDTO reservationDTO = new ReservationDTO();
+        when(reservationService.findReservationsByUserId(1L)).thenReturn(Collections.singletonList(reservationDTO));
 
-        ResponseEntity<Void> responseEntity = reservationController.deleteReservation(1L);
+        List<ReservationDTO> reservations = reservationController.findReservationsByUserId(1L).getBody();
 
-        assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
-        verify(reservationService, times(1)).deleteReservation(1L);
+        assertEquals(1, reservations.size());
+        verify(reservationService, times(1)).findReservationsByUserId(1L);
+
+        mockMvc.perform(get("/reservations/user/1"))
+                .andExpect(status().isOk());
     }
 }

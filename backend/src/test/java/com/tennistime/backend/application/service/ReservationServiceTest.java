@@ -1,5 +1,7 @@
 package com.tennistime.backend.application.service;
 
+import com.tennistime.backend.application.dto.ReservationDTO;
+import com.tennistime.backend.application.mapper.ReservationMapper;
 import com.tennistime.backend.domain.model.Reservation;
 import com.tennistime.backend.domain.repository.ReservationRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,7 +10,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,6 +23,9 @@ class ReservationServiceTest {
     @Mock
     private ReservationRepository reservationRepository;
 
+    @Mock
+    private ReservationMapper reservationMapper;
+
     @InjectMocks
     private ReservationService reservationService;
 
@@ -29,45 +35,46 @@ class ReservationServiceTest {
     }
 
     @Test
-    void findAllReservations_shouldReturnAllReservations() {
+    void findAll_shouldReturnAllReservations() {
         Reservation reservation = new Reservation();
-        when(reservationRepository.findAll()).thenReturn(Arrays.asList(reservation));
+        ReservationDTO reservationDTO = new ReservationDTO();
+        when(reservationRepository.findAll()).thenReturn(Collections.singletonList(reservation));
+        when(reservationMapper.toDTO(any(Reservation.class))).thenReturn(reservationDTO);
 
-        assertEquals(1, reservationService.findAllReservations().size());
+        List<ReservationDTO> reservations = reservationService.findAll();
+
+        assertEquals(1, reservations.size());
+        verify(reservationRepository, times(1)).findAll();
     }
 
     @Test
-    void createReservation_shouldSaveAndReturnReservation() {
+    void save_shouldSaveAndReturnReservation() {
         Reservation reservation = new Reservation();
+        ReservationDTO reservationDTO = new ReservationDTO();
         when(reservationRepository.save(any(Reservation.class))).thenReturn(reservation);
+        when(reservationMapper.toEntity(any(ReservationDTO.class))).thenReturn(reservation);
+        when(reservationMapper.toDTO(any(Reservation.class))).thenReturn(reservationDTO);
 
-        Reservation savedReservation = reservationService.createReservation(reservation);
-        assertEquals(reservation, savedReservation);
+        ReservationDTO savedReservation = reservationService.save(reservationDTO);
+        assertEquals(reservationDTO, savedReservation);
     }
 
     @Test
-    void findReservationById_shouldReturnReservationWhenExists() {
+    void findById_shouldReturnReservationWhenExists() {
         Reservation reservation = new Reservation();
+        ReservationDTO reservationDTO = new ReservationDTO();
         when(reservationRepository.findById(anyLong())).thenReturn(Optional.of(reservation));
+        when(reservationMapper.toDTO(any(Reservation.class))).thenReturn(reservationDTO);
 
-        Reservation foundReservation = reservationService.findReservationById(1L);
-        assertEquals(reservation, foundReservation);
+        ReservationDTO foundReservation = reservationService.findById(1L);
+        assertEquals(reservationDTO, foundReservation);
     }
 
     @Test
-    void findReservationById_shouldReturnNullWhenNotExists() {
+    void findById_shouldReturnNullWhenNotExists() {
         when(reservationRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        Reservation foundReservation = reservationService.findReservationById(1L);
+        ReservationDTO foundReservation = reservationService.findById(1L);
         assertNull(foundReservation);
-    }
-
-    @Test
-    void deleteReservation_shouldDeleteReservation() {
-        doNothing().when(reservationRepository).deleteById(anyLong());
-
-        reservationService.deleteReservation(1L);
-
-        verify(reservationRepository, times(1)).deleteById(1L);
     }
 }

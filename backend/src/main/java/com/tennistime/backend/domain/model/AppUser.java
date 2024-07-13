@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -27,7 +28,7 @@ public class AppUser {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonBackReference
-    private List<Reservation> reservations;
+    private List<Reservation> reservations = new ArrayList<>();
 
     public void addReservation(Reservation reservation) {
         reservations.add(reservation);

@@ -1,10 +1,8 @@
 package com.tennistime.backend.application.controller;
 
+import com.tennistime.backend.application.dto.ReservationDTO;
 import com.tennistime.backend.application.service.ReservationService;
-import com.tennistime.backend.domain.model.Reservation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,38 +12,36 @@ import java.util.List;
 @RequestMapping("/reservations")
 public class ReservationController {
 
-    private final ReservationService reservationService;
-
     @Autowired
-    public ReservationController(ReservationService reservationService) {
-        this.reservationService = reservationService;
-    }
+    private ReservationService reservationService;
 
     @GetMapping
-    public ResponseEntity<List<Reservation>> getAllReservations() {
-        List<Reservation> reservations = reservationService.findAllReservations();
-        return new ResponseEntity<>(reservations, HttpStatus.OK);
-    }
-
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Reservation> createReservation(@RequestBody Reservation reservation) {
-        Reservation createdReservation = reservationService.createReservation(reservation);
-        return new ResponseEntity<>(createdReservation, HttpStatus.CREATED);
+    public ResponseEntity<List<ReservationDTO>> getAllReservations() {
+        List<ReservationDTO> reservations = reservationService.findAll();
+        return ResponseEntity.ok(reservations);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Reservation> getReservationById(@PathVariable Long id) {
-        Reservation reservation = reservationService.findReservationById(id);
-        if (reservation != null) {
-            return new ResponseEntity<>(reservation, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<ReservationDTO> getReservationById(@PathVariable Long id) {
+        ReservationDTO reservation = reservationService.findById(id);
+        return reservation != null ? ResponseEntity.ok(reservation) : ResponseEntity.notFound().build();
+    }
+
+    @PostMapping
+    public ResponseEntity<ReservationDTO> createReservation(@RequestBody ReservationDTO reservationDTO) {
+        ReservationDTO createdReservation = reservationService.save(reservationDTO);
+        return ResponseEntity.ok(createdReservation);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
-        reservationService.deleteReservation(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        reservationService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<ReservationDTO>> findReservationsByUserId(@PathVariable Long userId) {
+        List<ReservationDTO> reservations = reservationService.findReservationsByUserId(userId);
+        return ResponseEntity.ok(reservations);
     }
 }
