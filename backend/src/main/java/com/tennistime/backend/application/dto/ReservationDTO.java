@@ -1,5 +1,6 @@
 package com.tennistime.backend.application.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,11 +12,25 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReservationDTO {
+
+    @Schema(hidden = true)
     private Long id;
+
+    @Schema(example = "2024-08-01")
     private LocalDate reservationDate;
+
+    @Schema(example = "10:00")
     private LocalTime startTime;
+
+    @Schema(example = "12:00")
     private LocalTime endTime;
+
+    @Schema(example = "confirmed")
     private String status;
+
+    @Schema(example = "3")
     private Long userId;
+
+    @Schema(example = "1")
     private Long courtId;
 }
