@@ -4,7 +4,9 @@ INSERT INTO app_user (username, password, email, phone, first_name, last_name, r
 ('Ali_koorvet', 'password', 'ali@example.com', '122227890', 'Ali', 'Koorvet', 'USER');
 
 INSERT INTO club (name, address, phone, email, description) VALUES
-('Tennis Club 1', '123 Main St', '1234567890', 'club1@example.com', 'Best club in town');
+('Tennis Club 1', '123 Main St', '3334567890', 'club1@example.com', 'Best club in town'),
+('Tennis Club 2', '456 Main St', '1114567890', 'club2@example.com', 'A big tennis club in the west city'),
+('Tennis Club 3', '789 Main St', '2224567890', 'club3@example.com', 'Tournament club');
 
 INSERT INTO court (name, type, availability, club_id) VALUES
 ('Court 1', 'CLAY', true, 1),

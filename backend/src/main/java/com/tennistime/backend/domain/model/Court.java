@@ -32,15 +32,12 @@ public class Court {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "club_id")
     @JsonBackReference(value = "club-courts")
-    @Schema(hidden = true)
     private Club club;
 
     @OneToMany(mappedBy = "court", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @Schema(hidden = true)
     private List<Feedback> feedbacks;
 
     @OneToMany(mappedBy = "court")
     @JsonBackReference(value = "court-reservations")
-    @Schema(hidden = true)
     private List<Reservation> reservations;
 }
