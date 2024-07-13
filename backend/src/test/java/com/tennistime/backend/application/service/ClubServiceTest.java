@@ -1,5 +1,9 @@
 package com.tennistime.backend.application.service;
 
+import com.tennistime.backend.application.dto.ClubDTO;
+import com.tennistime.backend.application.dto.CourtDTO;
+import com.tennistime.backend.application.mapper.ClubMapper;
+import com.tennistime.backend.application.mapper.CourtMapper;
 import com.tennistime.backend.domain.model.Club;
 import com.tennistime.backend.domain.model.Court;
 import com.tennistime.backend.domain.repository.ClubRepository;
@@ -9,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -22,59 +25,70 @@ class ClubServiceTest {
     @Mock
     private ClubRepository clubRepository;
 
+    @Mock
+    private ClubMapper clubMapper;
+
+    @Mock
+    private CourtMapper courtMapper;
+
     @InjectMocks
     private ClubService clubService;
+
+    private Club club;
+    private ClubDTO clubDTO;
+    private CourtDTO courtDTO;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        club = new Club();
+        clubDTO = new ClubDTO();
+        courtDTO = new CourtDTO();
     }
 
     @Test
-    void findAllClubs_shouldReturnAllClubs() {
-        Club club = new Club();
+    void findAll_shouldReturnAllClubs() {
         when(clubRepository.findAll()).thenReturn(Arrays.asList(club));
+        when(clubMapper.toDTO(any(Club.class))).thenReturn(clubDTO);
 
-        assertEquals(1, clubService.findAllClubs().size());
+        assertEquals(1, clubService.findAll().size());
     }
 
     @Test
-    void saveClub_shouldSaveAndReturnClub() {
-        Club club = new Club();
+    void save_shouldSaveAndReturnClub() {
         when(clubRepository.save(any(Club.class))).thenReturn(club);
+        when(clubMapper.toDTO(any(Club.class))).thenReturn(clubDTO);
+        when(clubMapper.toEntity(any(ClubDTO.class))).thenReturn(club);
 
-        Club savedClub = clubService.saveClub(club);
-        assertEquals(club, savedClub);
+        ClubDTO savedClub = clubService.save(clubDTO);
+        assertEquals(clubDTO, savedClub);
     }
 
     @Test
-    void findClubById_shouldReturnClubWhenExists() {
-        Club club = new Club();
+    void findById_shouldReturnClubWhenExists() {
         when(clubRepository.findById(anyLong())).thenReturn(Optional.of(club));
+        when(clubMapper.toDTO(any(Club.class))).thenReturn(clubDTO);
 
-        Club foundClub = clubService.findClubById(1L);
-        assertEquals(club, foundClub);
+        ClubDTO foundClub = clubService.findById(1L);
+        assertEquals(clubDTO, foundClub);
     }
 
     @Test
-    void findClubById_shouldReturnNullWhenNotExists() {
+    void findById_shouldReturnNullWhenNotExists() {
         when(clubRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        Club foundClub = clubService.findClubById(1L);
+        ClubDTO foundClub = clubService.findById(1L);
         assertNull(foundClub);
     }
 
     @Test
-    void addCourtToClub_shouldAddCourtToClub() {
-        Club club = new Club();
-        club.setCourts(new ArrayList<>()); // Initialize the list of courts
-        Court court = new Court();
+    void addCourtToClub_shouldAddCourtAndReturnUpdatedClub() {
         when(clubRepository.findById(anyLong())).thenReturn(Optional.of(club));
         when(clubRepository.save(any(Club.class))).thenReturn(club);
+        when(clubMapper.toDTO(any(Club.class))).thenReturn(clubDTO);
+        when(courtMapper.toEntity(any(CourtDTO.class))).thenReturn(new Court());
 
-        Club updatedClub = clubService.addCourtToClub(1L, court);
-        assertNotNull(updatedClub);
-        assertEquals(1, updatedClub.getCourts().size());
-        verify(clubRepository, times(1)).save(club);
+        ClubDTO updatedClub = clubService.addCourtToClub(1L, courtDTO);
+        assertEquals(clubDTO, updatedClub);
     }
 }

@@ -7,6 +7,7 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface CourtMapper {
+
     @Mapping(source = "club.id", target = "clubId")
     CourtDTO toDTO(Court court);
 

@@ -8,4 +8,5 @@ public interface ClubRepository {
     List<Club> findAll();
     Optional<Club> findById(Long id);
     Club save(Club club);
+    void deleteById(Long id);
 }
