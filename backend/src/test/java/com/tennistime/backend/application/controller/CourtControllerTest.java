@@ -40,7 +40,7 @@ class CourtControllerTest {
         CourtDTO courtDTO = new CourtDTO(1L, "Court 1", "Clay", true, 1L);
         when(courtService.findAll()).thenReturn(Collections.singletonList(courtDTO));
 
-        mockMvc.perform(get("/api/courts")
+        mockMvc.perform(get("/courts")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1L))
@@ -57,7 +57,7 @@ class CourtControllerTest {
         CourtDTO courtDTO = new CourtDTO(1L, "Court 1", "Clay", true, 1L);
         when(courtService.save(any(CourtDTO.class))).thenReturn(courtDTO);
 
-        mockMvc.perform(post("/api/courts")
+        mockMvc.perform(post("/courts")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"name\": \"Court 1\", \"type\": \"Clay\", \"availability\": true, \"clubId\": 1}"))
                 .andExpect(status().isOk())
@@ -75,7 +75,7 @@ class CourtControllerTest {
         CourtDTO courtDTO = new CourtDTO(1L, "Court 1", "Clay", true, 1L);
         when(courtService.findById(1L)).thenReturn(courtDTO);
 
-        mockMvc.perform(get("/api/courts/1")
+        mockMvc.perform(get("/courts/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
