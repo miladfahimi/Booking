@@ -1,6 +1,7 @@
 package com.tennistime.backend.application.controller;
 
 import com.tennistime.backend.application.dto.AppUserDTO;
+import com.tennistime.backend.application.dto.ReservationDTO;
 import com.tennistime.backend.application.service.AppUserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,5 +39,11 @@ public class AppUserController {
     public ResponseEntity<Void> deleteUserById(@PathVariable Long id) {
         appUserService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/reservations")
+    public ResponseEntity<List<ReservationDTO>> getReservationsByUserId(@PathVariable Long id) {
+        List<ReservationDTO> reservations = appUserService.findReservationsByUserId(id);
+        return reservations != null ? ResponseEntity.ok(reservations) : ResponseEntity.notFound().build();
     }
 }
