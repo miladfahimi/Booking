@@ -1,6 +1,6 @@
 package com.tennistime.backend.domain.model;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import com.github.mfathi91.time.PersianDate;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,26 +9,25 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 public class Reservation {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Schema(example = "2024-07-04")
+    @Column(name = "reservation_date")
     private LocalDate reservationDate;
 
-    @Schema(example = "20:00")
+    @Column(name = "start_time")
     private LocalTime startTime;
 
-    @Schema(example = "22:00")
+    @Column(name = "end_time")
     private LocalTime endTime;
 
-    @Schema(example = "confirmed")
     private String status;
 
     @ManyToOne
@@ -38,4 +37,16 @@ public class Reservation {
     @ManyToOne
     @JoinColumn(name = "court_id")
     private Court court;
+
+    // This field will be mapped in DTO
+    @Transient
+    private PersianDate reservationDatePersian;
+
+    public PersianDate getReservationDatePersian() {
+        return PersianDate.fromGregorian(this.reservationDate);
+    }
+
+    public void setReservationDatePersian(PersianDate persianDate) {
+        this.reservationDate = persianDate.toGregorian();
+    }
 }

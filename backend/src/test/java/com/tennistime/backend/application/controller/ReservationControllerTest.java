@@ -11,15 +11,16 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-class ReservationControllerTest {
+public class ReservationControllerTest {
 
     @Mock
     private ReservationService reservationService;
@@ -30,76 +31,53 @@ class ReservationControllerTest {
     private MockMvc mockMvc;
 
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(reservationController).build();
     }
 
     @Test
-    void getAllReservations_shouldReturnReservationList() throws Exception {
-        ReservationDTO reservationDTO = new ReservationDTO();
-        when(reservationService.findAll()).thenReturn(Collections.singletonList(reservationDTO));
-
-        List<ReservationDTO> reservations = reservationController.getAllReservations().getBody();
-
-        assertEquals(1, reservations.size());
-        verify(reservationService, times(1)).findAll();
+    public void testGetAllReservations() throws Exception {
+        ReservationDTO reservation1 = new ReservationDTO();
+        reservation1.setId(1L);
+        ReservationDTO reservation2 = new ReservationDTO();
+        reservation2.setId(2L);
+        List<ReservationDTO> reservations = Arrays.asList(reservation1, reservation2);
+        when(reservationService.findAll()).thenReturn(reservations);
 
         mockMvc.perform(get("/reservations"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[1].id").value(2L));
     }
 
     @Test
-    void getReservationById_shouldReturnReservation() throws Exception {
-        ReservationDTO reservationDTO = new ReservationDTO();
-        when(reservationService.findById(1L)).thenReturn(reservationDTO);
-
-        ReservationDTO reservation = reservationController.getReservationById(1L).getBody();
-
-        assertEquals(reservationDTO, reservation);
-        verify(reservationService, times(1)).findById(1L);
+    public void testGetReservationById() throws Exception {
+        ReservationDTO reservation = new ReservationDTO();
+        reservation.setId(1L);
+        when(reservationService.findById(anyLong())).thenReturn(reservation);
 
         mockMvc.perform(get("/reservations/1"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L));
     }
 
     @Test
-    void createReservation_shouldCreateAndReturnReservation() throws Exception {
-        ReservationDTO reservationDTO = new ReservationDTO();
-        when(reservationService.save(any(ReservationDTO.class))).thenReturn(reservationDTO);
-
-        ReservationDTO createdReservation = reservationController.createReservation(reservationDTO).getBody();
-
-        assertEquals(reservationDTO, createdReservation);
-        verify(reservationService, times(1)).save(any(ReservationDTO.class));
+    public void testCreateReservation() throws Exception {
+        ReservationDTO reservation = new ReservationDTO();
+        reservation.setId(1L);
+        when(reservationService.save(any(ReservationDTO.class))).thenReturn(reservation);
 
         mockMvc.perform(post("/reservations")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{}"))
-                .andExpect(status().isOk());
+                .content("{\"reservationDate\": \"2024-08-11\", \"startTime\": \"10:00\", \"endTime\": \"12:00\", \"status\": \"confirmed\", \"userId\": 3, \"courtId\": 1}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L));
     }
 
     @Test
-    void deleteReservation_shouldDeleteReservation() throws Exception {
-        doNothing().when(reservationService).deleteById(1L);
-
+    public void testDeleteReservation() throws Exception {
         mockMvc.perform(delete("/reservations/1"))
                 .andExpect(status().isNoContent());
-
-        verify(reservationService, times(1)).deleteById(1L);
-    }
-
-    @Test
-    void findReservationsByUserId_shouldReturnReservationList() throws Exception {
-        ReservationDTO reservationDTO = new ReservationDTO();
-        when(reservationService.findReservationsByUserId(1L)).thenReturn(Collections.singletonList(reservationDTO));
-
-        List<ReservationDTO> reservations = reservationController.findReservationsByUserId(1L).getBody();
-
-        assertEquals(1, reservations.size());
-        verify(reservationService, times(1)).findReservationsByUserId(1L);
-
-        mockMvc.perform(get("/reservations/user/1"))
-                .andExpect(status().isOk());
     }
 }

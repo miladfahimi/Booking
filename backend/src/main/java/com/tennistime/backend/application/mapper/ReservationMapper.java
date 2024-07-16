@@ -10,9 +10,11 @@ public interface ReservationMapper {
 
     @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "court.id", target = "courtId")
+    @Mapping(target = "reservationDatePersian", ignore = true) // Exclude from MapStruct mapping
     ReservationDTO toDTO(Reservation reservation);
 
     @Mapping(source = "userId", target = "user.id")
     @Mapping(source = "courtId", target = "court.id")
+    @Mapping(target = "reservationDatePersian", ignore = true) // Exclude from MapStruct mapping
     Reservation toEntity(ReservationDTO reservationDTO);
 }

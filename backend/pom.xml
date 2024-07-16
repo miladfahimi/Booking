@@ -130,6 +130,14 @@
             <artifactId>logback-core</artifactId>
         </dependency>
 
+        <!-- PERSIAN CALENDAR -->
+        <dependency>
+            <groupId>com.github.mfathi91</groupId>
+            <artifactId>persian-date-time</artifactId>
+            <version>4.2.1</version>
+        </dependency>
+
+
         <!-- Jakarta Validation -->
         <dependency>
             <groupId>org.hibernate.validator</groupId>

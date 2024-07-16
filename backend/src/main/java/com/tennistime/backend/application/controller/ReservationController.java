@@ -44,4 +44,16 @@ public class ReservationController {
         List<ReservationDTO> reservations = reservationService.findReservationsByUserId(userId);
         return ResponseEntity.ok(reservations);
     }
+
+    @GetMapping("/court/{courtId}")
+    public ResponseEntity<List<ReservationDTO>> findReservationsByCourtId(@PathVariable Long courtId) {
+        List<ReservationDTO> reservations = reservationService.findReservationsByCourtId(courtId);
+        return ResponseEntity.ok(reservations);
+    }
+
+    @GetMapping("/persian/{date}")
+    public ResponseEntity<List<ReservationDTO>> findReservationsByPersianDate(@PathVariable String date) {
+        List<ReservationDTO> reservations = reservationService.findReservationsByPersianDate(date);
+        return ResponseEntity.ok(reservations);
+    }
 }
