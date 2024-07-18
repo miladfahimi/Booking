@@ -1,5 +1,5 @@
-CREATE TABLE app_user (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS app_user (
+    id BIGSERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
     password VARCHAR(255) NOT NULL,
     email VARCHAR(100),
@@ -9,8 +9,8 @@ CREATE TABLE app_user (
     role VARCHAR(50)
 );
 
-CREATE TABLE club (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS club (
+    id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     address VARCHAR(255),
     phone VARCHAR(50),
@@ -18,13 +18,13 @@ CREATE TABLE club (
     description TEXT
 );
 
-CREATE TABLE item (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS item (
+    id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE court (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS court (
+    id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     type VARCHAR(50),
     availability BOOLEAN,
@@ -32,8 +32,8 @@ CREATE TABLE court (
     FOREIGN KEY (club_id) REFERENCES club(id)
 );
 
-CREATE TABLE FEEDBACK (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS feedback (
+    id BIGSERIAL PRIMARY KEY,
     comment VARCHAR(255),
     rating INT,
     created_at TIMESTAMP,
@@ -43,9 +43,8 @@ CREATE TABLE FEEDBACK (
     FOREIGN KEY (court_id) REFERENCES court(id)
 );
 
-
-CREATE TABLE reservation (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS reservation (
+    id BIGSERIAL PRIMARY KEY,
     reservation_date TIMESTAMP,
     start_time TIME,
     end_time TIME,
