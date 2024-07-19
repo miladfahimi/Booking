@@ -11,3 +11,7 @@
 
 # Exclude workspace file
 .idea/workspace.xml
+
+
+### FAKE SMTP ###
+/lib/emails/

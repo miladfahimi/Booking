@@ -57,4 +57,25 @@ public class AppUserController {
         List<ReservationDTO> reservations = reservationService.findReservationsByUserId(id);
         return ResponseEntity.ok(reservations);
     }
+
+    @PostMapping("/signup")
+    @Operation(summary = "Sign up a new user")
+    public ResponseEntity<AppUserDTO> signup(@RequestBody AppUserDTO appUserDTO) {
+        AppUserDTO signedUpUser = appUserService.signup(appUserDTO);
+        return ResponseEntity.ok(signedUpUser);
+    }
+
+    @PostMapping("/signin")
+    @Operation(summary = "Sign in a user")
+    public ResponseEntity<AppUserDTO> signin(@RequestParam String email, @RequestParam String password) {
+        AppUserDTO signedInUser = appUserService.signin(email, password);
+        return ResponseEntity.ok(signedInUser);
+    }
+
+    @GetMapping("/verify")
+    @Operation(summary = "Verify user email")
+    public ResponseEntity<Void> verifyEmail(@RequestParam String token) {
+        appUserService.verifyEmail(token);
+        return ResponseEntity.noContent().build();
+    }
 }
