@@ -3,18 +3,22 @@ package com.tennistime.backend.application.service;
 import com.tennistime.backend.application.dto.AppUserDTO;
 import com.tennistime.backend.application.mapper.AppUserMapper;
 import com.tennistime.backend.domain.model.AppUser;
+import com.tennistime.backend.domain.model.VerificationToken;
 import com.tennistime.backend.domain.repository.AppUserRepository;
-import com.tennistime.backend.exception.EmailAlreadyInUseException;
-import com.tennistime.backend.exception.InvalidVerificationTokenException;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
+import com.tennistime.backend.domain.repository.VerificationTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,11 +36,8 @@ public class AppUserService {
     @Autowired
     private JavaMailSender javaMailSender;
 
-    // Temporary token storage for demonstration
-    private String verificationToken;
-    private Long verificationUserId;
-
-    private final Map<String, Long> verificationTokens = new HashMap<>();
+    @Autowired
+    private VerificationTokenRepository verificationTokenRepository;
 
     public List<AppUserDTO> findAll() {
         return appUserRepository.findAll().stream()
@@ -63,7 +64,7 @@ public class AppUserService {
 
     public AppUserDTO signup(AppUserDTO appUserDTO) {
         if (appUserRepository.findByEmail(appUserDTO.getEmail()).isPresent()) {
-            throw new EmailAlreadyInUseException("Email already in use");
+            throw new IllegalArgumentException("Email already in use");
         }
         appUserDTO.setPassword(passwordEncoder.encode(appUserDTO.getPassword()));
         AppUser appUser = appUserMapper.toEntity(appUserDTO);
@@ -85,9 +86,14 @@ public class AppUserService {
     }
 
     private void sendVerificationEmail(AppUser appUser) {
-        verificationToken = UUID.randomUUID().toString();
-        verificationUserId = appUser.getId();
-        String verificationLink = "http://localhost:8080/api/v1/users/verify?token=" + verificationToken;
+        String token = UUID.randomUUID().toString();
+        VerificationToken verificationToken = new VerificationToken();
+        verificationToken.setToken(token);
+        verificationToken.setUser(appUser);
+        verificationToken.setExpiryDate(LocalDateTime.now().plusDays(1)); // 24 hours expiration
+        verificationTokenRepository.save(verificationToken);
+
+        String verificationLink = "http://localhost:8080/api/v1/users/verify?token=" + token;
 
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
@@ -101,15 +107,21 @@ public class AppUserService {
         }
     }
 
+    @Transactional
     public void verifyEmail(String token) {
-        if (!token.equals(verificationToken)) {
+        Optional<VerificationToken> verificationTokenOptional = verificationTokenRepository.findByToken(token);
+        if (verificationTokenOptional.isEmpty()) {
             throw new IllegalArgumentException("Invalid verification token");
         }
-        Optional<AppUser> appUserOptional = appUserRepository.findById(verificationUserId);
-        if (appUserOptional.isPresent()) {
-            AppUser appUser = appUserOptional.get();
-            appUser.setRole("VERIFIED_USER");
-            appUserRepository.save(appUser);
+
+        VerificationToken verificationToken = verificationTokenOptional.get();
+        if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Verification token has expired");
         }
+
+        AppUser appUser = verificationToken.getUser();
+        appUser.setRole("VERIFIED_USER");
+        appUserRepository.save(appUser);
+        verificationTokenRepository.deleteByToken(token);
     }
 }

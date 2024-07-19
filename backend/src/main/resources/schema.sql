@@ -9,6 +9,15 @@ CREATE TABLE IF NOT EXISTS app_user (
     role VARCHAR(50)
 );
 
+CREATE TABLE IF NOT EXISTS verification_token (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    token VARCHAR(255) NOT NULL UNIQUE,
+    expiry_date TIMESTAMP NOT NULL,
+    user_id BIGINT NOT NULL,
+    CONSTRAINT fk_verification_token_user FOREIGN KEY (user_id) REFERENCES app_user (id) ON DELETE CASCADE
+);
+
+
 CREATE TABLE IF NOT EXISTS club (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
