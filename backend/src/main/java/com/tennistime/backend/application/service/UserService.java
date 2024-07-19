@@ -7,12 +7,12 @@ import com.tennistime.backend.domain.repository.AppUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class AppUserService {
+public class UserService {
 
     @Autowired
     private AppUserRepository appUserRepository;
@@ -22,6 +22,9 @@ public class AppUserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private VerificationService verificationService;
 
     public List<AppUserDTO> findAll() {
         return appUserRepository.findAll().stream()
@@ -44,5 +47,28 @@ public class AppUserService {
 
     public void deleteById(Long id) {
         appUserRepository.deleteById(id);
+    }
+
+    public AppUserDTO signup(AppUserDTO appUserDTO) {
+        if (appUserRepository.findByEmail(appUserDTO.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Email already in use");
+        }
+        appUserDTO.setPassword(passwordEncoder.encode(appUserDTO.getPassword()));
+        AppUser appUser = appUserMapper.toEntity(appUserDTO);
+        appUser.setRole("USER");
+        appUser = appUserRepository.save(appUser);
+        verificationService.sendVerificationEmail(appUser);
+        return appUserMapper.toDTO(appUser);
+    }
+
+    public AppUserDTO signin(String email, String password) {
+        Optional<AppUser> appUserOptional = appUserRepository.findByEmail(email);
+        if (appUserOptional.isPresent()) {
+            AppUser appUser = appUserOptional.get();
+            if (passwordEncoder.matches(password, appUser.getPassword())) {
+                return appUserMapper.toDTO(appUser);
+            }
+        }
+        throw new IllegalArgumentException("Invalid email or password");
     }
 }

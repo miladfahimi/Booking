@@ -1,27 +1,46 @@
 package com.tennistime.backend.domain.model;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.Id;
 
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
-@Table(name = "verification_token")
 public class VerificationToken {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String token;
 
-    @OneToOne(targetEntity = AppUser.class, fetch = FetchType.EAGER)
+    @OneToOne
     @JoinColumn(nullable = false, name = "user_id")
-    private AppUser user;
+    private AppUser appUser;
 
     private LocalDateTime expiryDate;
+
+    public VerificationToken() {}
+
+    public VerificationToken(String token, AppUser appUser) {
+        this.token = token;
+        this.appUser = appUser;
+        this.expiryDate = LocalDateTime.now().plusDays(1);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public AppUser getAppUser() {
+        return appUser;
+    }
+
+    public LocalDateTime getExpiryDate() {
+        return expiryDate;
+    }
 }

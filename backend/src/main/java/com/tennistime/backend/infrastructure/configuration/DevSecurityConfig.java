@@ -14,9 +14,13 @@ public class DevSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/h2-console/**").permitAll() // Allow access to H2 console
                         .anyRequest().permitAll()
                 )
-                .csrf(csrf -> csrf.disable());
+                .headers(headers -> headers
+                        .frameOptions().sameOrigin() // Allow frames from the same origin
+                )
+                .csrf(csrf -> csrf.disable()); // Disable CSRF for H2 console
         return http.build();
     }
 }
