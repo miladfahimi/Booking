@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import jakarta.validation.constraints.NotEmpty;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,6 +19,10 @@ public class AppUserDTO {
     private String phone;
     private String firstName;
     private String lastName;
+
+    @NotEmpty(message = "Password cannot be empty")
+    @Schema(hidden = true)
     private String password;
+
     private String role;
 }

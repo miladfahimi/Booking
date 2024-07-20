@@ -7,6 +7,7 @@ import com.tennistime.backend.domain.repository.AppUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -52,6 +53,9 @@ public class UserService {
     public AppUserDTO signup(AppUserDTO appUserDTO) {
         if (appUserRepository.findByEmail(appUserDTO.getEmail()).isPresent()) {
             throw new IllegalArgumentException("Email already in use");
+        }
+        if (appUserDTO.getPassword() == null) {
+            throw new IllegalArgumentException("Password cannot be null");
         }
         appUserDTO.setPassword(passwordEncoder.encode(appUserDTO.getPassword()));
         AppUser appUser = appUserMapper.toEntity(appUserDTO);

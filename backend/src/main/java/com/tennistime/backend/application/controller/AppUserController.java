@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -42,7 +44,7 @@ public class AppUserController {
 
     @PostMapping
     @Operation(summary = "Create a new user")
-    public ResponseEntity<AppUserDTO> createUser(@RequestBody AppUserDTO appUserDTO) {
+    public ResponseEntity<AppUserDTO> createUser(@Valid @RequestBody AppUserDTO appUserDTO) {
         AppUserDTO createdUser = userService.save(appUserDTO);
         return ResponseEntity.ok(createdUser);
     }
@@ -56,7 +58,7 @@ public class AppUserController {
 
     @PostMapping("/signup")
     @Operation(summary = "Sign up a new user")
-    public ResponseEntity<AppUserDTO> signup(@RequestBody AppUserDTO appUserDTO) {
+    public ResponseEntity<AppUserDTO> signup(@Valid @RequestBody AppUserDTO appUserDTO) {
         AppUserDTO signedUpUser = userService.signup(appUserDTO);
         return ResponseEntity.ok(signedUpUser);
     }
