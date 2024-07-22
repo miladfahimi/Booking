@@ -1,48 +1,34 @@
-package com.tennistime.backend.domain.model;
+package com.tennistime.backend.infrastructure.security;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.tennistime.backend.domain.model.AppUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
-import jakarta.persistence.*;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
 
-@Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "app_user")
-public class AppUser implements UserDetails {
+public class CustomUserDetails implements UserDetails {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String username;
-    private String email;
-    private String phone;
-    private String firstName;
-    private String lastName;
-    private String password;
-    private String role;
+    private AppUser appUser;
+
+    public CustomUserDetails(AppUser appUser) {
+        this.appUser = appUser;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(role));
+        return Collections.singleton(new SimpleGrantedAuthority(appUser.getRole()));
     }
 
     @Override
     public String getPassword() {
-        return this.password;
+        return appUser.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return this.email; // use email as the username
+        return appUser.getEmail();
     }
 
     @Override

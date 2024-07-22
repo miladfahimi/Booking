@@ -1,7 +1,7 @@
 INSERT INTO app_user (username, password, email, phone, first_name, last_name, role) VALUES
-('john_doe', 'password', 'john@example.com', '1234567890', 'John', 'Doe', 'USER'),
-('David_jackson', 'password', 'david@example.com', '1111567890', 'David', 'Jackson', 'ADMIN'),
-('Ali_koorvet', 'password', 'ali@example.com', '122227890', 'Ali', 'Koorvet', 'USER');
+('john_doe', '$2a$10$06UBqKaMpOkdfjHQVeJ9k.Z2OG0ImrPIA2l2vJ3H0U8E05gn48yVS', 'john@example.com', '1234567890', 'John', 'Doe', 'USER'),
+('David_jackson', '$2a$10$06UBqKaMpOkdfjHQVeJ9k.Z2OG0ImrPIA2l2vJ3H0U8E05gn48yVS', 'david@example.com', '1111567890', 'David', 'Jackson', 'ADMIN'),
+('Ali_koorvet', '$2a$10$06UBqKaMpOkdfjHQVeJ9k.Z2OG0ImrPIA2l2vJ3H0U8E05gn48yVS', 'ali@example.com', '122227890', 'Ali', 'Koorvet', 'USER');
 
 INSERT INTO club (name, address, phone, email, description) VALUES
 ('Tennis Club 1', '123 Main St', '3334567890', 'club1@example.com', 'Best club in town'),

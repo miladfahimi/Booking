@@ -5,12 +5,15 @@ import com.tennistime.backend.application.dto.ReservationDTO;
 import com.tennistime.backend.application.service.UserService;
 import com.tennistime.backend.application.service.VerificationService;
 import com.tennistime.backend.application.service.ReservationService;
+import com.tennistime.backend.infrastructure.security.JwtUtil;
+import com.tennistime.backend.infrastructure.security.TokenBlacklistService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 
@@ -27,6 +30,12 @@ public class AppUserController {
 
     @Autowired
     private ReservationService reservationService;
+
+    @Autowired
+    private TokenBlacklistService tokenBlacklistService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @GetMapping
     @Operation(summary = "Get all users")
@@ -60,6 +69,12 @@ public class AppUserController {
     @Operation(summary = "Sign up a new user")
     public ResponseEntity<AppUserDTO> signup(@Valid @RequestBody AppUserDTO appUserDTO) {
         AppUserDTO signedUpUser = userService.signup(appUserDTO);
+
+        // Logging
+        System.out.println("\033[1;32m----------------------------\033[0m");
+        System.out.println("\033[1;32m[AppUserController] Signup response: " + signedUpUser + "\033[0m");
+        System.out.println("\033[1;32m----------------------------\033[0m");
+
         return ResponseEntity.ok(signedUpUser);
     }
 
@@ -67,7 +82,27 @@ public class AppUserController {
     @Operation(summary = "Sign in a user")
     public ResponseEntity<AppUserDTO> signin(@RequestParam String email, @RequestParam String password) {
         AppUserDTO signedInUser = userService.signin(email, password);
+
+        // Logging
+        System.out.println("\033[1;32m----------------------------\033[0m");
+        System.out.println("\033[1;32m[AppUserController] Signin response: " + signedInUser + "\033[0m");
+        System.out.println("\033[1;32m----------------------------\033[0m");
+
         return ResponseEntity.ok(signedInUser);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@RequestHeader("Authorization") String token) {
+        if (token != null && token.startsWith("Bearer ")) {
+            String jwt = token.substring(7);
+            tokenBlacklistService.blacklistToken(jwt);
+
+            // Logging
+            System.out.println("\033[1;31m----------------------------\033[0m");
+            System.out.println("\033[1;31m[AppUserController] Token blacklisted: " + jwt + "\033[0m");
+            System.out.println("\033[1;31m----------------------------\033[0m");
+        }
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/verify")

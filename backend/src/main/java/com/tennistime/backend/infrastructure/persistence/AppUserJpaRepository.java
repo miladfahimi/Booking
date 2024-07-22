@@ -1,4 +1,4 @@
-package com.tennistime.backend.infrastructure.repository;
+package com.tennistime.backend.infrastructure.persistence;
 
 import com.tennistime.backend.domain.model.AppUser;
 import com.tennistime.backend.domain.repository.AppUserRepository;

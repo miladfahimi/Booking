@@ -2,8 +2,11 @@ package com.tennistime.backend.infrastructure.configuration;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
-import org.springdoc.core.GroupedOpenApi;
 import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.Components;
+import org.springdoc.core.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,13 +20,16 @@ public class OpenApiConfig {
                         .title("Tennis Time API")
                         .version("1.0")
                         .description("API for managing Tennis Time bookings")
-                        .contact(new Contact().name("Milad Fahimi").email("milad.f@mail.com")));
+                        .contact(new Contact().name("Milad Fahimi").email("milad.f@mail.com")))
+                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
+                .components(new Components().addSecuritySchemes("bearerAuth",
+                        new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")));
     }
 
     @Bean
     public GroupedOpenApi publicApi() {
         return GroupedOpenApi.builder()
-                .group("springshop-public")
+                .group("tennistime-public")
                 .pathsToMatch("/api/v1/**")
                 .build();
     }
