@@ -1,5 +1,6 @@
 package com.tennistime.backend;
 
+import com.tennistime.backend.application.service.VerificationInitializationService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,6 +13,9 @@ public class TennistimeBackendApplication implements CommandLineRunner {
 	@Autowired
 	private Environment env;
 
+    @Autowired
+    private VerificationInitializationService verificationInitializationService;
+
 	public static void main(String[] args) {
 		SpringApplication.run(TennistimeBackendApplication.class, args);
 	}
@@ -19,5 +23,9 @@ public class TennistimeBackendApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		System.out.println("Active Profiles: " + String.join(", ", env.getActiveProfiles()));
-	}
+        verificationInitializationService.initializeVerificationTokens();
+
+    }
+
+
 }

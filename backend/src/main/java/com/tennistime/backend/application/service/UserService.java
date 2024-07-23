@@ -70,9 +70,12 @@ public class UserService {
         if (appUserDTO.getPassword() == null) {
             throw new IllegalArgumentException("Password cannot be null");
         }
+
+        // Save the raw password for later login
+        String rawPassword = appUserDTO.getPassword();
+
         appUserDTO.setPassword(passwordEncoder.encode(appUserDTO.getPassword()));
         AppUser appUser = appUserMapper.toEntity(appUserDTO);
-        appUser.setRole("USER");
         appUser = appUserRepository.save(appUser);
         verificationService.sendVerificationEmail(appUser);
 
@@ -81,8 +84,8 @@ public class UserService {
         System.out.println("\033[1;32m[UserService] Signup successful for user: " + appUser.getEmail() + "\033[0m");
         System.out.println("\033[1;32m----------------------------\033[0m");
 
-        // Perform signin to generate JWT token
-        return signin(appUserDTO.getEmail(), appUserDTO.getPassword());
+        // Perform signin to generate JWT token using the raw password
+        return signin(appUserDTO.getEmail(), rawPassword);
     }
 
     public AppUserDTO signin(String email, String password) {
@@ -92,9 +95,7 @@ public class UserService {
             if (passwordEncoder.matches(password, appUser.getPassword())) {
                 String token = jwtUtil.generateToken(appUser.getEmail());
                 if (isDevProfileActive()) {
-                    logger.info("\033[1;33m----------------------------\033[0m");
                     logger.info("\033[1;33mGenerated JWT Token: {}\033[0m", token); // Yellow color
-                    logger.info("\033[1;33m----------------------------\033[0m");
                 }
                 AppUserDTO userDTO = appUserMapper.toDTO(appUser);
                 userDTO.setToken(token); // Setting the token in AppUserDTO
@@ -106,9 +107,34 @@ public class UserService {
                 System.out.println("\033[1;32m----------------------------\033[0m");
 
                 return userDTO;
+            } else {
+                // Logging password mismatch
+                System.out.println("\033[1;31m----------------------------\033[0m");
+                System.out.println("\033[1;31m[UserService] Signin failed for user: " + email + " - Incorrect password\033[0m");
+                System.out.println("\033[1;31m----------------------------\033[0m");
             }
+        } else {
+            // Logging user not found
+            System.out.println("\033[1;31m----------------------------\033[0m");
+            System.out.println("\033[1;31m[UserService] Signin failed - User not found: " + email + "\033[0m");
+            System.out.println("\033[1;31m----------------------------\033[0m");
         }
         throw new IllegalArgumentException("Invalid email or password");
+    }
+
+    public void resendVerificationEmail(String email) {
+        Optional<AppUser> appUserOptional = appUserRepository.findByEmail(email);
+        if (appUserOptional.isPresent()) {
+            AppUser appUser = appUserOptional.get();
+            verificationService.regenerateAndSendVerificationToken(appUser);
+
+            // Logging
+            System.out.println("\033[1;32m----------------------------\033[0m");
+            System.out.println("\033[1;32m[UserService] Resent verification email to user: " + email + "\033[0m");
+            System.out.println("\033[1;32m----------------------------\033[0m");
+        } else {
+            throw new IllegalArgumentException("User with email " + email + " does not exist");
+        }
     }
 
     private boolean isDevProfileActive() {

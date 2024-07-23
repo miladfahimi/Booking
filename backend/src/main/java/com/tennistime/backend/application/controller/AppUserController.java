@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 
@@ -112,6 +111,13 @@ public class AppUserController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/resend-verification")
+    @Operation(summary = "Resend verification email")
+    public ResponseEntity<Void> resendVerificationEmail(@RequestParam String email) {
+        userService.resendVerificationEmail(email);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/{id}/reservations")
     @Operation(summary = "Get reservations by user ID")
     public ResponseEntity<List<ReservationDTO>> getReservationsByUserId(@PathVariable Long id) {
@@ -119,3 +125,4 @@ public class AppUserController {
         return ResponseEntity.ok(reservations);
     }
 }
+
