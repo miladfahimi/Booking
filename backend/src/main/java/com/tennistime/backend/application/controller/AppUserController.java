@@ -5,6 +5,7 @@ import com.tennistime.backend.application.dto.ReservationDTO;
 import com.tennistime.backend.application.service.UserService;
 import com.tennistime.backend.application.service.VerificationService;
 import com.tennistime.backend.application.service.ReservationService;
+import com.tennistime.backend.domain.model.AppUser;
 import com.tennistime.backend.infrastructure.security.JwtUtil;
 import com.tennistime.backend.infrastructure.security.TokenBlacklistService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -118,6 +119,22 @@ public class AppUserController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/send-verification-sms")
+    @Operation(summary = "Send verification SMS")
+    public ResponseEntity<Void> sendVerificationSms(@RequestParam String phone) {
+        AppUser appUser = userService.findByPhone(phone);
+        verificationService.sendVerificationSms(appUser);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/resend-verification-sms")
+    @Operation(summary = "Resend verification SMS")
+    public ResponseEntity<Void> resendVerificationSms(@RequestParam String phone) {
+        AppUser appUser = userService.findByPhone(phone);
+        verificationService.regenerateAndSendVerificationSms(appUser);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/{id}/reservations")
     @Operation(summary = "Get reservations by user ID")
     public ResponseEntity<List<ReservationDTO>> getReservationsByUserId(@PathVariable Long id) {
@@ -125,4 +142,3 @@ public class AppUserController {
         return ResponseEntity.ok(reservations);
     }
 }
-

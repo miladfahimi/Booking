@@ -137,6 +137,11 @@ public class UserService {
         }
     }
 
+    public AppUser findByPhone(String phone) {
+        return appUserRepository.findByPhone(phone)
+                .orElseThrow(() -> new IllegalArgumentException("User with phone " + phone + " does not exist"));
+    }
+
     private boolean isDevProfileActive() {
         return Arrays.asList(env.getActiveProfiles()).contains("dev");
     }

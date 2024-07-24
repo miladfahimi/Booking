@@ -3,6 +3,8 @@ package com.tennistime.backend.application.service;
 import com.tennistime.backend.domain.model.AppUser;
 import com.tennistime.backend.domain.model.VerificationToken;
 import com.tennistime.backend.domain.repository.VerificationTokenRepository;
+import com.twilio.Twilio;
+import com.twilio.rest.verify.v2.service.Verification;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,15 @@ public class VerificationService {
 
     @Autowired
     private JavaMailSender javaMailSender;
+
+    // Twilio credentials
+    public static final String ACCOUNT_SID = "AC10c6673a6eae624392b374b0e6101a7e";
+    public static final String AUTH_TOKEN = "dd1cb6eda0694fe8e01e76ec877c2b9a";
+    public static final String SERVICE_SID = "VA1b4aaaf73068dcc13fd4b890e8b11dea";
+
+    static {
+        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+    }
 
     @Transactional
     public void sendVerificationEmail(AppUser appUser) {
@@ -71,7 +82,6 @@ public class VerificationService {
         String verificationLink = "http://localhost:8080/api/v1/users/verify?token=" + newToken;
         String htmlLink = "<a href=\"" + verificationLink + "\">Click here to verify your account</a>";
 
-
         // Logic to send email with the new verification link
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
@@ -83,5 +93,28 @@ public class VerificationService {
         } catch (MessagingException e) {
             throw new RuntimeException("Failed to send email", e);
         }
+    }
+
+    public void sendVerificationSms(AppUser appUser) {
+        Verification.creator(
+                SERVICE_SID,
+                appUser.getPhone(),
+                "sms")
+                .create();
+    }
+
+    public void regenerateAndSendVerificationSms(AppUser appUser) {
+        VerificationToken existingToken = verificationTokenRepository.findByAppUser(appUser)
+                .orElseThrow(() -> new IllegalArgumentException("No verification token found for user"));
+
+        // Remove the existing token
+        verificationTokenRepository.delete(existingToken);
+
+        // Create and save a new token
+        String newToken = UUID.randomUUID().toString();
+        VerificationToken newVerificationToken = new VerificationToken(newToken, appUser);
+        verificationTokenRepository.save(newVerificationToken);
+
+        sendVerificationSms(appUser);
     }
 }
