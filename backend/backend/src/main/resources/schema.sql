@@ -1,0 +1,65 @@
+CREATE TABLE IF NOT EXISTS app_user (
+    id BIGSERIAL PRIMARY KEY,
+    username VARCHAR(50) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(100),
+    phone VARCHAR(50),
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    role VARCHAR(50)
+);
+
+CREATE TABLE IF NOT EXISTS verification_token (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    token VARCHAR(255) NOT NULL UNIQUE,
+    expiry_date TIMESTAMP NOT NULL,
+    user_id BIGINT NOT NULL,
+    CONSTRAINT fk_verification_token_user FOREIGN KEY (user_id) REFERENCES app_user (id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE IF NOT EXISTS club (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    address VARCHAR(255),
+    phone VARCHAR(50),
+    email VARCHAR(100),
+    description TEXT
+);
+
+CREATE TABLE IF NOT EXISTS item (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS court (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    type VARCHAR(50),
+    availability BOOLEAN,
+    club_id BIGINT,
+    FOREIGN KEY (club_id) REFERENCES club(id)
+);
+
+CREATE TABLE IF NOT EXISTS feedback (
+    id BIGSERIAL PRIMARY KEY,
+    comment VARCHAR(255),
+    rating INT,
+    created_at TIMESTAMP,
+    club_id BIGINT,
+    court_id BIGINT,
+    FOREIGN KEY (club_id) REFERENCES club(id),
+    FOREIGN KEY (court_id) REFERENCES court(id)
+);
+
+CREATE TABLE IF NOT EXISTS reservation (
+    id BIGSERIAL PRIMARY KEY,
+    reservation_date TIMESTAMP,
+    start_time TIME,
+    end_time TIME,
+    status VARCHAR(50),
+    court_id BIGINT,
+    user_id BIGINT,
+    FOREIGN KEY (court_id) REFERENCES court(id),
+    FOREIGN KEY (user_id) REFERENCES app_user(id)
+);
