@@ -20,7 +20,10 @@ public class OpenApiConfig {
                         .title("Tennis Time API")
                         .version("1.0")
                         .description("API for managing Tennis Time bookings")
-                        .contact(new Contact().name("Milad Fahimi").email("milad.f@mail.com")));
+                        .contact(new Contact().name("Milad Fahimi").email("milad.f@mail.com")))
+                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
+                .components(new Components().addSecuritySchemes("bearerAuth",
+                        new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")));
 
     }
 
