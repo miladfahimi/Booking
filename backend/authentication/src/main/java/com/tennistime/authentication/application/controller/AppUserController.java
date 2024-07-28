@@ -1,6 +1,7 @@
 package com.tennistime.authentication.application.controller;
 
 import com.tennistime.authentication.application.dto.AppUserDTO;
+import com.tennistime.authentication.application.service.OtpService;
 import com.tennistime.authentication.application.service.UserService;
 import com.tennistime.authentication.application.service.VerificationService;
 import com.tennistime.authentication.domain.model.AppUser;
@@ -32,6 +33,9 @@ public class AppUserController {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private OtpService otpService;
 
     @GetMapping
     @Operation(summary = "Get all users")
@@ -92,6 +96,9 @@ public class AppUserController {
         if (token != null && token.startsWith("Bearer ")) {
             String jwt = token.substring(7);
             tokenBlacklistService.blacklistToken(jwt);
+
+            AppUser appUser = jwtUtil.extractUserFromToken(jwt);
+            otpService.invalidateOtp(appUser);
 
             // Logging
             System.out.println("\033[1;31m----------------------------\033[0m");

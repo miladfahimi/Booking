@@ -40,6 +40,9 @@ public class UserService {
     @Autowired
     private Environment env;
 
+    @Autowired
+    private OtpService otpService;
+
     public List<AppUserDTO> findAll() {
         return appUserRepository.findAll().stream()
                 .map(appUserMapper::toDTO)
@@ -144,5 +147,34 @@ public class UserService {
 
     private boolean isDevProfileActive() {
         return Arrays.asList(env.getActiveProfiles()).contains("dev");
+    }
+
+    public AppUserDTO findByEmail(String email) {
+        Optional<AppUser> userOptional = appUserRepository.findByEmail(email);
+        return userOptional.map(appUserMapper::toDTO).orElse(null);
+    }
+
+    public AppUser findEntityByEmail(String email) {
+        return appUserRepository.findByEmail(email).orElse(null);
+    }
+
+    public AppUserDTO signinWithOtp(String email, String otp) {
+        Optional<AppUser> appUserOptional = appUserRepository.findByEmail(email);
+        if (appUserOptional.isPresent()) {
+            AppUser appUser = appUserOptional.get();
+            if (otpService.validateOtp(appUser, otp)) {
+                otpService.invalidateOtp(appUser);
+                return appUserMapper.toDTO(appUser);
+            } else {
+                throw new IllegalArgumentException("Invalid OTP or OTP expired");
+            }
+        } else {
+            throw new IllegalArgumentException("User not found");
+        }
+    }
+
+    public void logout(String token) {
+        AppUser appUser = jwtUtil.extractUserFromToken(token);
+        otpService.invalidateOtp(appUser);
     }
 }

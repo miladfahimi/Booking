@@ -5,11 +5,15 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import com.tennistime.authentication.domain.model.AppUser;
+import com.tennistime.authentication.domain.repository.AppUserRepository;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.Optional;
 import java.util.function.Function;
 
 @Component
@@ -20,6 +24,9 @@ public class JwtUtil {
 
     @Value("${jwt.expirationMs}")
     private long expirationMs;
+
+    @Autowired
+    private AppUserRepository appUserRepository;
 
     private Key getSigningKey() {
         byte[] keyBytes = secret.getBytes();
@@ -81,5 +88,11 @@ public class JwtUtil {
     private Claims getAllClaimsFromToken(String token) {
         JwtParser parser = Jwts.parser().setSigningKey(getSigningKey()).build();
         return parser.parseClaimsJws(token).getBody();
+    }
+
+    public AppUser extractUserFromToken(String token) {
+        String email = getUsernameFromToken(token);
+        Optional<AppUser> appUserOptional = appUserRepository.findByEmail(email);
+        return appUserOptional.orElse(null);
     }
 }

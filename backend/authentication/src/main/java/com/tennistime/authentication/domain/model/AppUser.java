@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import jakarta.persistence.*;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -29,6 +30,9 @@ public class AppUser implements UserDetails {
     private String lastName;
     private String password;
     private String role;
+    // OTP fields
+    private String otp;
+    private LocalDateTime otpExpirationTime;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

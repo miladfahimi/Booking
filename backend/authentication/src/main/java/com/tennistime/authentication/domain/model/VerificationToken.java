@@ -22,13 +22,15 @@ public class VerificationToken {
     private AppUser appUser;
 
     private LocalDateTime expiryDate;
+    private boolean used;
 
     public VerificationToken() {}
 
     public VerificationToken(String token, AppUser appUser) {
         this.token = token;
         this.appUser = appUser;
-        this.expiryDate = LocalDateTime.now().plusDays(1);
+        this.expiryDate = LocalDateTime.now().plusMinutes(10); // Valid for 10 minutes
+        this.used = false;
     }
 
     public Long getId() {

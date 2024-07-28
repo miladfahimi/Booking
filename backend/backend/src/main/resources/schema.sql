@@ -1,3 +1,4 @@
+-- Create app_user table with OTP fields
 CREATE TABLE IF NOT EXISTS app_user (
     id BIGSERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
@@ -6,18 +7,22 @@ CREATE TABLE IF NOT EXISTS app_user (
     phone VARCHAR(50),
     first_name VARCHAR(100),
     last_name VARCHAR(100),
-    role VARCHAR(50)
+    role VARCHAR(50),
+    otp VARCHAR(6),
+    otp_expiration_time TIMESTAMP
 );
 
+-- Create verification_token table with USED column
 CREATE TABLE IF NOT EXISTS verification_token (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     token VARCHAR(255) NOT NULL UNIQUE,
     expiry_date TIMESTAMP NOT NULL,
+    used BOOLEAN DEFAULT FALSE,
     user_id BIGINT NOT NULL,
     CONSTRAINT fk_verification_token_user FOREIGN KEY (user_id) REFERENCES app_user (id) ON DELETE CASCADE
 );
 
-
+-- Create club table
 CREATE TABLE IF NOT EXISTS club (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -27,11 +32,7 @@ CREATE TABLE IF NOT EXISTS club (
     description TEXT
 );
 
-CREATE TABLE IF NOT EXISTS item (
-    id BIGSERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
-);
-
+-- Create court table
 CREATE TABLE IF NOT EXISTS court (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -41,6 +42,7 @@ CREATE TABLE IF NOT EXISTS court (
     FOREIGN KEY (club_id) REFERENCES club(id)
 );
 
+-- Create feedback table
 CREATE TABLE IF NOT EXISTS feedback (
     id BIGSERIAL PRIMARY KEY,
     comment VARCHAR(255),
@@ -52,6 +54,7 @@ CREATE TABLE IF NOT EXISTS feedback (
     FOREIGN KEY (court_id) REFERENCES court(id)
 );
 
+-- Create reservation table
 CREATE TABLE IF NOT EXISTS reservation (
     id BIGSERIAL PRIMARY KEY,
     reservation_date TIMESTAMP,
