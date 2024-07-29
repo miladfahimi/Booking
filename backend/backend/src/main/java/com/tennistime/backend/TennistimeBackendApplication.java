@@ -6,7 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.core.env.Environment;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.tennistime.backend", "com.tennistime.common"})
 public class TennistimeBackendApplication implements CommandLineRunner {
 
 	@Autowired

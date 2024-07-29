@@ -6,7 +6,7 @@ import com.tennistime.authentication.application.service.UserService;
 import com.tennistime.authentication.application.service.VerificationService;
 import com.tennistime.authentication.domain.model.AppUser;
 import com.tennistime.authentication.infrastructure.security.JwtUtil;
-import com.tennistime.authentication.infrastructure.security.TokenBlacklistService;
+import com.tennistime.common.security.TokenBlacklistService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
-
 import java.util.List;
 
 @RestController
@@ -95,7 +94,8 @@ public class AppUserController {
     public ResponseEntity<Void> logout(@RequestHeader("Authorization") String token) {
         if (token != null && token.startsWith("Bearer ")) {
             String jwt = token.substring(7);
-            tokenBlacklistService.blacklistToken(jwt);
+            long expirationTime = jwtUtil.getExpirationDateFromToken(jwt).getTime() - System.currentTimeMillis();
+            tokenBlacklistService.blacklistToken(jwt, expirationTime);
 
             AppUser appUser = jwtUtil.extractUserFromToken(jwt);
             otpService.invalidateOtp(appUser);
@@ -137,6 +137,4 @@ public class AppUserController {
         verificationService.regenerateAndSendVerificationSms(appUser);
         return ResponseEntity.noContent().build();
     }
-
-
 }

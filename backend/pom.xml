@@ -19,6 +19,7 @@
     <modules>
         <module>backend</module>
         <module>authentication</module>
+        <module>common</module>
     </modules>
     <properties>
         <java.version>17</java.version>
