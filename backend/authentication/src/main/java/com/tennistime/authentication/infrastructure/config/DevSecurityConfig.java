@@ -39,8 +39,9 @@ public class DevSecurityConfig {
         logger.info("\033[1;32m----------------------------\033[0m");
 
         http.csrf().disable()
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/h2-console/**",
+                .authorizeRequests(auth -> auth
+                        .requestMatchers(
+                                "/h2-console/**",
                                 "/api/v1/authentication/**",
                                 "/v2/api-docs",
                                 "/v3/api-docs",
@@ -55,7 +56,7 @@ public class DevSecurityConfig {
                                 "/users/signup",  // Allow signup without JWT
                                 "/users/signin",   // Allow signin without JWT
                                 "/users/signin-otp"
-                                ).permitAll()
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

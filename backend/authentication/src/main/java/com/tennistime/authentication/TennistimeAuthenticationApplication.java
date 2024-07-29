@@ -23,7 +23,7 @@ public class TennistimeAuthenticationApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         System.out.println("\033[1;31m----------------------------\033[0m");
-        System.out.println("Authentication starts in : " + env.getActiveProfiles() + "profile");
+        System.out.println("\033[1;31mActive Profiles Authentication: " + env.getActiveProfiles() + "\033[0m");
         System.out.println("\033[1;31m----------------------------\033[0m");
         verificationInitializationService.initializeVerificationTokens();
     }

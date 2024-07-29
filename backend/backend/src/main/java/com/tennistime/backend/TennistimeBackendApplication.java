@@ -19,7 +19,7 @@ public class TennistimeBackendApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		System.out.println("\033[1;31m----------------------------\033[0m");
-		System.out.println("Active Profiles: " + String.join(", ", env.getActiveProfiles()));
+		System.out.println("\033[1;31mActive Profiles Backend: " + env.getActiveProfiles() + "\033[0m");
 		System.out.println("\033[1;31m----------------------------\033[0m");
     }
 
