@@ -13,10 +13,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+/**
+ * Service class for managing user-related operations for clients.
+ */
 @Service
 public class UserService {
 
@@ -43,29 +44,12 @@ public class UserService {
     @Autowired
     private OtpService otpService;
 
-    public List<AppUserDTO> findAll() {
-        return appUserRepository.findAll().stream()
-                .map(appUserMapper::toDTO)
-                .collect(Collectors.toList());
-    }
-
-    public AppUserDTO save(AppUserDTO appUserDTO) {
-        AppUser appUser = appUserMapper.toEntity(appUserDTO);
-        appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
-        appUser = appUserRepository.save(appUser);
-        return appUserMapper.toDTO(appUser);
-    }
-
-    public AppUserDTO findById(Long id) {
-        return appUserRepository.findById(id)
-                .map(appUserMapper::toDTO)
-                .orElse(null);
-    }
-
-    public void deleteById(Long id) {
-        appUserRepository.deleteById(id);
-    }
-
+    /**
+     * Sign up a new user.
+     *
+     * @param appUserDTO the user to sign up
+     * @return the signed-up user
+     */
     public AppUserDTO signup(AppUserDTO appUserDTO) {
         if (appUserRepository.findByEmail(appUserDTO.getEmail()).isPresent()) {
             throw new IllegalArgumentException("Email already in use");
@@ -91,6 +75,13 @@ public class UserService {
         return signin(appUserDTO.getEmail(), rawPassword);
     }
 
+    /**
+     * Sign in a user.
+     *
+     * @param email    the user's email
+     * @param password the user's password
+     * @return the signed-in user
+     */
     public AppUserDTO signin(String email, String password) {
         Optional<AppUser> appUserOptional = appUserRepository.findByEmail(email);
         if (appUserOptional.isPresent()) {
@@ -125,6 +116,11 @@ public class UserService {
         throw new IllegalArgumentException("Invalid email or password");
     }
 
+    /**
+     * Resend verification email to the user.
+     *
+     * @param email the user's email
+     */
     public void resendVerificationEmail(String email) {
         Optional<AppUser> appUserOptional = appUserRepository.findByEmail(email);
         if (appUserOptional.isPresent()) {
@@ -140,31 +136,71 @@ public class UserService {
         }
     }
 
+    /**
+     * Find user by phone number.
+     *
+     * @param phone the user's phone number
+     * @return the user entity
+     */
     public AppUser findByPhone(String phone) {
         return appUserRepository.findByPhone(phone)
                 .orElseThrow(() -> new IllegalArgumentException("User with phone " + phone + " does not exist"));
     }
 
+    /**
+     * Check if the dev profile is active.
+     *
+     * @return true if dev profile is active, false otherwise
+     */
     private boolean isDevProfileActive() {
         return Arrays.asList(env.getActiveProfiles()).contains("dev");
     }
 
+    /**
+     * Find user by email.
+     *
+     * @param email the user's email
+     * @return the user DTO
+     */
     public AppUserDTO findByEmail(String email) {
         Optional<AppUser> userOptional = appUserRepository.findByEmail(email);
         return userOptional.map(appUserMapper::toDTO).orElse(null);
     }
 
+    /**
+     * Find user entity by email.
+     *
+     * @param email the user's email
+     * @return the user entity
+     */
     public AppUser findEntityByEmail(String email) {
         return appUserRepository.findByEmail(email).orElse(null);
     }
 
+    /**
+     * Sign in with OTP.
+     *
+     * @param email the user's email
+     * @param otp   the OTP
+     * @return the user DTO
+     */
     public AppUserDTO signinWithOtp(String email, String otp) {
         Optional<AppUser> appUserOptional = appUserRepository.findByEmail(email);
         if (appUserOptional.isPresent()) {
             AppUser appUser = appUserOptional.get();
             if (otpService.validateOtp(appUser, otp)) {
                 otpService.invalidateOtp(appUser);
-                return appUserMapper.toDTO(appUser);
+                AppUserDTO userDTO = appUserMapper.toDTO(appUser);
+                String token = jwtUtil.generateToken(appUser.getEmail());
+                userDTO.setToken(token); // Setting the token in AppUserDTO
+
+                // Logging
+                System.out.println("\033[1;32m----------------------------\033[0m");
+                System.out.println("\033[1;32m[UserService] Signin with OTP successful for user: " + email + "\033[0m");
+                System.out.println("\033[1;32mGenerated JWT Token: " + token + "\033[0m");
+                System.out.println("\033[1;32m----------------------------\033[0m");
+
+                return userDTO;
             } else {
                 throw new IllegalArgumentException("Invalid OTP or OTP expired");
             }
@@ -173,6 +209,11 @@ public class UserService {
         }
     }
 
+    /**
+     * Logout a user.
+     *
+     * @param token the JWT token
+     */
     public void logout(String token) {
         AppUser appUser = jwtUtil.extractUserFromToken(token);
         otpService.invalidateOtp(appUser);

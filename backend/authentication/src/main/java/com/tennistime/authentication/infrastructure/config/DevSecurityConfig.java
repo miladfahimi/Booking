@@ -42,7 +42,6 @@ public class DevSecurityConfig {
                 .authorizeRequests(auth -> auth
                         .requestMatchers(
                                 "/h2-console/**",
-                                "/api/v1/authentication/**",
                                 "/v2/api-docs",
                                 "/v3/api-docs",
                                 "/v3/api-docs/**",
@@ -53,9 +52,10 @@ public class DevSecurityConfig {
                                 "/swagger-ui/**",
                                 "/webjars/**",
                                 "/swagger-ui.html",
-                                "/users/signup",  // Allow signup without JWT
-                                "/users/signin",   // Allow signin without JWT
-                                "/users/signin-otp"
+                                "/auth/signup",  // Allow signup without JWT
+                                "/auth/signin",   // Allow signin without JWT
+                                "/otp/send",
+                                "/otp/validate"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

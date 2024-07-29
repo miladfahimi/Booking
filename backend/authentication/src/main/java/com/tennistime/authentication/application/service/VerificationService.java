@@ -5,9 +5,11 @@ import com.tennistime.authentication.domain.model.VerificationToken;
 import com.tennistime.authentication.domain.repository.VerificationTokenRepository;
 import com.twilio.Twilio;
 import com.twilio.rest.verify.v2.service.Verification;
+import jakarta.annotation.PostConstruct;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+/**
+ * Service class for managing verification operations like sending verification emails and SMS.
+ */
 @Service
 public class VerificationService {
 
@@ -24,15 +29,28 @@ public class VerificationService {
     @Autowired
     private JavaMailSender javaMailSender;
 
-    // Twilio credentials
-    public static final String ACCOUNT_SID = "AC10c6673a6eae624392b374b0e6101a7e";
-    public static final String AUTH_TOKEN = "dd1cb6eda0694fe8e01e76ec877c2b9a";
-    public static final String SERVICE_SID = "VA1b4aaaf73068dcc13fd4b890e8b11dea";
+    @Autowired
+    private TwilioService twilioService;
 
-    static {
-        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+    @Value("${twilio.account.sid}")
+    private String accountSid;
+
+    @Value("${twilio.auth.token}")
+    private String authToken;
+
+    @Value("${twilio.service.sid}")
+    private String serviceSid;
+
+    @PostConstruct
+    public void initTwilio() {
+        Twilio.init(accountSid, authToken);
     }
 
+    /**
+     * Send a verification email to the user.
+     *
+     * @param appUser the user to send the email to
+     */
     @Transactional
     public void sendVerificationEmail(AppUser appUser) {
         String token = UUID.randomUUID().toString();
@@ -49,11 +67,21 @@ public class VerificationService {
             helper.setSubject("Email Verification");
             helper.setText("Please click the following link to verify your email: " + htmlLink, true);
             javaMailSender.send(message);
+
+            // Logging
+            System.out.println("\033[1;32m----------------------------\033[0m");
+            System.out.println("\033[1;32m[VerificationService] Verification email sent to: " + appUser.getEmail() + "\033[0m");
+            System.out.println("\033[1;32m----------------------------\033[0m");
         } catch (MessagingException e) {
             throw new RuntimeException("Failed to send email", e);
         }
     }
 
+    /**
+     * Verify the user's email using the provided token.
+     *
+     * @param token the verification token
+     */
     @Transactional
     public void verifyEmail(String token) {
         VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
@@ -61,13 +89,20 @@ public class VerificationService {
         AppUser appUser = verificationToken.getAppUser();
         String role = appUser.getRole();
         appUser.setRole("VERIFIED_" + role);
+        verificationTokenRepository.delete(verificationToken);
+
         // Logging
         System.out.println("\033[1;32m----------------------------\033[0m");
-        System.out.println("\033[1;32m[VerificationService] Verified user as: " + "VERIFIED_" + role + "\033[0m");
+        System.out.println("\033[1;32m[VerificationService] Verified user: " + appUser.getEmail() + " as VERIFIED_" + role + "\033[0m");
         System.out.println("\033[1;32m----------------------------\033[0m");
-        verificationTokenRepository.delete(verificationToken);
     }
 
+    /**
+     * Regenerate and send a new verification token to the user.
+     *
+     * @param appUser the user to send the token to
+     */
+    @Transactional
     public void regenerateAndSendVerificationToken(AppUser appUser) {
         VerificationToken existingToken = verificationTokenRepository.findByAppUser(appUser)
                 .orElseThrow(() -> new IllegalArgumentException("No verification token found for user"));
@@ -90,19 +125,39 @@ public class VerificationService {
             helper.setSubject("Email Verification");
             helper.setText("Please click the following link to verify your email: " + htmlLink, true);
             javaMailSender.send(message);
+
+            // Logging
+            System.out.println("\033[1;32m----------------------------\033[0m");
+            System.out.println("\033[1;32m[VerificationService] Resent verification email to: " + appUser.getEmail() + "\033[0m");
+            System.out.println("\033[1;32m----------------------------\033[0m");
         } catch (MessagingException e) {
             throw new RuntimeException("Failed to send email", e);
         }
     }
 
+    /**
+     * Send a verification SMS to the user.
+     *
+     * @param appUser the user to send the SMS to
+     */
     public void sendVerificationSms(AppUser appUser) {
         Verification.creator(
-                SERVICE_SID,
-                appUser.getPhone(),
-                "sms")
+                        serviceSid,
+                        appUser.getPhone(),
+                        "sms")
                 .create();
+
+        // Logging
+        System.out.println("\033[1;32m----------------------------\033[0m");
+        System.out.println("\033[1;32m[VerificationService] Verification SMS sent to: " + appUser.getPhone() + "\033[0m");
+        System.out.println("\033[1;32m----------------------------\033[0m");
     }
 
+    /**
+     * Regenerate and send a new verification SMS to the user.
+     *
+     * @param appUser the user to send the SMS to
+     */
     public void regenerateAndSendVerificationSms(AppUser appUser) {
         VerificationToken existingToken = verificationTokenRepository.findByAppUser(appUser)
                 .orElseThrow(() -> new IllegalArgumentException("No verification token found for user"));

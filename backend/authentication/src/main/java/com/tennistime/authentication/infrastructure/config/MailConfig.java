@@ -1,5 +1,8 @@
 package com.tennistime.authentication.infrastructure.config;
 
+import com.twilio.Twilio;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -9,6 +12,12 @@ import java.util.Properties;
 
 @Configuration
 public class MailConfig {
+
+//    @Value("${smtp.server.ip}")
+//    private String smtpIp;
+//
+//    @Value("${smtp.server.port}")
+//    private String smtpPort;
 
     @Bean
     public JavaMailSender javaMailSender() {
