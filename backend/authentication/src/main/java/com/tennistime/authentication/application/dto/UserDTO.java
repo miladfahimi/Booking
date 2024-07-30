@@ -10,7 +10,7 @@ import jakarta.validation.constraints.NotEmpty;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AppUserDTO {
+public class UserDTO {
 
     @Schema(hidden = true)
     private Long id;
@@ -20,11 +20,6 @@ public class AppUserDTO {
     private String email;
     @Schema(example = "1234567")
     private String phone;
-    @Schema(example = "Milad")
-    private String firstName;
-    @Schema(example = "Nick")
-    private String lastName;
-
     @NotEmpty(message = "Password cannot be empty")
     @Schema(example = "123")
     private String password;

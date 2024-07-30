@@ -1,7 +1,7 @@
 package com.tennistime.authentication.infrastructure.persistence;
 
 
-import com.tennistime.authentication.domain.model.AppUser;
+import com.tennistime.authentication.domain.model.User;
 import com.tennistime.authentication.domain.model.VerificationToken;
 import com.tennistime.authentication.domain.repository.VerificationTokenRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,5 +13,5 @@ import java.util.Optional;
 public interface VerificationTokenJpaRepository extends VerificationTokenRepository, JpaRepository<VerificationToken, Long> {
     Optional<VerificationToken> findByToken(String token);
     void delete(VerificationToken verificationToken);
-    Optional<VerificationToken> findByAppUser(AppUser appUser); // Add method to find by user
+    Optional<VerificationToken> findByUser(User user); // Add method to find by user
 }

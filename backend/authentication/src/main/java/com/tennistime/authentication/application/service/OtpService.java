@@ -1,7 +1,7 @@
 package com.tennistime.authentication.application.service;
 
-import com.tennistime.authentication.domain.model.AppUser;
-import com.tennistime.authentication.domain.repository.AppUserRepository;
+import com.tennistime.authentication.domain.model.User;
+import com.tennistime.authentication.domain.repository.UserRepository;
 import com.tennistime.authentication.infrastructure.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -25,7 +25,7 @@ public class OtpService {
     private JavaMailSender javaMailSender;
 
     @Autowired
-    private AppUserRepository appUserRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -35,16 +35,16 @@ public class OtpService {
     /**
      * Generate and send OTP to user's email.
      *
-     * @param appUser the user to send OTP to
+     * @param user the user to send OTP to
      */
     @Transactional
-    public void generateAndSendOtp(AppUser appUser) {
+    public void generateAndSendOtp(User user) {
         String otp = generateOtp();
-        appUser.setOtp(otp);
-        appUser.setOtpExpirationTime(LocalDateTime.now().plusMinutes(OTP_VALID_DURATION));
-        appUserRepository.save(appUser);
+        user.setOtp(otp);
+        user.setOtpExpirationTime(LocalDateTime.now().plusMinutes(OTP_VALID_DURATION));
+        userRepository.save(user);
 
-        sendOtpEmail(appUser.getEmail(), otp);
+        sendOtpEmail(user.getEmail(), otp);
     }
 
     /**
@@ -78,40 +78,40 @@ public class OtpService {
     /**
      * Validate the OTP.
      *
-     * @param appUser the user to validate OTP for
+     * @param user the user to validate OTP for
      * @param otp     the OTP to validate
      * @return true if OTP is valid, false otherwise
      */
-    public boolean validateOtp(AppUser appUser, String otp) {
-        return appUser.getOtp() != null &&
-                appUser.getOtp().equals(otp) &&
-                appUser.getOtpExpirationTime().isAfter(LocalDateTime.now());
+    public boolean validateOtp(User user, String otp) {
+        return user.getOtp() != null &&
+                user.getOtp().equals(otp) &&
+                user.getOtpExpirationTime().isAfter(LocalDateTime.now());
     }
 
     /**
      * Invalidate the OTP for the user.
      *
-     * @param appUser the user to invalidate OTP for
+     * @param user the user to invalidate OTP for
      */
     @Transactional
-    public void invalidateOtp(AppUser appUser) {
-        appUser.setOtp(null);
-        appUser.setOtpExpirationTime(null);
-        appUserRepository.save(appUser);
+    public void invalidateOtp(User user) {
+        user.setOtp(null);
+        user.setOtpExpirationTime(null);
+        userRepository.save(user);
     }
 
     /**
      * Validate OTP and generate JWT token if valid.
      *
-     * @param appUser the user to validate OTP for
+     * @param user the user to validate OTP for
      * @param otp     the OTP to validate
      * @return the generated JWT token if OTP is valid, null otherwise
      */
     @Transactional
-    public String validateOtpAndGenerateToken(AppUser appUser, String otp) {
-        if (validateOtp(appUser, otp)) {
-            invalidateOtp(appUser);
-            return jwtUtil.generateToken(appUser.getEmail());
+    public String validateOtpAndGenerateToken(User user, String otp) {
+        if (validateOtp(user, otp)) {
+            invalidateOtp(user);
+            return jwtUtil.generateToken(user.getEmail());
         }
         return null;
     }

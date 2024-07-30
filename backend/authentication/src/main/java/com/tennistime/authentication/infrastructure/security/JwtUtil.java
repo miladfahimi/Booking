@@ -8,8 +8,8 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import com.tennistime.authentication.domain.model.AppUser;
-import com.tennistime.authentication.domain.repository.AppUserRepository;
+import com.tennistime.authentication.domain.model.User;
+import com.tennistime.authentication.domain.repository.UserRepository;
 
 import java.security.Key;
 import java.util.Date;
@@ -26,7 +26,7 @@ public class JwtUtil {
     private long expirationMs;
 
     @Autowired
-    private AppUserRepository appUserRepository;
+    private UserRepository userRepository;
 
     private Key getSigningKey() {
         byte[] keyBytes = secret.getBytes();
@@ -90,9 +90,9 @@ public class JwtUtil {
         return parser.parseClaimsJws(token).getBody();
     }
 
-    public AppUser extractUserFromToken(String token) {
+    public User extractUserFromToken(String token) {
         String email = getUsernameFromToken(token);
-        Optional<AppUser> appUserOptional = appUserRepository.findByEmail(email);
+        Optional<User> appUserOptional = userRepository.findByEmail(email);
         return appUserOptional.orElse(null);
     }
 }

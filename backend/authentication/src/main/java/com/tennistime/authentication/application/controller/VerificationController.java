@@ -2,7 +2,7 @@ package com.tennistime.authentication.application.controller;
 
 import com.tennistime.authentication.application.service.VerificationService;
 import com.tennistime.authentication.application.service.UserService;
-import com.tennistime.authentication.domain.model.AppUser;
+import com.tennistime.authentication.domain.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,16 +40,16 @@ public class VerificationController {
     @PostMapping("/send-sms")
     @Operation(summary = "Send verification SMS")
     public ResponseEntity<Void> sendVerificationSms(@RequestParam String phone) {
-        AppUser appUser = userService.findByPhone(phone);
-        verificationService.sendVerificationSms(appUser);
+        User user = userService.findByPhone(phone);
+        verificationService.sendVerificationSms(user);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/resend-sms")
     @Operation(summary = "Resend verification SMS")
     public ResponseEntity<Void> resendVerificationSms(@RequestParam String phone) {
-        AppUser appUser = userService.findByPhone(phone);
-        verificationService.regenerateAndSendVerificationSms(appUser);
+        User user = userService.findByPhone(phone);
+        verificationService.regenerateAndSendVerificationSms(user);
         return ResponseEntity.noContent().build();
     }
 }

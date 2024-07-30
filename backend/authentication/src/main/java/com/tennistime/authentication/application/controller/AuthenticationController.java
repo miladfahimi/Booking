@@ -1,6 +1,6 @@
 package com.tennistime.authentication.application.controller;
 
-import com.tennistime.authentication.application.dto.AppUserDTO;
+import com.tennistime.authentication.application.dto.UserDTO;
 import com.tennistime.authentication.application.service.UserService;
 import com.tennistime.common.security.TokenBlacklistService;
 import com.tennistime.authentication.infrastructure.security.JwtUtil;
@@ -31,8 +31,8 @@ public class AuthenticationController {
 
     @PostMapping("/signup")
     @Operation(summary = "Sign up a new user")
-    public ResponseEntity<AppUserDTO> signup(@Valid @RequestBody AppUserDTO appUserDTO) {
-        AppUserDTO signedUpUser = userService.signup(appUserDTO);
+    public ResponseEntity<UserDTO> signup(@Valid @RequestBody UserDTO userDTO) {
+        UserDTO signedUpUser = userService.signup(userDTO);
 
         // Logging
         System.out.println("\033[1;32m----------------------------\033[0m");
@@ -44,8 +44,8 @@ public class AuthenticationController {
 
     @PostMapping("/signin")
     @Operation(summary = "Sign in a user")
-    public ResponseEntity<AppUserDTO> signin(@RequestParam String email, @RequestParam String password) {
-        AppUserDTO signedInUser = userService.signin(email, password);
+    public ResponseEntity<UserDTO> signin(@RequestParam String email, @RequestParam String password) {
+        UserDTO signedInUser = userService.signin(email, password);
 
         // Logging
         System.out.println("\033[1;32m----------------------------\033[0m");

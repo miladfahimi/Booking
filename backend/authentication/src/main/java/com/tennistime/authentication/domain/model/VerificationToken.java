@@ -19,33 +19,15 @@ public class VerificationToken {
 
     @OneToOne
     @JoinColumn(nullable = false, name = "user_id")
-    private AppUser appUser;
+    private User user;
 
     private LocalDateTime expiryDate;
     private boolean used;
 
-    public VerificationToken() {}
-
-    public VerificationToken(String token, AppUser appUser) {
+    public VerificationToken(String token, User user) {
         this.token = token;
-        this.appUser = appUser;
+        this.user = user;
         this.expiryDate = LocalDateTime.now().plusMinutes(10); // Valid for 10 minutes
         this.used = false;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public AppUser getAppUser() {
-        return appUser;
-    }
-
-    public LocalDateTime getExpiryDate() {
-        return expiryDate;
     }
 }

@@ -1,6 +1,6 @@
 package com.tennistime.authentication.application.controller;
 
-import com.tennistime.authentication.application.dto.AppUserDTO;
+import com.tennistime.authentication.application.dto.UserDTO;
 import com.tennistime.authentication.application.service.AdminUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,22 +24,22 @@ public class UserManagementController {
 
     @GetMapping
     @Operation(summary = "Get all users")
-    public ResponseEntity<List<AppUserDTO>> getAllUsers() {
-        List<AppUserDTO> users = appUserService.findAll();
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        List<UserDTO> users = appUserService.findAll();
         return ResponseEntity.ok(users);
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get user by ID")
-    public ResponseEntity<AppUserDTO> getUserById(@PathVariable Long id) {
-        AppUserDTO user = appUserService.findById(id);
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
+        UserDTO user = appUserService.findById(id);
         return user != null ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();
     }
 
     @PostMapping
     @Operation(summary = "Create a new user")
-    public ResponseEntity<AppUserDTO> createUser(@Valid @RequestBody AppUserDTO appUserDTO) {
-        AppUserDTO createdUser = appUserService.save(appUserDTO);
+    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserDTO userDTO) {
+        UserDTO createdUser = appUserService.save(userDTO);
         return ResponseEntity.ok(createdUser);
     }
 

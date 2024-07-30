@@ -1,9 +1,9 @@
 package com.tennistime.authentication.application.service;
 
-import com.tennistime.authentication.application.dto.AppUserDTO;
+import com.tennistime.authentication.application.dto.UserDTO;
 import com.tennistime.authentication.application.mapper.AppUserMapper;
-import com.tennistime.authentication.domain.model.AppUser;
-import com.tennistime.authentication.domain.repository.AppUserRepository;
+import com.tennistime.authentication.domain.model.User;
+import com.tennistime.authentication.domain.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class AdminUserService {
 
     @Autowired
-    private AppUserRepository appUserRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private AppUserMapper appUserMapper;
@@ -31,8 +31,8 @@ public class AdminUserService {
      *
      * @return list of AppUserDTO
      */
-    public List<AppUserDTO> findAll() {
-        return appUserRepository.findAll().stream()
+    public List<UserDTO> findAll() {
+        return userRepository.findAll().stream()
                 .map(appUserMapper::toDTO)
                 .collect(Collectors.toList());
     }
@@ -40,14 +40,14 @@ public class AdminUserService {
     /**
      * Save a new user.
      *
-     * @param appUserDTO the user to save
+     * @param userDTO the user to save
      * @return the saved user
      */
-    public AppUserDTO save(AppUserDTO appUserDTO) {
-        AppUser appUser = appUserMapper.toEntity(appUserDTO);
-        appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
-        appUser = appUserRepository.save(appUser);
-        return appUserMapper.toDTO(appUser);
+    public UserDTO save(UserDTO userDTO) {
+        User user = appUserMapper.toEntity(userDTO);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user = userRepository.save(user);
+        return appUserMapper.toDTO(user);
     }
 
     /**
@@ -56,8 +56,8 @@ public class AdminUserService {
      * @param id the user ID
      * @return the user, or null if not found
      */
-    public AppUserDTO findById(Long id) {
-        return appUserRepository.findById(id)
+    public UserDTO findById(Long id) {
+        return userRepository.findById(id)
                 .map(appUserMapper::toDTO)
                 .orElse(null);
     }
@@ -68,6 +68,6 @@ public class AdminUserService {
      * @param id the user ID
      */
     public void deleteById(Long id) {
-        appUserRepository.deleteById(id);
+        userRepository.deleteById(id);
     }
 }

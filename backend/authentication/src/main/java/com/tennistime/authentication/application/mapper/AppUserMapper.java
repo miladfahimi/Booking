@@ -1,14 +1,14 @@
 package com.tennistime.authentication.application.mapper;
 
 
-import com.tennistime.authentication.application.dto.AppUserDTO;
-import com.tennistime.authentication.domain.model.AppUser;
+import com.tennistime.authentication.application.dto.UserDTO;
+import com.tennistime.authentication.domain.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface AppUserMapper {
     @Mapping(target = "password", ignore = true)
-    AppUserDTO toDTO(AppUser appUser);
-    AppUser toEntity(AppUserDTO appUserDTO);
+    UserDTO toDTO(User user);
+    User toEntity(UserDTO userDTO);
 }

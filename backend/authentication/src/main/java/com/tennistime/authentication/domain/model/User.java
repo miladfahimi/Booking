@@ -18,7 +18,7 @@ import java.util.Collections;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "app_user")
-public class AppUser implements UserDetails {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,10 +26,10 @@ public class AppUser implements UserDetails {
     private String username;
     private String email;
     private String phone;
-    private String firstName;
-    private String lastName;
     private String password;
     private String role;
+    private LocalDateTime createdAt;
+    private LocalDateTime lastLogin;
     // OTP fields
     private String otp;
     private LocalDateTime otpExpirationTime;
@@ -46,7 +46,7 @@ public class AppUser implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.email; // use email as the username
+        return this.email; // or use email as username
     }
 
     @Override

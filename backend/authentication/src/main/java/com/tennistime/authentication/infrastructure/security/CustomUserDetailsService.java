@@ -1,7 +1,7 @@
 package com.tennistime.authentication.infrastructure.security;
 
-import com.tennistime.authentication.domain.model.AppUser;
-import com.tennistime.authentication.domain.repository.AppUserRepository;
+import com.tennistime.authentication.domain.model.User;
+import com.tennistime.authentication.domain.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,19 +13,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
-    private AppUserRepository appUserRepository;
+    private UserRepository userRepository;
 
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        AppUser appUser = appUserRepository.findByEmail(email)
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
         // Logging
         System.out.println("\033[1;34m----------------------------\033[0m");
-        System.out.println("\033[1;34m[CustomUserDetailsService] User loaded: " + appUser + "\033[0m");
+        System.out.println("\033[1;34m[CustomUserDetailsService] User loaded: " + user + "\033[0m");
         System.out.println("\033[1;34m----------------------------\033[0m");
 
-        return new org.springframework.security.core.userdetails.User(appUser.getEmail(), appUser.getPassword(), appUser.getAuthorities());
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), user.getAuthorities());
     }
 }

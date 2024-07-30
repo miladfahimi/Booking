@@ -1,6 +1,6 @@
 package com.tennistime.authentication.application.service;
 
-import com.tennistime.authentication.domain.model.AppUser;
+import com.tennistime.authentication.domain.model.User;
 import com.tennistime.authentication.domain.model.VerificationToken;
 import com.tennistime.authentication.domain.repository.VerificationTokenRepository;
 import com.twilio.Twilio;
@@ -49,12 +49,12 @@ public class VerificationService {
     /**
      * Send a verification email to the user.
      *
-     * @param appUser the user to send the email to
+     * @param user the user to send the email to
      */
     @Transactional
-    public void sendVerificationEmail(AppUser appUser) {
+    public void sendVerificationEmail(User user) {
         String token = UUID.randomUUID().toString();
-        VerificationToken verificationToken = new VerificationToken(token, appUser);
+        VerificationToken verificationToken = new VerificationToken(token, user);
         verificationTokenRepository.save(verificationToken);
 
         String verificationLink = "http://localhost:8080/api/v1/users/verify?token=" + token;
@@ -63,14 +63,14 @@ public class VerificationService {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            helper.setTo(appUser.getEmail());
+            helper.setTo(user.getEmail());
             helper.setSubject("Email Verification");
             helper.setText("Please click the following link to verify your email: " + htmlLink, true);
             javaMailSender.send(message);
 
             // Logging
             System.out.println("\033[1;32m----------------------------\033[0m");
-            System.out.println("\033[1;32m[VerificationService] Verification email sent to: " + appUser.getEmail() + "\033[0m");
+            System.out.println("\033[1;32m[VerificationService] Verification email sent to: " + user.getEmail() + "\033[0m");
             System.out.println("\033[1;32m----------------------------\033[0m");
         } catch (MessagingException e) {
             throw new RuntimeException("Failed to send email", e);
@@ -86,25 +86,25 @@ public class VerificationService {
     public void verifyEmail(String token) {
         VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid verification token"));
-        AppUser appUser = verificationToken.getAppUser();
-        String role = appUser.getRole();
-        appUser.setRole("VERIFIED_" + role);
+        User user = verificationToken.getUser();
+        String role = user.getRole();
+        user.setRole("VERIFIED_" + role);
         verificationTokenRepository.delete(verificationToken);
 
         // Logging
         System.out.println("\033[1;32m----------------------------\033[0m");
-        System.out.println("\033[1;32m[VerificationService] Verified user: " + appUser.getEmail() + " as VERIFIED_" + role + "\033[0m");
+        System.out.println("\033[1;32m[VerificationService] Verified user: " + user.getEmail() + " as VERIFIED_" + role + "\033[0m");
         System.out.println("\033[1;32m----------------------------\033[0m");
     }
 
     /**
      * Regenerate and send a new verification token to the user.
      *
-     * @param appUser the user to send the token to
+     * @param user the user to send the token to
      */
     @Transactional
-    public void regenerateAndSendVerificationToken(AppUser appUser) {
-        VerificationToken existingToken = verificationTokenRepository.findByAppUser(appUser)
+    public void regenerateAndSendVerificationToken(User user) {
+        VerificationToken existingToken = verificationTokenRepository.findByUser(user)
                 .orElseThrow(() -> new IllegalArgumentException("No verification token found for user"));
 
         // Remove the existing token
@@ -112,7 +112,7 @@ public class VerificationService {
 
         // Create and save a new token
         String newToken = UUID.randomUUID().toString();
-        VerificationToken newVerificationToken = new VerificationToken(newToken, appUser);
+        VerificationToken newVerificationToken = new VerificationToken(newToken, user);
         verificationTokenRepository.save(newVerificationToken);
         String verificationLink = "http://localhost:8080/api/v1/users/verify?token=" + newToken;
         String htmlLink = "<a href=\"" + verificationLink + "\">Click here to verify your account</a>";
@@ -121,14 +121,14 @@ public class VerificationService {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            helper.setTo(appUser.getEmail());
+            helper.setTo(user.getEmail());
             helper.setSubject("Email Verification");
             helper.setText("Please click the following link to verify your email: " + htmlLink, true);
             javaMailSender.send(message);
 
             // Logging
             System.out.println("\033[1;32m----------------------------\033[0m");
-            System.out.println("\033[1;32m[VerificationService] Resent verification email to: " + appUser.getEmail() + "\033[0m");
+            System.out.println("\033[1;32m[VerificationService] Resent verification email to: " + user.getEmail() + "\033[0m");
             System.out.println("\033[1;32m----------------------------\033[0m");
         } catch (MessagingException e) {
             throw new RuntimeException("Failed to send email", e);
@@ -138,28 +138,28 @@ public class VerificationService {
     /**
      * Send a verification SMS to the user.
      *
-     * @param appUser the user to send the SMS to
+     * @param user the user to send the SMS to
      */
-    public void sendVerificationSms(AppUser appUser) {
+    public void sendVerificationSms(User user) {
         Verification.creator(
                         serviceSid,
-                        appUser.getPhone(),
+                        user.getPhone(),
                         "sms")
                 .create();
 
         // Logging
         System.out.println("\033[1;32m----------------------------\033[0m");
-        System.out.println("\033[1;32m[VerificationService] Verification SMS sent to: " + appUser.getPhone() + "\033[0m");
+        System.out.println("\033[1;32m[VerificationService] Verification SMS sent to: " + user.getPhone() + "\033[0m");
         System.out.println("\033[1;32m----------------------------\033[0m");
     }
 
     /**
      * Regenerate and send a new verification SMS to the user.
      *
-     * @param appUser the user to send the SMS to
+     * @param user the user to send the SMS to
      */
-    public void regenerateAndSendVerificationSms(AppUser appUser) {
-        VerificationToken existingToken = verificationTokenRepository.findByAppUser(appUser)
+    public void regenerateAndSendVerificationSms(User user) {
+        VerificationToken existingToken = verificationTokenRepository.findByUser(user)
                 .orElseThrow(() -> new IllegalArgumentException("No verification token found for user"));
 
         // Remove the existing token
@@ -167,9 +167,9 @@ public class VerificationService {
 
         // Create and save a new token
         String newToken = UUID.randomUUID().toString();
-        VerificationToken newVerificationToken = new VerificationToken(newToken, appUser);
+        VerificationToken newVerificationToken = new VerificationToken(newToken, user);
         verificationTokenRepository.save(newVerificationToken);
 
-        sendVerificationSms(appUser);
+        sendVerificationSms(user);
     }
 }

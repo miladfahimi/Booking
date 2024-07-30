@@ -1,9 +1,9 @@
 package com.tennistime.authentication.application.service;
 
-import com.tennistime.authentication.application.dto.AppUserDTO;
+import com.tennistime.authentication.application.dto.UserDTO;
 import com.tennistime.authentication.application.mapper.AppUserMapper;
-import com.tennistime.authentication.domain.model.AppUser;
-import com.tennistime.authentication.domain.repository.AppUserRepository;
+import com.tennistime.authentication.domain.model.User;
+import com.tennistime.authentication.domain.repository.UserRepository;
 import com.tennistime.authentication.infrastructure.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -24,7 +24,7 @@ public class UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     @Autowired
-    private AppUserRepository appUserRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private AppUserMapper appUserMapper;
@@ -47,32 +47,32 @@ public class UserService {
     /**
      * Sign up a new user.
      *
-     * @param appUserDTO the user to sign up
+     * @param userDTO the user to sign up
      * @return the signed-up user
      */
-    public AppUserDTO signup(AppUserDTO appUserDTO) {
-        if (appUserRepository.findByEmail(appUserDTO.getEmail()).isPresent()) {
+    public UserDTO signup(UserDTO userDTO) {
+        if (userRepository.findByEmail(userDTO.getEmail()).isPresent()) {
             throw new IllegalArgumentException("Email already in use");
         }
-        if (appUserDTO.getPassword() == null) {
+        if (userDTO.getPassword() == null) {
             throw new IllegalArgumentException("Password cannot be null");
         }
 
         // Save the raw password for later login
-        String rawPassword = appUserDTO.getPassword();
+        String rawPassword = userDTO.getPassword();
 
-        appUserDTO.setPassword(passwordEncoder.encode(appUserDTO.getPassword()));
-        AppUser appUser = appUserMapper.toEntity(appUserDTO);
-        appUser = appUserRepository.save(appUser);
-        verificationService.sendVerificationEmail(appUser);
+        userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        User user = appUserMapper.toEntity(userDTO);
+        user = userRepository.save(user);
+        verificationService.sendVerificationEmail(user);
 
         // Logging
         System.out.println("\033[1;32m----------------------------\033[0m");
-        System.out.println("\033[1;32m[UserService] Signup successful for user: " + appUser.getEmail() + "\033[0m");
+        System.out.println("\033[1;32m[UserService] Signup successful for user: " + user.getEmail() + "\033[0m");
         System.out.println("\033[1;32m----------------------------\033[0m");
 
         // Perform signin to generate JWT token using the raw password
-        return signin(appUserDTO.getEmail(), rawPassword);
+        return signin(userDTO.getEmail(), rawPassword);
     }
 
     /**
@@ -82,16 +82,16 @@ public class UserService {
      * @param password the user's password
      * @return the signed-in user
      */
-    public AppUserDTO signin(String email, String password) {
-        Optional<AppUser> appUserOptional = appUserRepository.findByEmail(email);
+    public UserDTO signin(String email, String password) {
+        Optional<User> appUserOptional = userRepository.findByEmail(email);
         if (appUserOptional.isPresent()) {
-            AppUser appUser = appUserOptional.get();
-            if (passwordEncoder.matches(password, appUser.getPassword())) {
-                String token = jwtUtil.generateToken(appUser.getEmail());
+            User user = appUserOptional.get();
+            if (passwordEncoder.matches(password, user.getPassword())) {
+                String token = jwtUtil.generateToken(user.getEmail());
                 if (isDevProfileActive()) {
                     logger.info("\033[1;33mGenerated JWT Token: {}\033[0m", token); // Yellow color
                 }
-                AppUserDTO userDTO = appUserMapper.toDTO(appUser);
+                UserDTO userDTO = appUserMapper.toDTO(user);
                 userDTO.setToken(token); // Setting the token in AppUserDTO
 
                 // Logging
@@ -122,10 +122,10 @@ public class UserService {
      * @param email the user's email
      */
     public void resendVerificationEmail(String email) {
-        Optional<AppUser> appUserOptional = appUserRepository.findByEmail(email);
+        Optional<User> appUserOptional = userRepository.findByEmail(email);
         if (appUserOptional.isPresent()) {
-            AppUser appUser = appUserOptional.get();
-            verificationService.regenerateAndSendVerificationToken(appUser);
+            User user = appUserOptional.get();
+            verificationService.regenerateAndSendVerificationToken(user);
 
             // Logging
             System.out.println("\033[1;32m----------------------------\033[0m");
@@ -142,8 +142,8 @@ public class UserService {
      * @param phone the user's phone number
      * @return the user entity
      */
-    public AppUser findByPhone(String phone) {
-        return appUserRepository.findByPhone(phone)
+    public User findByPhone(String phone) {
+        return userRepository.findByPhone(phone)
                 .orElseThrow(() -> new IllegalArgumentException("User with phone " + phone + " does not exist"));
     }
 
@@ -162,8 +162,8 @@ public class UserService {
      * @param email the user's email
      * @return the user DTO
      */
-    public AppUserDTO findByEmail(String email) {
-        Optional<AppUser> userOptional = appUserRepository.findByEmail(email);
+    public UserDTO findByEmail(String email) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
         return userOptional.map(appUserMapper::toDTO).orElse(null);
     }
 
@@ -173,8 +173,8 @@ public class UserService {
      * @param email the user's email
      * @return the user entity
      */
-    public AppUser findEntityByEmail(String email) {
-        return appUserRepository.findByEmail(email).orElse(null);
+    public User findEntityByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
     }
 
     /**
@@ -184,14 +184,14 @@ public class UserService {
      * @param otp   the OTP
      * @return the user DTO
      */
-    public AppUserDTO signinWithOtp(String email, String otp) {
-        Optional<AppUser> appUserOptional = appUserRepository.findByEmail(email);
+    public UserDTO signinWithOtp(String email, String otp) {
+        Optional<User> appUserOptional = userRepository.findByEmail(email);
         if (appUserOptional.isPresent()) {
-            AppUser appUser = appUserOptional.get();
-            if (otpService.validateOtp(appUser, otp)) {
-                otpService.invalidateOtp(appUser);
-                AppUserDTO userDTO = appUserMapper.toDTO(appUser);
-                String token = jwtUtil.generateToken(appUser.getEmail());
+            User user = appUserOptional.get();
+            if (otpService.validateOtp(user, otp)) {
+                otpService.invalidateOtp(user);
+                UserDTO userDTO = appUserMapper.toDTO(user);
+                String token = jwtUtil.generateToken(user.getEmail());
                 userDTO.setToken(token); // Setting the token in AppUserDTO
 
                 // Logging
@@ -215,7 +215,7 @@ public class UserService {
      * @param token the JWT token
      */
     public void logout(String token) {
-        AppUser appUser = jwtUtil.extractUserFromToken(token);
-        otpService.invalidateOtp(appUser);
+        User user = jwtUtil.extractUserFromToken(token);
+        otpService.invalidateOtp(user);
     }
 }
