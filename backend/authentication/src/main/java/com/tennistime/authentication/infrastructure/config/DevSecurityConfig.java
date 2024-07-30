@@ -39,7 +39,8 @@ public class DevSecurityConfig {
         logger.info("\033[1;32m----------------------------\033[0m");
 
         http.csrf().disable()
-                .authorizeRequests(auth -> auth
+                .authorizeHttpRequests(auth -> auth
+                        // Public Endpoints
                         .requestMatchers(
                                 "/h2-console/**",
                                 "/v2/api-docs",
@@ -52,16 +53,37 @@ public class DevSecurityConfig {
                                 "/swagger-ui/**",
                                 "/webjars/**",
                                 "/swagger-ui.html",
-                                "/auth/signup",  // Allow signup without JWT
-                                "/auth/signin",   // Allow signin without JWT
+                                "/verify/send-sms",
+                                "/verify/resend-sms",
+                                "/verify/resend-email",
+                                "/otp/validate",
                                 "/otp/send",
-                                "/otp/validate"
+                                "/otp/invalidate",
+                                "/auth/signup",
+                                "/auth/signin",
+                                "/auth/logout",
+                                "/verify/email"
                         ).permitAll()
+                        .requestMatchers(
+                                "/**"
+                        ).hasRole("ADMIN")
+                        .requestMatchers(
+                                "/reservations/**",
+                                "/courts/**",
+                                "/clubs/**",
+                                "/feedbacks/**"
+                        ).hasRole("CLUB_OWNER")
+                        .requestMatchers(
+                                "/reservations/**",
+                                "/courts/**",
+                                "/feedbacks/**"
+                        ).hasRole("USER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .headers(headers -> headers.frameOptions().sameOrigin()); // Allow frames from the same origin
+                .headers(headers -> headers.frameOptions().sameOrigin());
+
         return http.build();
     }
 }

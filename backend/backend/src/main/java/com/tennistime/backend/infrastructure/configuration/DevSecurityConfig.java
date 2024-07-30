@@ -33,8 +33,9 @@ public class DevSecurityConfig {
 
         http.csrf().disable()
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/h2-console/**",
-                                "/api/v1/com.tennistime.authentication.authentication/**",
+                        // Public Endpoints
+                        .requestMatchers(
+                                "/h2-console/**",
                                 "/v2/api-docs",
                                 "/v3/api-docs",
                                 "/v3/api-docs/**",
@@ -44,12 +45,28 @@ public class DevSecurityConfig {
                                 "/configuration/security",
                                 "/swagger-ui/**",
                                 "/webjars/**",
-                                "/swagger-ui.html").permitAll()
+                                "/swagger-ui.html"
+                        ).permitAll()
+                        .requestMatchers(
+                                "/**"
+                        ).hasRole("ADMIN")
+                        .requestMatchers(
+                                "/reservations/**",
+                                "/courts/**",
+                                "/clubs/**",
+                                "/feedbacks/**"
+                        ).hasRole("CLUB_OWNER")
+                        .requestMatchers(
+                                "/reservations/**",
+                                "/courts/**",
+                                "/feedbacks/**"
+                        ).hasRole("USER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .headers(headers -> headers.frameOptions().sameOrigin()); // Allow frames from the same origin
+                .headers(headers -> headers.frameOptions().sameOrigin());
+
         return http.build();
     }
 }

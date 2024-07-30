@@ -6,6 +6,8 @@ import com.tennistime.authentication.infrastructure.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +31,9 @@ public class OtpService {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     private static final int OTP_VALID_DURATION = 5; // OTP validity duration in minutes
 
@@ -79,7 +84,7 @@ public class OtpService {
      * Validate the OTP.
      *
      * @param user the user to validate OTP for
-     * @param otp     the OTP to validate
+     * @param otp  the OTP to validate
      * @return true if OTP is valid, false otherwise
      */
     public boolean validateOtp(User user, String otp) {
@@ -104,14 +109,15 @@ public class OtpService {
      * Validate OTP and generate JWT token if valid.
      *
      * @param user the user to validate OTP for
-     * @param otp     the OTP to validate
+     * @param otp  the OTP to validate
      * @return the generated JWT token if OTP is valid, null otherwise
      */
     @Transactional
     public String validateOtpAndGenerateToken(User user, String otp) {
         if (validateOtp(user, otp)) {
             invalidateOtp(user);
-            return jwtUtil.generateToken(user.getEmail());
+            UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+            return jwtUtil.generateToken(userDetails);
         }
         return null;
     }

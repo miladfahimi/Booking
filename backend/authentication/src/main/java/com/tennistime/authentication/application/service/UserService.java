@@ -7,6 +7,8 @@ import com.tennistime.authentication.domain.repository.UserRepository;
 import com.tennistime.authentication.infrastructure.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
@@ -43,6 +45,9 @@ public class UserService {
 
     @Autowired
     private OtpService otpService;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     /**
      * Sign up a new user.
@@ -87,12 +92,13 @@ public class UserService {
         if (appUserOptional.isPresent()) {
             User user = appUserOptional.get();
             if (passwordEncoder.matches(password, user.getPassword())) {
-                String token = jwtUtil.generateToken(user.getEmail());
+                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                String token = jwtUtil.generateToken(userDetails);
                 if (isDevProfileActive()) {
                     logger.info("\033[1;33mGenerated JWT Token: {}\033[0m", token); // Yellow color
                 }
                 UserDTO userDTO = appUserMapper.toDTO(user);
-                userDTO.setToken(token); // Setting the token in AppUserDTO
+                userDTO.setToken(token); // Setting the token in UserDTO
 
                 // Logging
                 System.out.println("\033[1;32m----------------------------\033[0m");
@@ -191,8 +197,9 @@ public class UserService {
             if (otpService.validateOtp(user, otp)) {
                 otpService.invalidateOtp(user);
                 UserDTO userDTO = appUserMapper.toDTO(user);
-                String token = jwtUtil.generateToken(user.getEmail());
-                userDTO.setToken(token); // Setting the token in AppUserDTO
+                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                String token = jwtUtil.generateToken(userDetails);
+                userDTO.setToken(token); // Setting the token in UserDTO
 
                 // Logging
                 System.out.println("\033[1;32m----------------------------\033[0m");

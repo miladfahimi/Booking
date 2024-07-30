@@ -8,6 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,7 +27,7 @@ public class User implements UserDetails {
     private String email;
     private String phone;
     private String password;
-    private String role;
+    private String role; // "ADMIN", "CLUB_OWNER", "CLIENT"
     private LocalDateTime createdAt;
     private LocalDateTime lastLogin;
 
@@ -36,7 +37,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(role));
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role));
     }
 
     @Override
