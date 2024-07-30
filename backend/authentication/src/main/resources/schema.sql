@@ -6,11 +6,11 @@ CREATE TABLE IF NOT EXISTS app_user (
     password VARCHAR(255) NOT NULL,
     email VARCHAR(100),
     phone VARCHAR(50),
-    first_name VARCHAR(100),
-    last_name VARCHAR(100),
     role VARCHAR(50),
     otp VARCHAR(6),
-    otp_expiration_time TIMESTAMP
+    otp_expiration_time TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_login TIMESTAMP
 );
 
 -- Create verification_token table with USED column

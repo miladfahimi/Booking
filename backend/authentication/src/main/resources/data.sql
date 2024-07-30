@@ -1,5 +1,7 @@
 -- Insert data into app_user table
-INSERT INTO app_user (username, password, email, phone, first_name, last_name, role, otp, otp_expiration_time) VALUES
-('john_doe', '$2a$10$4Xi2lPlzJwVIaTtNVVeYBOJV39OSS/8czwyu1GH/TRwcXCsRqH7/q', 'john@example.com', '1234567890', 'John', 'Doe', 'USER', NULL, NULL),
-('David_jackson', '$2a$10$06UBqKaMpOkdfjHQVeJ9k.Z2OG0ImrPIA2l2vJ3H0U8E05gn48yVS', 'david@example.com', '1111567890', 'David', 'Jackson', 'ADMIN', NULL, NULL),
-('Ali_koorvet', '$2a$10$06UBqKaMpOkdfjHQVeJ9k.Z2OG0ImrPIA2l2vJ3H0U8E05gn48yVS', 'ali@example.com', '122227890', 'Ali', 'Koorvet', 'USER', NULL, NULL);
+INSERT INTO app_user (username, email, phone, password, role, created_at, last_login, otp, otp_expiration_time) VALUES
+('john_doe', 'john_doe@example.com', '1111111111', '$2a$10$06UBqKaMpOkdfjHQVeJ9k.Z2OG0ImrPIA2l2vJ3H0U8E05gn48yVS', 'USER', NOW(), NULL, NULL, NULL),
+('jane_smith', 'jane_smith@example.com', '2222222222', '$2a$10$06UBqKaMpOkdfjHQVeJ9k.Z2OG0ImrPIA2l2vJ3H0U8E05gn48yVS', 'USER', NOW(), NULL, NULL, NULL),
+('david_jackson', 'david_jackson@example.com', '3333333333', '$2a$10$06UBqKaMpOkdfjHQVeJ9k.Z2OG0ImrPIA2l2vJ3H0U8E05gn48yVS', 'CLUB_OWNER', NOW(), NULL, NULL, NULL),
+('emma_jones', 'emma_jones@example.com', '4444444444', '$2a$10$06UBqKaMpOkdfjHQVeJ9k.Z2OG0ImrPIA2l2vJ3H0U8E05gn48yVS', 'CLUB_OWNER', NOW(), NULL, NULL, NULL),
+('admin', 'admin@example.com', '5555555555', '$2a$10$06UBqKaMpOkdfjHQVeJ9k.Z2OG0ImrPIA2l2vJ3H0U8E05gn48yVS', 'ADMIN', NOW(), NULL, NULL, NULL);

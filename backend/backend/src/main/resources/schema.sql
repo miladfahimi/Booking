@@ -1,5 +1,3 @@
-
-
 -- Create club table
 DROP TABLE IF EXISTS club CASCADE;
 CREATE TABLE IF NOT EXISTS club (
@@ -45,6 +43,46 @@ CREATE TABLE IF NOT EXISTS reservation (
     status VARCHAR(50),
     court_id BIGINT,
     user_id BIGINT,
+    FOREIGN KEY (court_id) REFERENCES court(id),
+    FOREIGN KEY (user_id) REFERENCES app_user(id)
+);
+
+
+-- Create user_profile table
+DROP TABLE IF EXISTS user_profile CASCADE;
+CREATE TABLE IF NOT EXISTS user_profile (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL, -- Reference to app_user table in authentication module
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    phone_number VARCHAR(50),
+    address TEXT,
+    date_of_birth DATE,
+    profile_picture VARCHAR(255),
+    preferences TEXT,
+    FOREIGN KEY (user_id) REFERENCES app_user(id)
+);
+
+-- Create user_subscription table
+DROP TABLE IF EXISTS user_subscription CASCADE;
+CREATE TABLE IF NOT EXISTS user_subscription (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL, -- Reference to app_user table in authentication module
+    subscription_plan VARCHAR(100),
+    start_date DATE,
+    end_date DATE,
+    status VARCHAR(50),
+    FOREIGN KEY (user_id) REFERENCES app_user(id)
+);
+
+-- Create user_booking_history table
+DROP TABLE IF EXISTS user_booking_history CASCADE;
+CREATE TABLE IF NOT EXISTS user_booking_history (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL, -- Reference to app_user table in authentication module
+    court_id BIGINT NOT NULL,
+    booking_date TIMESTAMP,
+    status VARCHAR(50),
     FOREIGN KEY (court_id) REFERENCES court(id),
     FOREIGN KEY (user_id) REFERENCES app_user(id)
 );

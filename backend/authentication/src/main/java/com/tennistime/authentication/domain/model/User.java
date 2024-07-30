@@ -5,10 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
-import jakarta.persistence.*;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,6 +29,7 @@ public class User implements UserDetails {
     private String role;
     private LocalDateTime createdAt;
     private LocalDateTime lastLogin;
+
     // OTP fields
     private String otp;
     private LocalDateTime otpExpirationTime;
@@ -46,7 +46,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.email; // or use email as username
+        return this.email; // use email as the username
     }
 
     @Override
