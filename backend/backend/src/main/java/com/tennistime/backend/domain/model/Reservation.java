@@ -1,7 +1,6 @@
 package com.tennistime.backend.domain.model;
 
 import com.github.mfathi91.time.PersianDate;
-// import com.tennistime.authentication.domain.model.AppUser;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

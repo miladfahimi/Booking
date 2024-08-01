@@ -1,6 +1,6 @@
-package com.tennistime.backend.infrastructure.security;
+package com.tennistime.authentication.infrastructure.security;
 
-import com.tennistime.backend.redis.TokenBlacklistService;
+import com.tennistime.authentication.redis.TokenBlacklistService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,14 +50,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     return;
                 }
-                username = jwtUtil.extractUsername(jwt);
-                email = jwtUtil.extractEmail(jwt);
-                roles = jwtUtil.extractRoles(jwt);
-
-                // Ensure roles are prefixed with "ROLE_"
-                roles = roles.stream()
-                        .map(role -> role.startsWith("ROLE_") ? role : "ROLE_" + role)
-                        .collect(Collectors.toList());
+                username = jwtUtil.getUsernameFromToken(jwt);
+                email = jwtUtil.getEmailFromToken(jwt);
+                roles = jwtUtil.getRolesFromToken(jwt);
 
                 // Logging all claims
                 logger.info("\033[1;34m----------------------------\033[0m");
@@ -73,9 +68,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            if (jwtUtil.validateToken(jwt, username)) {
+            if (jwtUtil.validateToken(jwt)) {
                 List<SimpleGrantedAuthority> authorities = roles.stream()
-                        .map(SimpleGrantedAuthority::new)
+                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                         .collect(Collectors.toList());
 
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =

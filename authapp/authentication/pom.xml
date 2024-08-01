@@ -4,10 +4,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.tennistime</groupId>
-    <artifactId>backend</artifactId>
+    <artifactId>authentication</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>com.tennistime.backend</name>
-    <description>backend service for TennisTime application</description>
+    <name>com.tennistime.authentication</name>
+    <description>Authentication service for TennisTime application</description>
 
     <parent>
         <groupId>com.tennistime</groupId>
@@ -278,7 +278,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <!-- Maven Jar Plugin to create a JAR without Application class -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -297,7 +296,7 @@
                             <archive>
                                 <manifest>
                                     <addClasspath>true</addClasspath>
-                                    <mainClass>com.tennistime.backend</mainClass>
+                                    <mainClass>com.tennistime.authentication</mainClass>
                                 </manifest>
                             </archive>
                         </configuration>
