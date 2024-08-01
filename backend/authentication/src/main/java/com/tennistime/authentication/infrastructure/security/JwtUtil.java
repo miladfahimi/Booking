@@ -43,6 +43,7 @@ public class JwtUtil {
         claims.put("roles", userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList()));
+        claims.put("email", userDetails.getUsername()); // Add the email to the claims
 
         String token = Jwts.builder()
                 .setClaims(claims)
@@ -84,6 +85,10 @@ public class JwtUtil {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
+    public String getEmailFromToken(String token) {
+        return getClaimFromToken(token, claims -> claims.get("email", String.class));
+    }
+
     public List<String> getRolesFromToken(String token) {
         return getClaimFromToken(token, claims -> claims.get("roles", List.class));
     }
@@ -103,7 +108,7 @@ public class JwtUtil {
     }
 
     public User extractUserFromToken(String token) {
-        String email = getUsernameFromToken(token);
+        String email = getEmailFromToken(token);
         Optional<User> appUserOptional = userRepository.findByEmail(email);
         return appUserOptional.orElse(null);
     }

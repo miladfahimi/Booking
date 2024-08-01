@@ -45,7 +45,8 @@ public class DevSecurityConfig {
                                 "/configuration/security",
                                 "/swagger-ui/**",
                                 "/webjars/**",
-                                "/swagger-ui.html"
+                                "/swagger-ui.html",
+                                "/profile"
                         ).permitAll()
                         .requestMatchers(
                                 "/**"

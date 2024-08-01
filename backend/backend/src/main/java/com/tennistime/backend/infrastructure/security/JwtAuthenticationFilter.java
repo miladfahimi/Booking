@@ -36,6 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String authorizationHeader = request.getHeader("Authorization");
 
         String username = null;
+        String email = null;
         String jwt = null;
         List<String> roles = null;
 
@@ -50,12 +51,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     return;
                 }
                 username = jwtUtil.extractUsername(jwt);
+                email = jwtUtil.extractEmail(jwt);
                 roles = jwtUtil.extractRoles(jwt);
 
                 // Logging all claims
                 logger.info("\033[1;34m----------------------------\033[0m");
                 logger.info("\033[1;34mJWT Token: {}\033[0m", jwt);
                 logger.info("\033[1;34mUsername: {}\033[0m", username);
+                logger.info("\033[1;34mEmail: {}\033[0m", email);
                 logger.info("\033[1;34mRoles: {}\033[0m", roles);
                 logger.info("\033[1;34m----------------------------\033[0m");
 
@@ -80,6 +83,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // Logging
                 logger.info("\033[1;32m----------------------------\033[0m");
                 logger.info("\033[1;32mAuthenticated user: {}\033[0m", username);
+                logger.info("\033[1;32mEmail: {}\033[0m", email);
                 logger.info("\033[1;32mRoles: {}\033[0m", roles);
                 logger.info("\033[1;32m----------------------------\033[0m");
             } else {

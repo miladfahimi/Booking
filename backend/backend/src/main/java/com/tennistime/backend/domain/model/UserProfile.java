@@ -21,7 +21,7 @@ public class UserProfile {
     private Long id;
 
     private Long userId; // Storing user ID instead of user reference
-
+    private String email;
     private String firstName;
     private String lastName;
     private String phoneNumber;

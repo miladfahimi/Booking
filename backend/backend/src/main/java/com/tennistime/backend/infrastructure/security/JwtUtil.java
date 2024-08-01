@@ -1,6 +1,8 @@
 package com.tennistime.backend.infrastructure.security;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -30,37 +32,26 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(String username, List<String> roles) {
-        // Create a map for claims
-        Map<String, Object> claimsMap = new HashMap<>();
-        claimsMap.put("sub", username);
-        claimsMap.put("roles", roles.stream().map(role -> "ROLE_" + role).collect(Collectors.toList()));
+    public String generateToken(String username, String email, List<String> roles) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", roles.stream().map(role -> "ROLE_" + role).collect(Collectors.toList()));
+        claims.put("email", email);
 
-        // Create a Claims object from the map
-        Claims claims = Jwts.claims(claimsMap);
-
-        String token = Jwts.builder()
+        return Jwts.builder()
                 .setClaims(claims)
+                .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
-                .signWith(SignatureAlgorithm.HS512, secret)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                 .compact();
-
-        // Logging
-        System.out.println("\033[1;35m----------------------------\033[0m");
-        System.out.println("\033[1;35m[JwtUtil] Generated JWT Token: " + token + "\033[0m");
-        System.out.println("\033[1;35m----------------------------\033[0m");
-
-        return token;
-    }
-
-    public boolean validateToken(String token, String username) {
-        final String extractedUsername = extractUsername(token);
-        return (extractedUsername.equals(username) && !isTokenExpired(token));
     }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public String extractEmail(String token) {
+        return extractClaim(token, claims -> claims.get("email", String.class));
     }
 
     public List<String> extractRoles(String token) {
@@ -90,5 +81,10 @@ public class JwtUtil {
 
     private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
+    }
+
+    public boolean validateToken(String token, String username) {
+        final String extractedUsername = extractUsername(token);
+        return (extractedUsername.equals(username) && !isTokenExpired(token));
     }
 }
