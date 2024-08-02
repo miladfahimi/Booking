@@ -63,6 +63,7 @@ public class DevSecurityConfig {
                                 "/auth/signin",
                                 "/auth/logout",
                                 "/verify/email",
+                                "/service/test",
                                 "/profile"
                         ).permitAll()
                         .requestMatchers(

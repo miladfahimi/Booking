@@ -1,0 +1,22 @@
+package com.tennistime.backend.application.controller;
+
+import com.tennistime.backend.application.service.AuthService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/test")
+public class TestController {
+
+    @Autowired
+    private AuthService authService;
+
+    @GetMapping
+    public ResponseEntity<String> testFeignClient() {
+        String response = authService.callTestEndpoint();
+        return ResponseEntity.ok(response);
+    }
+}
