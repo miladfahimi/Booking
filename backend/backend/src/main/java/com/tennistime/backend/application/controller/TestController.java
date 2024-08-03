@@ -14,9 +14,29 @@ public class TestController {
     @Autowired
     private AuthService authService;
 
-    @GetMapping
+    @GetMapping("/feign")
     public ResponseEntity<String> testFeignClient() {
         String response = authService.callTestEndpoint();
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/public")
+    public ResponseEntity<String> publicEndpoint() {
+        return ResponseEntity.ok("Public Endpoint");
+    }
+
+    @GetMapping("/admin")
+    public ResponseEntity<String> adminEndpoint() {
+        return ResponseEntity.ok("Admin Endpoint");
+    }
+
+    @GetMapping("/club")
+    public ResponseEntity<String> clubOwnerEndpoint() {
+        return ResponseEntity.ok("Club Owner Endpoint");
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<String> userEndpoint() {
+        return ResponseEntity.ok("User Endpoint");
     }
 }

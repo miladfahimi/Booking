@@ -64,22 +64,13 @@ public class DevSecurityConfig {
                                 "/auth/logout",
                                 "/verify/email",
                                 "/service/test",
-                                "/profile"
+                                "/profile",
+                                "/token/validate" // Allow access to token validation endpoint
                         ).permitAll()
-                        .requestMatchers(
-                                "/**"
-                        ).hasRole("ADMIN")
-                        .requestMatchers(
-                                "/reservations/**",
-                                "/courts/**",
-                                "/clubs/**",
-                                "/feedbacks/**"
-                        ).hasRole("CLUB_OWNER")
-                        .requestMatchers(
-                                "/reservations/**",
-                                "/courts/**",
-                                "/feedbacks/**"
-                        ).hasRole("USER")
+                        // Easier testing for different roles
+                        .requestMatchers("/test/admin").hasRole("ADMIN")
+                        .requestMatchers("/test/club").hasRole("CLUB_OWNER")
+                        .requestMatchers("/test/user").hasRole("USER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -1,5 +1,6 @@
 package com.tennistime.backend.infrastructure.security;
 
+import com.tennistime.backend.infrastructure.feign.AuthServiceClient;
 import com.tennistime.backend.redis.TokenBlacklistService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -25,7 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     @Autowired
-    private JwtUtil jwtUtil;
+    private AuthServiceClient authServiceClient;
 
     @Autowired
     private TokenBlacklistService tokenBlacklistService;
@@ -35,10 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         final String authorizationHeader = request.getHeader("Authorization");
 
-        String username = null;
-        String email = null;
         String jwt = null;
-        List<String> roles = null;
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);
@@ -50,51 +49,54 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     return;
                 }
-                username = jwtUtil.extractUsername(jwt);
-                email = jwtUtil.extractEmail(jwt);
-                roles = jwtUtil.extractRoles(jwt);
 
-                // Ensure roles are prefixed with "ROLE_"
-                roles = roles.stream()
-                        .map(role -> role.startsWith("ROLE_") ? role : "ROLE_" + role)
-                        .collect(Collectors.toList());
+                Map<String, String> requestMap = Map.of("token", jwt);
+                Map<String, Object> tokenInfo = authServiceClient.validateToken(requestMap);
 
-                // Logging all claims
-                logger.info("\033[1;34m----------------------------\033[0m");
-                logger.info("\033[1;34mJWT Token: {}\033[0m", jwt);
-                logger.info("\033[1;34mUsername: {}\033[0m", username);
-                logger.info("\033[1;34mEmail: {}\033[0m", email);
-                logger.info("\033[1;34mRoles: {}\033[0m", roles);
-                logger.info("\033[1;34m----------------------------\033[0m");
+                // Logging the response
+                logger.info("\033[1;36m----------------------------\033[0m");
+                logger.info("\033[1;36m[JwtAuthenticationFilter] Token Info: {}\033[0m", tokenInfo);
+                logger.info("\033[1;36m----------------------------\033[0m");
 
+                if ((boolean) tokenInfo.get("valid")) {
+                    String username = (String) tokenInfo.get("username");
+                    String email = (String) tokenInfo.get("email");
+                    List<String> roles = (List<String>) tokenInfo.get("roles");
+
+                    // Ensure roles are prefixed with "ROLE_"
+                    roles = roles.stream()
+                            .map(role -> role.startsWith("ROLE_") ? role : "ROLE_" + role)
+                            .collect(Collectors.toList());
+
+                    List<SimpleGrantedAuthority> authorities = roles.stream()
+                            .map(SimpleGrantedAuthority::new)
+                            .collect(Collectors.toList());
+
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                            username, null, authorities);
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                    // Logging
+                    logger.info("\033[1;32m----------------------------\033[0m");
+                    logger.info("\033[1;32m[JwtAuthenticationFilter] Token validated and user authenticated: {}\033[0m", username);
+                    logger.info("\033[1;32mEmail: {}\033[0m", email);
+                    logger.info("\033[1;32mRoles: {}\033[0m", roles);
+                    logger.info("\033[1;32m----------------------------\033[0m");
+                } else {
+                    // Logging
+                    logger.info("\033[1;31m----------------------------\033[0m");
+                    logger.info("\033[1;31m[JwtAuthenticationFilter] Invalid token: {}\033[0m", jwt);
+                    logger.info("\033[1;31m----------------------------\033[0m");
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    return;
+                }
             } catch (Exception e) {
-                logger.error("\033[1;31mJWT parsing error: {}\033[0m", e.getMessage());
-            }
-        }
-
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            if (jwtUtil.validateToken(jwt, username)) {
-                List<SimpleGrantedAuthority> authorities = roles.stream()
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
-
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                        new UsernamePasswordAuthenticationToken(username, null, authorities);
-                usernamePasswordAuthenticationToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
-                );
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-
-                // Logging
-                logger.info("\033[1;32m----------------------------\033[0m");
-                logger.info("\033[1;32mAuthenticated user: {}\033[0m", username);
-                logger.info("\033[1;32mEmail: {}\033[0m", email);
-                logger.info("\033[1;32mRoles: {}\033[0m", roles);
-                logger.info("\033[1;32m----------------------------\033[0m");
-            } else {
-                logger.info("\033[1;31m----------------------------\033[0m");
-                logger.info("\033[1;31mToken is invalid\033[0m");
-                logger.info("\033[1;31m----------------------------\033[0m");
+                logger.error("\033[1;31m----------------------------\033[0m");
+                logger.error("\033[1;31m[JwtAuthenticationFilter] Token validation error: {}\033[0m", e.getMessage());
+                logger.error("\033[1;31m----------------------------\033[0m");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
             }
         }
 

@@ -6,11 +6,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/service")
+@RequestMapping("/test")
 public class TestController {
 
-    @GetMapping("/test")
+    @GetMapping("/feign")
     public ResponseEntity<String> testEndpoint() {
         return ResponseEntity.ok("Hello from Authentication Service");
+    }
+
+    @GetMapping("/admin")
+    public ResponseEntity<String> adminEndpoint() {
+        return ResponseEntity.ok("Admin Endpoint");
+    }
+
+    @GetMapping("/club")
+    public ResponseEntity<String> clubOwnerEndpoint() {
+        return ResponseEntity.ok("Club Owner Endpoint");
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<String> userEndpoint() {
+        return ResponseEntity.ok("User Endpoint");
     }
 }
