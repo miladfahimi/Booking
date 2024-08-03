@@ -7,6 +7,7 @@ import com.tennistime.authentication.redis.TokenBlacklistService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,15 +32,19 @@ public class AuthenticationController {
 
     @PostMapping("/signup")
     @Operation(summary = "Sign up a new user")
-    public ResponseEntity<UserDTO> signup(@Valid @RequestBody UserDTO userDTO) {
-        UserDTO signedUpUser = userService.signup(userDTO);
+    public ResponseEntity<?> signup(@Valid @RequestBody UserDTO userDTO) {
+        try {
+            UserDTO signedUpUser = userService.signup(userDTO);
 
-        // Logging
-        System.out.println("\033[1;32m----------------------------\033[0m");
-        System.out.println("\033[1;32m[AuthenticationController] Signup response: " + signedUpUser + "\033[0m");
-        System.out.println("\033[1;32m----------------------------\033[0m");
+            // Logging
+            System.out.println("\033[1;35m----------------------------\033[0m");
+            System.out.println("\033[1;35m[AuthenticationController] Signup response: " + signedUpUser + "\033[0m");
+            System.out.println("\033[1;35m----------------------------\033[0m");
 
-        return ResponseEntity.ok(signedUpUser);
+            return ResponseEntity.ok(signedUpUser);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        }
     }
 
     @PostMapping("/signin")

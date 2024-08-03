@@ -48,22 +48,27 @@ public class UserService {
 
     public UserDTO signup(UserDTO userDTO) {
         if (userRepository.findByEmail(userDTO.getEmail()).isPresent()) {
+            logger.error("\033[1;35mSignup attempt with already registered email: {}\033[0m", userDTO.getEmail());
             throw new IllegalArgumentException("Email already in use");
         }
-        if (userDTO.getPassword() == null) {
-            throw new IllegalArgumentException("Password cannot be null");
+        if (userDTO.getPassword() == null || userDTO.getPassword().isEmpty()) {
+            logger.error("\033[1;35mSignup attempt with empty password for email: {}\033[0m", userDTO.getEmail());
+            throw new IllegalArgumentException("Password cannot be null or empty");
         }
 
         String rawPassword = userDTO.getPassword();
-        userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        userDTO.setPassword(passwordEncoder.encode(rawPassword));
         User user = appUserMapper.toEntity(userDTO);
         user = userRepository.save(user);
-        verificationService.sendVerificationEmail(user);
 
-        // Logging
-        System.out.println("\033[1;32m----------------------------\033[0m");
-        System.out.println("\033[1;32m[UserService] Signup successful for user: " + user.getEmail() + "\033[0m");
-        System.out.println("\033[1;32m----------------------------\033[0m");
+        try {
+            verificationService.sendVerificationEmail(user);
+        } catch (Exception e) {
+            logger.error("\033[1;35mFailed to send verification email for user: {}\033[0m", user.getEmail());
+            throw new IllegalArgumentException("The mail server is down. Please try again later.");
+        }
+
+        logger.info("\033[1;35mSignup successful for user: {}\033[0m", user.getEmail());
 
         return signin(userDTO.getEmail(), rawPassword);
     }
@@ -78,29 +83,18 @@ public class UserService {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(emailOrPhone);
                 String token = jwtUtil.generateToken(userDetails);
                 if (isDevProfileActive()) {
-                    logger.info("\033[1;33mGenerated JWT Token: {}\033[0m", token); // Yellow color
+                    logger.info("\033[1;32mGenerated JWT Token: {}\033[0m", token);
                 }
                 UserDTO userDTO = appUserMapper.toDTO(user);
                 userDTO.setToken(token);
 
-                // Logging
-                System.out.println("\033[1;32m----------------------------\033[0m");
-                System.out.println("\033[1;32m[UserService] Signin successful for user: " + emailOrPhone + "\033[0m");
-                System.out.println("\033[1;32mGenerated JWT Token: " + token + "\033[0m");
-                System.out.println("\033[1;32m----------------------------\033[0m");
-
+                logger.info("\033[1;32mSignin successful for user: {}\033[0m", emailOrPhone);
                 return userDTO;
             } else {
-                // Logging password mismatch
-                System.out.println("\033[1;31m----------------------------\033[0m");
-                System.out.println("\033[1;31m[UserService] Signin failed for user: " + emailOrPhone + " - Incorrect password\033[0m");
-                System.out.println("\033[1;31m----------------------------\033[0m");
+                logger.error("\033[1;32mSignin failed for user: {} - Incorrect password\033[0m", emailOrPhone);
             }
         } else {
-            // Logging user not found
-            System.out.println("\033[1;31m----------------------------\033[0m");
-            System.out.println("\033[1;31m[UserService] Signin failed - User not found: " + emailOrPhone + "\033[0m");
-            System.out.println("\033[1;31m----------------------------\033[0m");
+            logger.error("\033[1;32mSignin failed - User not found: {}\033[0m", emailOrPhone);
         }
         throw new IllegalArgumentException("Invalid email/phone or password");
     }
@@ -109,12 +103,13 @@ public class UserService {
         Optional<User> appUserOptional = userRepository.findByEmail(email);
         if (appUserOptional.isPresent()) {
             User user = appUserOptional.get();
-            verificationService.regenerateAndSendVerificationToken(user);
-
-            // Logging
-            System.out.println("\033[1;32m----------------------------\033[0m");
-            System.out.println("\033[1;32m[UserService] Resent verification email to user: " + email + "\033[0m");
-            System.out.println("\033[1;32m----------------------------\033[0m");
+            try {
+                verificationService.regenerateAndSendVerificationToken(user);
+                logger.info("\033[1;34mResent verification email to user: {}\033[0m", email);
+            } catch (Exception e) {
+                logger.error("\033[1;34mFailed to resend verification email for user: {}\033[0m", email);
+                throw new IllegalArgumentException("The mail server is down. Please try again later.");
+            }
         } else {
             throw new IllegalArgumentException("User with email " + email + " does not exist");
         }
@@ -149,12 +144,7 @@ public class UserService {
                 String token = jwtUtil.generateToken(userDetails);
                 userDTO.setToken(token);
 
-                // Logging
-                System.out.println("\033[1;32m----------------------------\033[0m");
-                System.out.println("\033[1;32m[UserService] Signin with OTP successful for user: " + email + "\033[0m");
-                System.out.println("\033[1;32mGenerated JWT Token: " + token + "\033[0m");
-                System.out.println("\033[1;32m----------------------------\033[0m");
-
+                logger.info("\033[1;36mSignin with OTP successful for user: {}\033[0m", email);
                 return userDTO;
             } else {
                 throw new IllegalArgumentException("Invalid OTP or OTP expired");
@@ -168,5 +158,7 @@ public class UserService {
         String username = jwtUtil.getUsernameFromToken(token);
         User user = userRepository.findByEmail(username).orElseThrow(() -> new IllegalArgumentException("User not found"));
         otpService.invalidateOtp(user);
+
+        logger.info("\033[1;31mLogout successful for user: {}\033[0m", username);
     }
 }
