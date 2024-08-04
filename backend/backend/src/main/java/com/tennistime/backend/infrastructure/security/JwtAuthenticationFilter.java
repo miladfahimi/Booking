@@ -1,7 +1,9 @@
 package com.tennistime.backend.infrastructure.security;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tennistime.backend.infrastructure.feign.AuthServiceClient;
-import com.tennistime.backend.redis.TokenBlacklistService;
+import com.tennistime.backend.redis.TokenCacheService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +32,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private AuthServiceClient authServiceClient;
 
     @Autowired
-    private TokenBlacklistService tokenBlacklistService;
+    private TokenCacheService tokenCacheService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -41,65 +46,81 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);
-            try {
-                if (tokenBlacklistService.isTokenBlacklisted(jwt)) {
+
+            Map<String, Object> tokenInfo = null;
+            String cachedResponse = tokenCacheService.getTokenValidation(jwt);
+
+            if (cachedResponse != null) {
+                tokenInfo = parseCachedResponse(cachedResponse);
+                logger.info("\033[1;36m[JwtAuthenticationFilter] Cache hit for token: {}\033[0m", jwt);
+            } else {
+                try {
+                    Map<String, String> requestMap = Map.of("token", jwt);
+                    tokenInfo = authServiceClient.validateToken(requestMap);
+
+                    // Logging the response
+                    logger.info("\033[1;36m----------------------------\033[0m");
+                    logger.info("\033[1;36m[JwtAuthenticationFilter] Token Info: {}\033[0m", tokenInfo);
+                    logger.info("\033[1;36m----------------------------\033[0m");
+
+                    // Cache the validation result
+                    tokenCacheService.cacheTokenValidation(jwt, tokenInfo);
+                } catch (Exception e) {
                     logger.error("\033[1;31m----------------------------\033[0m");
-                    logger.error("\033[1;31m[JwtAuthenticationFilter] Token is blacklisted: {}\033[0m", jwt);
+                    logger.error("\033[1;31m[JwtAuthenticationFilter] Token validation error: {}\033[0m", e.getMessage());
                     logger.error("\033[1;31m----------------------------\033[0m");
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     return;
                 }
+            }
 
-                Map<String, String> requestMap = Map.of("token", jwt);
-                Map<String, Object> tokenInfo = authServiceClient.validateToken(requestMap);
+            if (tokenInfo != null && Boolean.TRUE.equals(tokenInfo.get("valid"))) {
+                String username = (String) tokenInfo.get("username");
+                String email = (String) tokenInfo.get("email");
+                List<String> roles = (List<String>) tokenInfo.get("roles");
 
-                // Logging the response
-                logger.info("\033[1;36m----------------------------\033[0m");
-                logger.info("\033[1;36m[JwtAuthenticationFilter] Token Info: {}\033[0m", tokenInfo);
-                logger.info("\033[1;36m----------------------------\033[0m");
+                // Ensure roles are prefixed with "ROLE_"
+                roles = roles.stream()
+                        .map(role -> role.startsWith("ROLE_") ? role : "ROLE_" + role)
+                        .collect(Collectors.toList());
 
-                if ((boolean) tokenInfo.get("valid")) {
-                    String username = (String) tokenInfo.get("username");
-                    String email = (String) tokenInfo.get("email");
-                    List<String> roles = (List<String>) tokenInfo.get("roles");
+                List<SimpleGrantedAuthority> authorities = roles.stream()
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList());
 
-                    // Ensure roles are prefixed with "ROLE_"
-                    roles = roles.stream()
-                            .map(role -> role.startsWith("ROLE_") ? role : "ROLE_" + role)
-                            .collect(Collectors.toList());
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        username, null, authorities);
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                    List<SimpleGrantedAuthority> authorities = roles.stream()
-                            .map(SimpleGrantedAuthority::new)
-                            .collect(Collectors.toList());
-
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            username, null, authorities);
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-
-                    // Logging
-                    logger.info("\033[1;32m----------------------------\033[0m");
-                    logger.info("\033[1;32m[JwtAuthenticationFilter] Token validated and user authenticated: {}\033[0m", username);
-                    logger.info("\033[1;32mEmail: {}\033[0m", email);
-                    logger.info("\033[1;32mRoles: {}\033[0m", roles);
-                    logger.info("\033[1;32m----------------------------\033[0m");
-                } else {
-                    // Logging
-                    logger.info("\033[1;31m----------------------------\033[0m");
-                    logger.info("\033[1;31m[JwtAuthenticationFilter] Invalid token: {}\033[0m", jwt);
-                    logger.info("\033[1;31m----------------------------\033[0m");
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    return;
-                }
-            } catch (Exception e) {
-                logger.error("\033[1;31m----------------------------\033[0m");
-                logger.error("\033[1;31m[JwtAuthenticationFilter] Token validation error: {}\033[0m", e.getMessage());
-                logger.error("\033[1;31m----------------------------\033[0m");
+                // Logging
+                logger.info("\033[1;32m----------------------------\033[0m");
+                logger.info("\033[1;32m[JwtAuthenticationFilter] Token validated and user authenticated: {}\033[0m", username);
+                logger.info("\033[1;32mEmail: {}\033[0m", email);
+                logger.info("\033[1;32mRoles: {}\033[0m", roles);
+                logger.info("\033[1;32m----------------------------\033[0m");
+            } else {
+                // Logging
+                logger.info("\033[1;31m----------------------------\033[0m");
+                logger.info("\033[1;31m[JwtAuthenticationFilter] Invalid token: {}\033[0m", jwt);
+                logger.info("\033[1;31m----------------------------\033[0m");
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
         }
 
         chain.doFilter(request, response);
+    }
+
+    private Map<String, Object> parseCachedResponse(String cachedResponse) {
+        // Parse the cached response string back to a Map
+        try {
+            return objectMapper.readValue(cachedResponse, new TypeReference<Map<String, Object>>() {});
+        } catch (IOException e) {
+            logger.error("\033[1;31m----------------------------\033[0m");
+            logger.error("\033[1;31m[JwtAuthenticationFilter] Error parsing cached response: {}\033[0m", e.getMessage());
+            logger.error("\033[1;31m----------------------------\033[0m");
+            return null;
+        }
     }
 }
