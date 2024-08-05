@@ -16,8 +16,8 @@ public class ReservationDTO {
     @Schema(hidden = true)
     private Long id;
 
-    @Schema(hidden = true)
-    private LocalDate reservationDate;
+    @Schema(example = "2024-08-05")
+    private LocalDate reservationDate; // Changed to LocalDate
 
     @Schema(example = "1403-04-01")
     private String reservationDatePersian;

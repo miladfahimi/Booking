@@ -1,11 +1,12 @@
 package com.tennistime.backend.application.service;
 
 import com.github.mfathi91.time.PersianDate;
-
 import com.tennistime.backend.application.dto.ReservationDTO;
 import com.tennistime.backend.application.mapper.ReservationMapper;
+import com.tennistime.backend.domain.model.Court;
 import com.tennistime.backend.domain.model.Reservation;
 import com.tennistime.backend.domain.repository.ReservationRepository;
+import com.tennistime.backend.domain.repository.CourtRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,9 @@ public class ReservationService {
 
     @Autowired
     private ReservationRepository reservationRepository;
+
+    @Autowired
+    private CourtRepository courtRepository;
 
     @Autowired
     private ReservationMapper reservationMapper;
@@ -39,6 +43,34 @@ public class ReservationService {
         Reservation reservation = convertToEntity(reservationDTO);
         Reservation savedReservation = reservationRepository.save(reservation);
         return convertToDTO(savedReservation);
+    }
+
+    public ReservationDTO updateReservation(Long id, ReservationDTO reservationDTO) {
+        Optional<Reservation> reservationOpt = reservationRepository.findById(id);
+        if (reservationOpt.isPresent()) {
+            Reservation reservation = reservationOpt.get();
+            reservation.setReservationDate(reservationDTO.getReservationDate());
+            reservation.setStartTime(reservationDTO.getStartTime());
+            reservation.setEndTime(reservationDTO.getEndTime());
+            reservation.setStatus(reservationDTO.getStatus());
+            reservation.setUserId(reservationDTO.getUserId());
+            Optional<Court> courtOpt = courtRepository.findById(reservationDTO.getCourtId());
+            courtOpt.ifPresent(reservation::setCourt);
+            Reservation updatedReservation = reservationRepository.save(reservation);
+            return convertToDTO(updatedReservation);
+        }
+        return null;
+    }
+
+    public ReservationDTO updateReservationStatus(Long id, String status) {
+        Optional<Reservation> reservationOpt = reservationRepository.findById(id);
+        if (reservationOpt.isPresent()) {
+            Reservation reservation = reservationOpt.get();
+            reservation.setStatus(status);
+            Reservation updatedReservation = reservationRepository.save(reservation);
+            return convertToDTO(updatedReservation);
+        }
+        return null;
     }
 
     public void deleteById(Long id) {

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Data
@@ -33,15 +34,10 @@ public class Reservation {
 
     private String status;
 
-    // @ManyToOne
-    // @JoinColumn(name = "user_id")
-    // private AppUser user;
-
     @ManyToOne
     @JoinColumn(name = "court_id")
     private Court court;
 
-    // This field will be mapped in DTO
     @Transient
     private PersianDate reservationDatePersian;
 
@@ -51,5 +47,15 @@ public class Reservation {
 
     public void setReservationDatePersian(PersianDate persianDate) {
         this.reservationDate = persianDate.toGregorian();
+    }
+
+    public UserBookingHistory toUserBookingHistory() {
+        UserBookingHistory history = new UserBookingHistory();
+        history.setUserId(this.userId);
+        history.setCourt(this.court);
+        history.setBookingDate(this.reservationDate.atTime(this.startTime));
+        history.setStatus(this.status);
+        history.setBookingDatePersian(PersianDate.fromGregorian(this.reservationDate));
+        return history;
     }
 }

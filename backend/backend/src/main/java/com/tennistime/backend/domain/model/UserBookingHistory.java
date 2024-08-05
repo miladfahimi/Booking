@@ -40,4 +40,12 @@ public class UserBookingHistory {
     public void setBookingDatePersian(PersianDate persianDate) {
         this.bookingDate = persianDate.toGregorian().atStartOfDay();
     }
+
+    public UserBookingHistory(Reservation reservation) {
+        this.userId = reservation.getUserId();
+        this.court = reservation.getCourt();
+        this.bookingDate = reservation.getReservationDate().atTime(reservation.getStartTime());
+        this.status = reservation.getStatus();
+        this.bookingDatePersian = reservation.getReservationDatePersian();
+    }
 }
