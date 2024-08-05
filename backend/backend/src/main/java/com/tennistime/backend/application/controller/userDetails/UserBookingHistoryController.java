@@ -1,4 +1,4 @@
-package com.tennistime.backend.application.controller;
+package com.tennistime.backend.application.controller.userDetails;
 
 import com.tennistime.backend.application.service.UserBookingHistoryService;
 import com.tennistime.backend.domain.model.UserBookingHistory;

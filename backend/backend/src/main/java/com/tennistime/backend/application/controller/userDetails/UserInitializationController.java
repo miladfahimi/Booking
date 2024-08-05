@@ -1,7 +1,7 @@
-package com.tennistime.backend.application.controller;
+package com.tennistime.backend.application.controller.userDetails;
 
 import com.tennistime.backend.application.dto.AuthenticationResponse;
-import com.tennistime.backend.application.dto.UserInitializationResponse;
+import com.tennistime.backend.application.dto.userDetails.UserInitializationResponse;
 import com.tennistime.backend.application.service.UserInitializationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

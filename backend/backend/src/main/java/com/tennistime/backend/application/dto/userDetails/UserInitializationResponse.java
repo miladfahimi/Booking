@@ -1,4 +1,4 @@
-package com.tennistime.backend.application.dto;
+package com.tennistime.backend.application.dto.userDetails;
 
 import com.tennistime.backend.application.util.PersianDateUtil;
 import io.swagger.v3.oas.annotations.media.Schema;

@@ -1,9 +1,8 @@
 package com.tennistime.backend.application.service;
 
-import com.github.mfathi91.time.PersianDate;
-import com.tennistime.backend.application.dto.UserInitializationResponse;
-import com.tennistime.backend.application.dto.UserProfileDTO;
-import com.tennistime.backend.application.dto.UserSubscriptionDTO;
+import com.tennistime.backend.application.dto.userDetails.UserInitializationResponse;
+import com.tennistime.backend.application.dto.userDetails.UserProfileDTO;
+import com.tennistime.backend.application.dto.userDetails.UserSubscriptionDTO;
 import com.tennistime.backend.application.mapper.UserProfileMapper;
 import com.tennistime.backend.application.mapper.UserSubscriptionMapper;
 import com.tennistime.backend.domain.model.UserProfile;

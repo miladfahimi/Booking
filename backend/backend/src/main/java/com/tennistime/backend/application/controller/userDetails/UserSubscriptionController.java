@@ -1,4 +1,4 @@
-package com.tennistime.backend.application.controller;
+package com.tennistime.backend.application.controller.userDetails;
 
 import com.tennistime.backend.application.service.UserSubscriptionService;
 import com.tennistime.backend.domain.model.UserSubscription;

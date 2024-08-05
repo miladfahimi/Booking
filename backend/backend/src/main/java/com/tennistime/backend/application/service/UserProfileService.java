@@ -1,5 +1,8 @@
 package com.tennistime.backend.application.service;
 
+import com.github.mfathi91.time.PersianDate;
+import com.tennistime.backend.application.dto.userDetails.UserProfileDTO;
+import com.tennistime.backend.application.mapper.UserProfileMapper;
 import com.tennistime.backend.domain.model.UserProfile;
 import com.tennistime.backend.domain.repository.UserProfileRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,29 +15,46 @@ import java.util.Optional;
 public class UserProfileService {
 
     private final UserProfileRepository userProfileRepository;
+    private final UserProfileMapper userProfileMapper;
 
-    public Optional<UserProfile> getUserProfile(Long id) {
-        return userProfileRepository.findById(id);
+    public Optional<UserProfileDTO> getUserProfile(Long id) {
+        return userProfileRepository.findById(id)
+                .map(this::convertToDTO);
     }
 
-    public UserProfile createUserProfile(UserProfile userProfile) {
-        return userProfileRepository.save(userProfile);
+    public UserProfileDTO createUserProfile(UserProfileDTO userProfileDTO) {
+        UserProfile userProfile = convertToEntity(userProfileDTO);
+        UserProfile savedUserProfile = userProfileRepository.save(userProfile);
+        return convertToDTO(savedUserProfile);
     }
 
-    public Optional<UserProfile> updateUserProfile(Long id, UserProfile updatedProfile) {
-        return userProfileRepository.findById(id).map(userProfile -> {
-            userProfile.setFirstName(updatedProfile.getFirstName());
-            userProfile.setLastName(updatedProfile.getLastName());
-            userProfile.setPhoneNumber(updatedProfile.getPhoneNumber());
-            userProfile.setAddress(updatedProfile.getAddress());
-            userProfile.setDateOfBirth(updatedProfile.getDateOfBirth());
-            userProfile.setProfilePicture(updatedProfile.getProfilePicture());
-            userProfile.setPreferences(updatedProfile.getPreferences());
-            return userProfileRepository.save(userProfile);
-        });
+    public Optional<UserProfileDTO> updateUserProfile(Long id, UserProfileDTO updatedProfileDTO) {
+        return userProfileRepository.findById(id)
+                .map(existingProfile -> {
+                    UserProfile updatedProfile = convertToEntity(updatedProfileDTO);
+                    updatedProfile.setId(existingProfile.getId());
+                    UserProfile savedUserProfile = userProfileRepository.save(updatedProfile);
+                    return convertToDTO(savedUserProfile);
+                });
     }
 
     public void deleteUserProfile(Long id) {
         userProfileRepository.deleteById(id);
+    }
+
+    private UserProfileDTO convertToDTO(UserProfile userProfile) {
+        UserProfileDTO dto = userProfileMapper.toDTO(userProfile);
+        if (userProfile.getDateOfBirth() != null) {
+            dto.setDateOfBirthPersian(PersianDate.fromGregorian(userProfile.getDateOfBirth()).toString());
+        }
+        return dto;
+    }
+
+    private UserProfile convertToEntity(UserProfileDTO userProfileDTO) {
+        UserProfile userProfile = userProfileMapper.toEntity(userProfileDTO);
+        if (userProfileDTO.getDateOfBirthPersian() != null) {
+            userProfile.setDateOfBirth(PersianDate.parse(userProfileDTO.getDateOfBirthPersian()).toGregorian());
+        }
+        return userProfile;
     }
 }

@@ -1,6 +1,6 @@
 package com.tennistime.backend.application.mapper;
 
-import com.tennistime.backend.application.dto.UserBookingHistoryDTO;
+import com.tennistime.backend.application.dto.userDetails.UserBookingHistoryDTO;
 import com.tennistime.backend.domain.model.UserBookingHistory;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
