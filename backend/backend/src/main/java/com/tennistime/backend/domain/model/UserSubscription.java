@@ -14,13 +14,11 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "user_subscription")
 public class UserSubscription {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId; // Storing user ID instead of user reference
-
+    private Long userId;
     private String subscriptionPlan;
     private LocalDate startDate;
     private LocalDate endDate;
@@ -33,18 +31,18 @@ public class UserSubscription {
     private PersianDate endDatePersian;
 
     public PersianDate getStartDatePersian() {
-        return PersianDate.fromGregorian(this.startDate);
+        return startDate != null ? PersianDate.fromGregorian(startDate) : null;
     }
 
     public void setStartDatePersian(PersianDate persianDate) {
-        this.startDate = persianDate.toGregorian();
+        this.startDate = persianDate != null ? persianDate.toGregorian() : null;
     }
 
     public PersianDate getEndDatePersian() {
-        return PersianDate.fromGregorian(this.endDate);
+        return endDate != null ? PersianDate.fromGregorian(endDate) : null;
     }
 
     public void setEndDatePersian(PersianDate persianDate) {
-        this.endDate = persianDate.toGregorian();
+        this.endDate = persianDate != null ? persianDate.toGregorian() : null;
     }
 }

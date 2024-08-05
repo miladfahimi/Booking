@@ -1,6 +1,5 @@
 package com.tennistime.backend.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.github.mfathi91.time.PersianDate;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -15,12 +14,11 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "user_profile")
 public class UserProfile {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId; // Storing user ID instead of user reference
+    private Long userId;
     private String email;
     private String firstName;
     private String lastName;
@@ -34,10 +32,10 @@ public class UserProfile {
     private PersianDate dateOfBirthPersian;
 
     public PersianDate getDateOfBirthPersian() {
-        return PersianDate.fromGregorian(this.dateOfBirth);
+        return dateOfBirth != null ? PersianDate.fromGregorian(dateOfBirth) : null;
     }
 
     public void setDateOfBirthPersian(PersianDate persianDate) {
-        this.dateOfBirth = persianDate.toGregorian();
+        this.dateOfBirth = persianDate != null ? persianDate.toGregorian() : null;
     }
 }

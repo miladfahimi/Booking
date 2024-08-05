@@ -52,6 +52,7 @@ public class DevSecurityConfig {
                         // Allowing easy testing for authenticated endpoints
                         // Ensure that only authorized roles can access specific endpoints
                         .requestMatchers("/test/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/user/initialize/**").hasAnyRole("ADMIN","CLUB_OWNER","USER")
                         .requestMatchers("/test/club/**").hasRole("CLUB_OWNER")
                         .requestMatchers("/test/user/**").hasRole("USER")
                         .anyRequest().authenticated()
