@@ -1,7 +1,7 @@
 package com.tennistime.backend.application.controller.userDetails;
 
+import com.tennistime.backend.application.dto.userDetails.UserBookingHistoryDTO;
 import com.tennistime.backend.application.service.UserBookingHistoryService;
-import com.tennistime.backend.domain.model.UserBookingHistory;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -20,23 +20,23 @@ public class UserBookingHistoryController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get user booking history", description = "Retrieve booking history for a given user ID")
-    public ResponseEntity<UserBookingHistory> getUserBookingHistory(@PathVariable Long id) {
-        Optional<UserBookingHistory> userBookingHistory = userBookingHistoryService.getUserBookingHistory(id);
+    public ResponseEntity<UserBookingHistoryDTO> getUserBookingHistory(@PathVariable Long id) {
+        Optional<UserBookingHistoryDTO> userBookingHistory = userBookingHistoryService.getUserBookingHistory(id);
         return userBookingHistory.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
     @Operation(summary = "Create user booking history", description = "Create a new booking history record for a user")
-    public ResponseEntity<UserBookingHistory> createUserBookingHistory(@RequestBody UserBookingHistory userBookingHistory) {
-        UserBookingHistory savedUserBookingHistory = userBookingHistoryService.createUserBookingHistory(userBookingHistory);
+    public ResponseEntity<UserBookingHistoryDTO> createUserBookingHistory(@RequestBody UserBookingHistoryDTO userBookingHistoryDTO) {
+        UserBookingHistoryDTO savedUserBookingHistory = userBookingHistoryService.createUserBookingHistory(userBookingHistoryDTO);
         return ResponseEntity.ok(savedUserBookingHistory);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update user booking history", description = "Update an existing booking history record for a user")
-    public ResponseEntity<UserBookingHistory> updateUserBookingHistory(@PathVariable Long id, @RequestBody UserBookingHistory updatedBookingHistory) {
-        Optional<UserBookingHistory> userBookingHistory = userBookingHistoryService.updateUserBookingHistory(id, updatedBookingHistory);
+    public ResponseEntity<UserBookingHistoryDTO> updateUserBookingHistory(@PathVariable Long id, @RequestBody UserBookingHistoryDTO updatedBookingHistoryDTO) {
+        Optional<UserBookingHistoryDTO> userBookingHistory = userBookingHistoryService.updateUserBookingHistory(id, updatedBookingHistoryDTO);
         return userBookingHistory.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }

@@ -1,7 +1,7 @@
 package com.tennistime.backend.application.controller.userDetails;
 
+import com.tennistime.backend.application.dto.userDetails.UserSubscriptionDTO;
 import com.tennistime.backend.application.service.UserSubscriptionService;
-import com.tennistime.backend.domain.model.UserSubscription;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -20,23 +20,23 @@ public class UserSubscriptionController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get user subscription", description = "Retrieve subscription information for a given user ID")
-    public ResponseEntity<UserSubscription> getUserSubscription(@PathVariable Long id) {
-        Optional<UserSubscription> userSubscription = userSubscriptionService.getUserSubscription(id);
+    public ResponseEntity<UserSubscriptionDTO> getUserSubscription(@PathVariable Long id) {
+        Optional<UserSubscriptionDTO> userSubscription = userSubscriptionService.getUserSubscription(id);
         return userSubscription.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
     @Operation(summary = "Create user subscription", description = "Create a new subscription for a user")
-    public ResponseEntity<UserSubscription> createUserSubscription(@RequestBody UserSubscription userSubscription) {
-        UserSubscription savedUserSubscription = userSubscriptionService.createUserSubscription(userSubscription);
+    public ResponseEntity<UserSubscriptionDTO> createUserSubscription(@RequestBody UserSubscriptionDTO userSubscriptionDTO) {
+        UserSubscriptionDTO savedUserSubscription = userSubscriptionService.createUserSubscription(userSubscriptionDTO);
         return ResponseEntity.ok(savedUserSubscription);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update user subscription", description = "Update an existing subscription for a user")
-    public ResponseEntity<UserSubscription> updateUserSubscription(@PathVariable Long id, @RequestBody UserSubscription updatedSubscription) {
-        Optional<UserSubscription> userSubscription = userSubscriptionService.updateUserSubscription(id, updatedSubscription);
+    public ResponseEntity<UserSubscriptionDTO> updateUserSubscription(@PathVariable Long id, @RequestBody UserSubscriptionDTO updatedSubscriptionDTO) {
+        Optional<UserSubscriptionDTO> userSubscription = userSubscriptionService.updateUserSubscription(id, updatedSubscriptionDTO);
         return userSubscription.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
