@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserProfileRepository {
-    Optional<UserProfile> findByUserId(Long userId);
-    boolean existsByUserId(Long userId);
+    Optional<UserProfile> findById(Long id);
     UserProfile save(UserProfile userProfile);
-    Optional<UserProfile> findByEmail(String email);
+    void deleteById(Long id);
+    Optional<UserProfile> findByUserId(Long userId); // Ensure this method is present
 }

@@ -9,6 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface UserSubscriptionJpaRepository extends UserSubscriptionRepository, JpaRepository<UserSubscription, Long> {
-    Optional<UserSubscription> findByUserId(Long userId);
-    boolean existsByUserId(Long userId);
+    @Override
+    Optional<UserSubscription> findByUserId(Long userId); // Ensure this method is implemented
 }

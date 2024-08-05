@@ -1,26 +1,40 @@
 package com.tennistime.backend.application.service;
 
-import com.tennistime.backend.application.dto.UserProfileDTO;
-import com.tennistime.backend.application.mapper.UserProfileMapper;
+import com.tennistime.backend.domain.model.UserProfile;
 import com.tennistime.backend.domain.repository.UserProfileRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
+@RequiredArgsConstructor
 public class UserProfileService {
 
     private final UserProfileRepository userProfileRepository;
-    private final UserProfileMapper userProfileMapper;
 
-    @Autowired
-    public UserProfileService(UserProfileRepository userProfileRepository, UserProfileMapper userProfileMapper) {
-        this.userProfileRepository = userProfileRepository;
-        this.userProfileMapper = userProfileMapper;
+    public Optional<UserProfile> getUserProfile(Long id) {
+        return userProfileRepository.findById(id);
     }
 
-    public UserProfileDTO findByEmail(String email) {
-        return userProfileRepository.findByEmail(email)
-                .map(userProfileMapper::toDTO)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public UserProfile createUserProfile(UserProfile userProfile) {
+        return userProfileRepository.save(userProfile);
+    }
+
+    public Optional<UserProfile> updateUserProfile(Long id, UserProfile updatedProfile) {
+        return userProfileRepository.findById(id).map(userProfile -> {
+            userProfile.setFirstName(updatedProfile.getFirstName());
+            userProfile.setLastName(updatedProfile.getLastName());
+            userProfile.setPhoneNumber(updatedProfile.getPhoneNumber());
+            userProfile.setAddress(updatedProfile.getAddress());
+            userProfile.setDateOfBirth(updatedProfile.getDateOfBirth());
+            userProfile.setProfilePicture(updatedProfile.getProfilePicture());
+            userProfile.setPreferences(updatedProfile.getPreferences());
+            return userProfileRepository.save(userProfile);
+        });
+    }
+
+    public void deleteUserProfile(Long id) {
+        userProfileRepository.deleteById(id);
     }
 }

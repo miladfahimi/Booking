@@ -2,11 +2,11 @@ package com.tennistime.backend.domain.repository;
 
 import com.tennistime.backend.domain.model.UserSubscription;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface UserSubscriptionRepository {
-    Optional<UserSubscription> findByUserId(Long userId);
-    boolean existsByUserId(Long userId);
+    Optional<UserSubscription> findById(Long id);
     UserSubscription save(UserSubscription userSubscription);
+    void deleteById(Long id);
+    Optional<UserSubscription> findByUserId(Long userId); // Ensure this method is present
 }
