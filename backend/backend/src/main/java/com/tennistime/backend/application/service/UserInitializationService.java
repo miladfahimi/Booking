@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 @Service
@@ -29,9 +30,9 @@ public class UserInitializationService {
     private static final Logger LOGGER = Logger.getLogger(UserInitializationService.class.getName());
 
     @Transactional
-    public UserInitializationResponse initializeUserEntities(Long userId, String email, String phone) {
+    public UserInitializationResponse initializeUserEntities(UUID userId, String email, String phone) {
         UserProfile userProfile = initializeUserProfile(userId, email, phone);
-        UserSubscription userSubscription = initializeUserSubscription(userId);
+        UserSubscription userSubscription = initializeUserSubscription(userProfile.getId());
 
         UserProfileDTO userProfileDTO = userProfileMapper.toDTO(userProfile);
         userProfileDTO.setDateOfBirthPersian(PersianDateUtil.localDateToString(userProfile.getDateOfBirth()));
@@ -41,6 +42,7 @@ public class UserInitializationService {
         userSubscriptionDTO.setEndDatePersian(PersianDateUtil.localDateToString(userSubscription.getEndDate()));
 
         return new UserInitializationResponse(
+                userId,
                 userProfileDTO,
                 userSubscriptionDTO,
                 null,
@@ -50,7 +52,7 @@ public class UserInitializationService {
     }
 
     @Transactional
-    private UserProfile initializeUserProfile(Long userId, String email, String phone) {
+    private UserProfile initializeUserProfile(UUID userId, String email, String phone) {
         Optional<UserProfile> existingUserProfile = userProfileRepository.findByUserId(userId);
         UserProfile userProfile;
         if (existingUserProfile.isPresent()) {
@@ -73,18 +75,18 @@ public class UserInitializationService {
     }
 
     @Transactional
-    private UserSubscription initializeUserSubscription(Long userId) {
-        Optional<UserSubscription> existingUserSubscription = userSubscriptionRepository.findByUserId(userId);
+    private UserSubscription initializeUserSubscription(Long userProfileId) {
+        Optional<UserSubscription> existingUserSubscription = userSubscriptionRepository.findByUserProfileId(userProfileId);
         UserSubscription userSubscription;
         if (existingUserSubscription.isPresent()) {
             userSubscription = existingUserSubscription.get();
         } else {
             userSubscription = new UserSubscription();
-            userSubscription.setUserId(userId);
+            userSubscription.setUserProfileId(userProfileId);
             userSubscription.setSubscriptionPlan("Does not filled by User");
             userSubscription.setStatus("Inactive");
             userSubscription = userSubscriptionRepository.save(userSubscription);
-            LOGGER.info("\u001B[32mUserSubscription created for userId: " + userId + "\u001B[0m");
+            LOGGER.info("\u001B[32mUserSubscription created for userProfileId: " + userProfileId + "\u001B[0m");
         }
         return userSubscription;
     }

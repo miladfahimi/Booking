@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/user")
 @Tag(name = "User Initialization", description = "Initialize user profile and subscription")
@@ -20,7 +22,7 @@ public class UserInitializationController {
     @PostMapping("/initialize")
     @Operation(summary = "Initialize user", description = "Initialize user profile and subscription based on authentication response")
     public ResponseEntity<UserInitializationResponse> initializeUser(@RequestBody AuthenticationResponse authResponse) {
-        Long userId = authResponse.getId();
+        UUID userId = UUID.fromString(authResponse.getId().toString()); // Ensure the correct conversion
         String email = authResponse.getEmail();
         String phone = authResponse.getPhone();
 

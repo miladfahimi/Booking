@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,10 +16,10 @@ public class UserBookingHistoryDTO {
     @Schema(description = "Unique identifier of the user booking history", example = "1")
     private Long id;
 
-    @Schema(description = "Unique identifier of the user", example = "1")
-    private Long userId;
+    @Schema(description = "Unique identifier of the user", example = "d290f1ee-6c54-4b01-90e6-d701748f0851")
+    private UUID userId;
 
-    @Schema(description = "Booking date of the user", example = "2024-01-01")
+    @Schema(description = "Booking date of the user", example = "2024-01-01T10:15:30")
     private String bookingDate = "Does not filled by User";
 
     @Schema(description = "Status of the booking", example = "Completed")

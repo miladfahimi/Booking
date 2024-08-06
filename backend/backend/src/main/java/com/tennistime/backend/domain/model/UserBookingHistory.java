@@ -19,7 +19,8 @@ public class UserBookingHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId; // Storing user ID instead of user reference
+    @Column(nullable = false)
+    private Long userProfileId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "court_id", nullable = false)
@@ -42,7 +43,7 @@ public class UserBookingHistory {
     }
 
     public UserBookingHistory(Reservation reservation) {
-        this.userId = reservation.getUserId();
+        this.userProfileId = reservation.getUserProfileId();
         this.court = reservation.getCourt();
         this.bookingDate = reservation.getReservationDate().atTime(reservation.getStartTime());
         this.status = reservation.getStatus();

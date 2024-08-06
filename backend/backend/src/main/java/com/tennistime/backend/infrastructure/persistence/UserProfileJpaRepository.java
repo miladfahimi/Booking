@@ -6,9 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface UserProfileJpaRepository extends UserProfileRepository, JpaRepository<UserProfile, Long> {
     @Override
-    Optional<UserProfile> findByUserId(Long userId); // Ensure this method is implemented
+    Optional<UserProfile> findByUserId(UUID userId); // Ensure this method is implemented
 }

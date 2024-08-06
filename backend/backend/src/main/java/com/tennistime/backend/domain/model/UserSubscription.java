@@ -18,7 +18,9 @@ public class UserSubscription {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
+    @Column(name = "user_profile_id", nullable = false)
+    private Long userProfileId;
+
     private String subscriptionPlan;
     private LocalDate startDate;
     private LocalDate endDate;

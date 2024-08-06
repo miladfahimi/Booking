@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * REST controller for managing reservations.
+ */
 @RestController
 @RequestMapping("/reservations")
 @Tag(name = "Reservation Management", description = "Operations related to reservations")
@@ -60,10 +63,10 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/user/{userId}")
-    @Operation(summary = "Find reservations by user ID", description = "Retrieves all reservations for a specific user.")
-    public ResponseEntity<List<ReservationDTO>> findReservationsByUserId(@PathVariable Long userId) {
-        List<ReservationDTO> reservations = reservationService.findReservationsByUserId(userId);
+    @GetMapping("/user/{userProfileId}")
+    @Operation(summary = "Find reservations by user profile ID", description = "Retrieves all reservations for a specific user profile.")
+    public ResponseEntity<List<ReservationDTO>> findReservationsByUserProfileId(@PathVariable Long userProfileId) {
+        List<ReservationDTO> reservations = reservationService.findReservationsByUserProfileId(userProfileId);
         return ResponseEntity.ok(reservations);
     }
 

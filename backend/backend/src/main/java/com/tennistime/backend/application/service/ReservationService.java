@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Service class for managing reservations.
+ */
 @Service
 public class ReservationService {
 
@@ -53,7 +56,7 @@ public class ReservationService {
             reservation.setStartTime(reservationDTO.getStartTime());
             reservation.setEndTime(reservationDTO.getEndTime());
             reservation.setStatus(reservationDTO.getStatus());
-            reservation.setUserId(reservationDTO.getUserId());
+            reservation.setUserProfileId(reservationDTO.getUserProfileId());
             Optional<Court> courtOpt = courtRepository.findById(reservationDTO.getCourtId());
             courtOpt.ifPresent(reservation::setCourt);
             Reservation updatedReservation = reservationRepository.save(reservation);
@@ -77,8 +80,8 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    public List<ReservationDTO> findReservationsByUserId(Long userId) {
-        return reservationRepository.findByUserId(userId)
+    public List<ReservationDTO> findReservationsByUserProfileId(Long userProfileId) {
+        return reservationRepository.findByUserProfileId(userProfileId)
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());

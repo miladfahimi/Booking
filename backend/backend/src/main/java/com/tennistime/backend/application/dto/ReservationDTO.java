@@ -31,8 +31,8 @@ public class ReservationDTO {
     @Schema(example = "confirmed")
     private String status;
 
-    @Schema(example = "3")
-    private Long userId;
+    @Schema(example = "1")
+    private Long userProfileId;
 
     @Schema(example = "1")
     private Long courtId;

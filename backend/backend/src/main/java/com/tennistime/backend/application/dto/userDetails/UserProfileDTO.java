@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,7 +16,7 @@ public class UserProfileDTO {
     private Long id;
 
     @Schema(description = "User ID", example = "1")
-    private Long userId;
+    private UUID userId;
 
     @Schema(description = "Email address", example = "john.doe@example.com")
     private String email;

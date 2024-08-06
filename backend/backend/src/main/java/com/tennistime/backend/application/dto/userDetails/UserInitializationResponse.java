@@ -7,12 +7,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "User Initialization Response Data Transfer Object")
 public class UserInitializationResponse {
+
+    @Schema(description = "User ID")
+    private UUID userId;
 
     @Schema(description = "User profile information")
     private UserProfileDTO userProfile;
@@ -29,7 +33,8 @@ public class UserInitializationResponse {
     @Schema(description = "End date of the subscription in Persian calendar", example = "1403-10-11")
     private String endDatePersian = "Does not filled by User";
 
-    public UserInitializationResponse(UserProfileDTO userProfile, UserSubscriptionDTO userSubscription, UserBookingHistoryDTO userBookingHistory) {
+    public UserInitializationResponse(UUID userId, UserProfileDTO userProfile, UserSubscriptionDTO userSubscription, UserBookingHistoryDTO userBookingHistory) {
+        this.userId = userId;
         this.userProfile = userProfile != null ? userProfile : new UserProfileDTO();
         this.userSubscription = userSubscription != null ? userSubscription : new UserSubscriptionDTO();
         this.userBookingHistory = userBookingHistory != null ? userBookingHistory : new UserBookingHistoryDTO();

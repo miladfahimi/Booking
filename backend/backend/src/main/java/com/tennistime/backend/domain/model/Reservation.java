@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Data
@@ -30,7 +29,7 @@ public class Reservation {
     private LocalTime endTime;
 
     @Column(nullable = false)
-    private Long userId;
+    private Long userProfileId;
 
     private String status;
 
@@ -51,7 +50,7 @@ public class Reservation {
 
     public UserBookingHistory toUserBookingHistory() {
         UserBookingHistory history = new UserBookingHistory();
-        history.setUserId(this.userId);
+        history.setUserProfileId(this.userProfileId);
         history.setCourt(this.court);
         history.setBookingDate(this.reservationDate.atTime(this.startTime));
         history.setStatus(this.status);

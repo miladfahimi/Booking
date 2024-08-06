@@ -10,7 +10,7 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
     Optional<Reservation> findById(Long id);
-    List<Reservation> findByUserId(Long userId);
+    List<Reservation> findByUserProfileId(Long userProfileId);  // Update the method signature
     List<Reservation> findByCourtId(Long courtId);
     List<Reservation> findByReservationDate(LocalDate localDate);
     Reservation save(Reservation reservation);

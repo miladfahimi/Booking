@@ -8,5 +8,5 @@ public interface UserSubscriptionRepository {
     Optional<UserSubscription> findById(Long id);
     UserSubscription save(UserSubscription userSubscription);
     void deleteById(Long id);
-    Optional<UserSubscription> findByUserId(Long userId); // Ensure this method is present
+    Optional<UserSubscription> findByUserProfileId(Long userProfileId);
 }

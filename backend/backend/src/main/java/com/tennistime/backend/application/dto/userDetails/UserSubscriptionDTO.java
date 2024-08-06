@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,7 +17,7 @@ public class UserSubscriptionDTO {
     private Long id;
 
     @Schema(description = "Unique identifier of the user", example = "1")
-    private Long userId;
+    private UUID userId;
 
     @Schema(description = "Subscription plan of the user", example = "Premium")
     private String subscriptionPlan = "Does not filled by User";

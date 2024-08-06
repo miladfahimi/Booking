@@ -10,5 +10,5 @@ import java.util.Optional;
 @Repository
 public interface UserSubscriptionJpaRepository extends UserSubscriptionRepository, JpaRepository<UserSubscription, Long> {
     @Override
-    Optional<UserSubscription> findByUserId(Long userId); // Ensure this method is implemented
+    Optional<UserSubscription> findByUserProfileId(Long userProfileId);
 }
