@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -80,8 +81,8 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    public List<ReservationDTO> findReservationsByUserProfileId(Long userProfileId) {
-        return reservationRepository.findByUserProfileId(userProfileId)
+    public List<ReservationDTO> findReservationsByUserId(UUID userId) {
+        return reservationRepository.findByUserId(userId)
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());

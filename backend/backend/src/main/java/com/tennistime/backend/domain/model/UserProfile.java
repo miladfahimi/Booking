@@ -19,6 +19,7 @@ public class UserProfile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private UUID userId;
     private String email;
     private String firstName;

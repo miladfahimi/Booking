@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -18,8 +19,8 @@ public class UserSubscription {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_profile_id", nullable = false)
-    private Long userProfileId;
+    @Column(name = "user_id", nullable = false)
+    private UUID userId;
 
     private String subscriptionPlan;
     private LocalDate startDate;

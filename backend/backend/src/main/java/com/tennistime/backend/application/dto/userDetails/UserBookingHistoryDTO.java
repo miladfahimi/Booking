@@ -26,7 +26,7 @@ public class UserBookingHistoryDTO {
     private String status = "Does not filled by User";
 
     @Schema(description = "Court ID of the booking", example = "2")
-    private Long courtId = null;
+    private Long courtId;
 
     @Schema(description = "Booking date in Persian calendar", example = "1402-10-11")
     private String bookingDatePersian = "Does not filled by User";

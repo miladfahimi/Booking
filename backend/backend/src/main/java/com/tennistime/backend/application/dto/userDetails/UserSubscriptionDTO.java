@@ -16,20 +16,20 @@ public class UserSubscriptionDTO {
     @Schema(description = "Unique identifier of the user subscription", example = "1")
     private Long id;
 
-    @Schema(description = "Unique identifier of the user", example = "1")
+    @Schema(description = "Unique identifier of the user", example = "d290f1ee-6c54-4b01-90e6-d701748f0851")
     private UUID userId;
 
     @Schema(description = "Subscription plan of the user", example = "Premium")
     private String subscriptionPlan = "Does not filled by User";
 
     @Schema(description = "Status of the subscription", example = "Active")
-    private String status = "Inactive";
+    private String status = "Does not filled by User";
 
     @Schema(description = "Start date of the subscription", example = "2024-01-01")
-    private String startDate = "Does not filled by User";
+    private String startDate;
 
     @Schema(description = "End date of the subscription", example = "2024-12-31")
-    private String endDate = "Does not filled by User";
+    private String endDate;
 
     @Schema(description = "Start date of the subscription in Persian calendar", example = "1402-10-11")
     private String startDatePersian = "Does not filled by User";

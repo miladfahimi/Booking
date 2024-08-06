@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -18,6 +19,8 @@ public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private UUID userId;
 
     @Column(name = "reservation_date")
     private LocalDate reservationDate;
@@ -50,7 +53,7 @@ public class Reservation {
 
     public UserBookingHistory toUserBookingHistory() {
         UserBookingHistory history = new UserBookingHistory();
-        history.setUserProfileId(this.userProfileId);
+        history.setUserId(this.userId);
         history.setCourt(this.court);
         history.setBookingDate(this.reservationDate.atTime(this.startTime));
         history.setStatus(this.status);

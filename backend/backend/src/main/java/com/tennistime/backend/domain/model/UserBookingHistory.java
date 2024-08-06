@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -20,7 +21,7 @@ public class UserBookingHistory {
     private Long id;
 
     @Column(nullable = false)
-    private Long userProfileId;
+    private UUID userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "court_id", nullable = false)
@@ -42,8 +43,12 @@ public class UserBookingHistory {
         this.bookingDate = persianDate.toGregorian().atStartOfDay();
     }
 
+    public Long getCourtId() {
+        return court != null ? court.getId() : null;
+    }
+
     public UserBookingHistory(Reservation reservation) {
-        this.userProfileId = reservation.getUserProfileId();
+        this.userId = reservation.getUserId();
         this.court = reservation.getCourt();
         this.bookingDate = reservation.getReservationDate().atTime(reservation.getStartTime());
         this.status = reservation.getStatus();
