@@ -1,8 +1,10 @@
 package com.tennistime.backend.application.service;
 
+import com.github.mfathi91.time.PersianDate;
 import com.tennistime.backend.application.dto.userDetails.*;
 import com.tennistime.backend.application.mapper.UserProfileMapper;
 import com.tennistime.backend.application.mapper.UserSubscriptionMapper;
+import com.tennistime.backend.domain.model.UserBookingHistory;
 import com.tennistime.backend.domain.model.UserProfile;
 import com.tennistime.backend.domain.model.UserSubscription;
 import com.tennistime.backend.domain.repository.UserProfileRepository;
@@ -72,6 +74,34 @@ public class UserInitializationService {
         return responseDTO;
     }
 
+    public Optional<UserInitializationResponseDTO> getUserInitializationByUserId(UUID userId) {
+        Optional<UserProfile> userProfileOpt = userProfileRepository.findByUserId(userId);
+        if (userProfileOpt.isPresent()) {
+            UserProfile userProfile = userProfileOpt.get();
+            UserProfileDTO userProfileDTO = userProfileMapper.toDTO(userProfile);
+
+            Optional<UserSubscription> userSubscriptionOpt = userSubscriptionRepository.findByUserId(userId);
+            UserSubscriptionDTO userSubscriptionDTO = userSubscriptionOpt
+                    .map(userSubscriptionMapper::toDTO)
+                    .orElse(null);
+
+            List<UserBookingHistoryDTO> userBookingHistoryDTOList = userBookingHistoryRepository.findByUserId(userId).stream()
+                    .map(this::convertToDTO)
+                    .collect(Collectors.toList());
+
+            UserInitializationResponseDTO responseDTO = new UserInitializationResponseDTO(
+                    userId,
+                    userProfile.isUserProfilesInitiated(),
+                    userProfileDTO,
+                    userSubscriptionDTO,
+                    userBookingHistoryDTOList
+            );
+            return Optional.of(responseDTO);
+        } else {
+            return Optional.empty();
+        }
+    }
+
     private UserProfile initializeUserProfile(UUID userId, String email, String phoneNumber) {
         return userProfileRepository.findByUserId(userId).orElseGet(() -> {
             UserProfile userProfile = new UserProfile();
@@ -114,5 +144,16 @@ public class UserInitializationService {
             dto.setBookingDatePersian("Does not filled by User");
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    private UserBookingHistoryDTO convertToDTO(UserBookingHistory userBookingHistory) {
+        UserBookingHistoryDTO dto = new UserBookingHistoryDTO();
+        dto.setId(userBookingHistory.getId());
+        dto.setUserId(userBookingHistory.getUserId());
+        dto.setBookingDate(userBookingHistory.getBookingDate().toString());
+        dto.setStatus(userBookingHistory.getStatus());
+        dto.setCourtId(userBookingHistory.getCourt().getId());
+        dto.setBookingDatePersian(userBookingHistory.getBookingDatePersian() != null ? userBookingHistory.getBookingDatePersian().toString() : "Does not filled by User");
+        return dto;
     }
 }

@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
@@ -27,5 +30,13 @@ public class UserInitializationController {
         } catch (IllegalStateException e) {
             return ResponseEntity.status(409).body(null); // Conflict status code
         }
+    }
+
+    @GetMapping("/initialize/{userId}")
+    @Operation(summary = "Get User Initialization by User ID", description = "Retrieve initialization data for a given user ID.")
+    public ResponseEntity<UserInitializationResponseDTO> getUserInitialization(@PathVariable UUID userId) {
+        Optional<UserInitializationResponseDTO> response = userInitializationService.getUserInitializationByUserId(userId);
+        return response.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
