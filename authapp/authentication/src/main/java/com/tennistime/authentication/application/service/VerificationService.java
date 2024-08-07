@@ -114,7 +114,7 @@ public class VerificationService {
         String newToken = UUID.randomUUID().toString();
         VerificationToken newVerificationToken = new VerificationToken(newToken, user);
         verificationTokenRepository.save(newVerificationToken);
-        String verificationLink = "http://localhost:8080/api/v1/users/verify?token=" + newToken;
+        String verificationLink = "http://localhost:8095/api/v1/verify/email?token=" + newToken;
         String htmlLink = "<a href=\"" + verificationLink + "\">Click here to verify your account</a>";
 
         // Logic to send email with the new verification link

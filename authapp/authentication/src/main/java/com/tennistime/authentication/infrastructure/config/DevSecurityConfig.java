@@ -65,7 +65,9 @@ public class DevSecurityConfig {
                                 "/verify/email",
                                 "/service/test",
                                 "/profile",
-                                "/token/validate" // Allow access to token validation endpoint
+                                "/token/validate",
+                                "/users/verify",
+                                "/verify/email"
                         ).permitAll()
                         // Easier testing for different roles
                         .requestMatchers("/test/admin").hasRole("ADMIN")
