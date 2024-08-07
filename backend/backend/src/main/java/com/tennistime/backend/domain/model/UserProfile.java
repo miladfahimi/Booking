@@ -30,6 +30,9 @@ public class UserProfile {
     private String profilePicture;
     private String preferences;
 
+    @Column(nullable = false)
+    private boolean isUserProfilesInitiated = false; // New column
+
     @Transient
     private PersianDate dateOfBirthPersian;
 

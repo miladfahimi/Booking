@@ -1,9 +1,9 @@
 -- Insert data into user_profile table
-INSERT INTO user_profile (user_id, email, first_name, last_name, phone_number, address, date_of_birth, profile_picture, preferences) VALUES
-('2fa85f64-5717-4562-b3fc-2c963f66afa7', 'jane.smith@example.com', 'Jane', 'Smith', '0987654321', '890 Main St', '1992-10-02', '/images/profile2.jpg', 'sms'),
-('1fa85f64-5717-4562-b3fc-2c963f66afa8', 'david.jackson@example.com', 'David', 'Jackson', '0987654321', '678 Main St', '1990-09-22', '/images/profile3.jpg', 'email'),
-('0fa85f64-5717-4562-b3fc-2c963f66afa9', 'emma.jones@example.com', 'Emma', 'Jones', '0987654321', '4543 Main St', '1982-03-11', '/images/profile4.jpg', 'sms'),
-('4fa85f64-5717-4562-b3fc-2c963f66afaa', 'admin@example.com', 'Admin', 'Admin', '0987654321', '453456 Main St', '1972-08-30', '/images/profile5.jpg', 'sms');
+INSERT INTO user_profile (user_id, email, first_name, last_name, phone_number, address, date_of_birth, profile_picture, preferences, is_user_profiles_initiated) VALUES
+('2fa85f64-5717-4562-b3fc-2c963f66afa7', 'jane.smith@example.com', 'Jane', 'Smith', '0987654321', '890 Main St', '1992-10-02', '/images/profile2.jpg', 'sms', FALSE),
+('1fa85f64-5717-4562-b3fc-2c963f66afa8', 'david.jackson@example.com', 'David', 'Jackson', '0987654321', '678 Main St', '1990-09-22', '/images/profile3.jpg', 'email', FALSE),
+('0fa85f64-5717-4562-b3fc-2c963f66afa9', 'emma.jones@example.com', 'Emma', 'Jones', '0987654321', '4543 Main St', '1982-03-11', '/images/profile4.jpg', 'sms', FALSE),
+('4fa85f64-5717-4562-b3fc-2c963f66afaa', 'admin@example.com', 'Admin', 'Admin', '0987654321', '453456 Main St', '1972-08-30', '/images/profile5.jpg', 'sms', FALSE);
 
 -- Insert data into club table
 INSERT INTO club (name, address, phone, email, description) VALUES

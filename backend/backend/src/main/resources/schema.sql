@@ -45,7 +45,8 @@ CREATE TABLE IF NOT EXISTS user_profile (
     address TEXT,
     date_of_birth DATE,
     profile_picture VARCHAR(255),
-    preferences TEXT
+    preferences TEXT,
+    is_user_profiles_initiated BOOLEAN DEFAULT FALSE -- New column
 );
 
 -- Create reservation table

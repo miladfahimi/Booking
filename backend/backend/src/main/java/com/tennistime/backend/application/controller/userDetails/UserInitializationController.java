@@ -21,8 +21,11 @@ public class UserInitializationController {
     @Operation(summary = "Initialize User Entities")
     public ResponseEntity<UserInitializationResponseDTO> initializeUser(
             @RequestBody UserInitializationRequestDTO request) {
-
-        UserInitializationResponseDTO response = userInitializationService.initializeUserEntities(request);
-        return ResponseEntity.ok(response);
+        try {
+            UserInitializationResponseDTO response = userInitializationService.initializeUserEntities(request);
+            return ResponseEntity.ok(response);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(409).body(null); // Conflict status code
+        }
     }
 }

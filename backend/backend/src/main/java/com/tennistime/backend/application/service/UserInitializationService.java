@@ -3,13 +3,11 @@ package com.tennistime.backend.application.service;
 import com.tennistime.backend.application.dto.userDetails.*;
 import com.tennistime.backend.application.mapper.UserProfileMapper;
 import com.tennistime.backend.application.mapper.UserSubscriptionMapper;
-import com.tennistime.backend.domain.model.UserBookingHistory;
 import com.tennistime.backend.domain.model.UserProfile;
 import com.tennistime.backend.domain.model.UserSubscription;
 import com.tennistime.backend.domain.repository.UserProfileRepository;
 import com.tennistime.backend.domain.repository.UserSubscriptionRepository;
 import com.tennistime.backend.domain.repository.UserBookingHistoryRepository;
-import com.tennistime.backend.application.util.PersianDateUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +36,19 @@ public class UserInitializationService {
         String email = request.getUserProfileDTO().getEmail();
         String phoneNumber = request.getUserProfileDTO().getPhoneNumber();
 
+        // Check if user profile is already initiated
+        Optional<UserProfile> existingUserProfileOpt = userProfileRepository.findByUserId(userId);
+        if (existingUserProfileOpt.isPresent()) {
+            UserProfile existingUserProfile = existingUserProfileOpt.get();
+            if (existingUserProfile.isUserProfilesInitiated()) {
+                LOGGER.info("\u001B[31mUser profiles already initiated for userId: " + userId + "\u001B[0m");
+                throw new IllegalStateException("User profiles initiated already!");
+            } else {
+                existingUserProfile.setUserProfilesInitiated(true);
+                userProfileRepository.save(existingUserProfile);
+            }
+        }
+
         // Initialize user profile
         UserProfile userProfile = initializeUserProfile(userId, email, phoneNumber);
         UserProfileDTO userProfileDTO = userProfileMapper.toDTO(userProfile);
@@ -55,9 +66,7 @@ public class UserInitializationService {
                 true,
                 userProfileDTO,
                 userSubscriptionDTO,
-                userBookingHistoryDTOList,
-                userSubscriptionDTO.getStartDatePersian(),
-                userSubscriptionDTO.getEndDatePersian()
+                userBookingHistoryDTOList
         );
 
         return responseDTO;
@@ -75,6 +84,7 @@ public class UserInitializationService {
             userProfile.setProfilePicture("Does not filled by User");
             userProfile.setPreferences("Does not filled by User");
             userProfile.setDateOfBirth(null);
+            userProfile.setUserProfilesInitiated(true);
             LOGGER.info("\u001B[32mUserProfile created for userId: " + userId + "\u001B[0m");
             return userProfileRepository.save(userProfile);
         });
@@ -93,10 +103,8 @@ public class UserInitializationService {
         });
     }
 
-
     private List<UserBookingHistoryDTO> initializeUserBookingHistory(UUID userId) {
-        List<UserBookingHistory> userBookingHistoryList = userBookingHistoryRepository.findByUserId(userId);
-        return userBookingHistoryList.stream().map(booking -> {
+        return userBookingHistoryRepository.findByUserId(userId).stream().map(booking -> {
             UserBookingHistoryDTO dto = new UserBookingHistoryDTO();
             dto.setId(booking.getId());
             dto.setUserId(userId);

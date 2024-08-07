@@ -1,7 +1,6 @@
 package com.tennistime.backend.application.dto.userDetails;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,7 +9,6 @@ import java.util.UUID;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @Schema(description = "User Initialization Response Data Transfer Object")
 public class UserInitializationResponseDTO {
 
@@ -29,9 +27,11 @@ public class UserInitializationResponseDTO {
     @Schema(description = "User booking history information")
     private List<UserBookingHistoryDTO> userBookingHistoryDTO;
 
-    @Schema(description = "Start date of the subscription in Persian calendar", example = "1402-10-11")
-    private String startDatePersian;
-
-    @Schema(description = "End date of the subscription in Persian calendar", example = "1403-10-11")
-    private String endDatePersian;
+    public UserInitializationResponseDTO(UUID userId, boolean isUserProfilesInitiated, UserProfileDTO userProfileDTO, UserSubscriptionDTO userSubscriptionDTO, List<UserBookingHistoryDTO> userBookingHistoryDTO) {
+        this.userId = userId;
+        this.isUserProfilesInitiated = isUserProfilesInitiated;
+        this.userProfileDTO = userProfileDTO;
+        this.userSubscriptionDTO = userSubscriptionDTO;
+        this.userBookingHistoryDTO = userBookingHistoryDTO;
+    }
 }
