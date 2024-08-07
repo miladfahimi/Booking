@@ -8,54 +8,44 @@ import com.tennistime.backend.domain.model.UserBookingHistory;
 import com.tennistime.backend.domain.repository.CourtRepository;
 import com.tennistime.backend.domain.repository.UserBookingHistoryRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
-/**
- * Service class for managing user booking history.
- */
 @Service
 @RequiredArgsConstructor
 public class UserBookingHistoryService {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserBookingHistoryService.class);
 
     private final UserBookingHistoryRepository userBookingHistoryRepository;
     private final CourtRepository courtRepository;
     private final UserBookingHistoryMapper userBookingHistoryMapper;
 
-    /**
-     * Retrieves a user booking history record by its ID.
-     *
-     * @param id the ID of the user booking history record
-     * @return an Optional containing the UserBookingHistoryDTO if found, or empty if not found
-     */
-    public Optional<UserBookingHistoryDTO> getUserBookingHistory(Long id) {
-        return userBookingHistoryRepository.findById(id)
-                .map(this::convertToDTO);
+    public List<UserBookingHistoryDTO> getUserBookingHistoryByUserId(UUID userId) {
+        logger.info("\033[0;34mFetching user booking history for user ID: {}\033[0m", userId);
+        return userBookingHistoryRepository.findByUserId(userId).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
-    /**
-     * Creates a new user booking history record.
-     *
-     * @param userBookingHistoryDTO the DTO containing the user booking history data
-     * @return the created UserBookingHistoryDTO
-     */
     public UserBookingHistoryDTO createUserBookingHistory(UserBookingHistoryDTO userBookingHistoryDTO) {
+        logger.info("\033[0;32mCreating new user booking history: {}\033[0m", userBookingHistoryDTO);
         UserBookingHistory userBookingHistory = convertToEntity(userBookingHistoryDTO);
         UserBookingHistory savedUserBookingHistory = userBookingHistoryRepository.save(userBookingHistory);
         return convertToDTO(savedUserBookingHistory);
     }
 
-    /**
-     * Updates an existing user booking history record.
-     *
-     * @param id the ID of the user booking history record to update
-     * @param updatedBookingHistoryDTO the DTO containing the updated booking history data
-     * @return an Optional containing the updated UserBookingHistoryDTO if the update was successful, or empty if not
-     */
-    public Optional<UserBookingHistoryDTO> updateUserBookingHistory(Long id, UserBookingHistoryDTO updatedBookingHistoryDTO) {
-        return userBookingHistoryRepository.findById(id)
+    public Optional<UserBookingHistoryDTO> updateUserBookingHistory(UUID userId, UserBookingHistoryDTO updatedBookingHistoryDTO) {
+        logger.info("\033[0;33mUpdating user booking history for user ID: {}\033[0m", userId);
+        return userBookingHistoryRepository.findByUserId(userId).stream()
+                .findFirst()  // Modify logic based on your requirement
                 .map(existingBookingHistory -> {
                     Optional<Court> courtOptional = courtRepository.findById(updatedBookingHistoryDTO.getCourtId());
                     courtOptional.ifPresent(existingBookingHistory::setCourt);
@@ -71,21 +61,11 @@ public class UserBookingHistoryService {
                 });
     }
 
-    /**
-     * Deletes a user booking history record by its ID.
-     *
-     * @param id the ID of the user booking history record to delete
-     */
-    public void deleteUserBookingHistory(Long id) {
-        userBookingHistoryRepository.deleteById(id);
+    public void deleteUserBookingHistoryByUserId(UUID userId) {
+        logger.info("\033[0;31mDeleting user booking history for user ID: {}\033[0m", userId);
+        userBookingHistoryRepository.findByUserId(userId).forEach(userBookingHistory -> userBookingHistoryRepository.deleteById(userBookingHistory.getId()));
     }
 
-    /**
-     * Converts a UserBookingHistory entity to a UserBookingHistoryDTO.
-     *
-     * @param userBookingHistory the UserBookingHistory entity to convert
-     * @return the converted UserBookingHistoryDTO
-     */
     private UserBookingHistoryDTO convertToDTO(UserBookingHistory userBookingHistory) {
         UserBookingHistoryDTO dto = userBookingHistoryMapper.toDTO(userBookingHistory);
         dto.setBookingDatePersian(userBookingHistory.getBookingDatePersian() != null ? userBookingHistory.getBookingDatePersian().toString() : "Does not filled by User");
@@ -94,12 +74,6 @@ public class UserBookingHistoryService {
         return dto;
     }
 
-    /**
-     * Converts a UserBookingHistoryDTO to a UserBookingHistory entity.
-     *
-     * @param userBookingHistoryDTO the UserBookingHistoryDTO to convert
-     * @return the converted UserBookingHistory entity
-     */
     private UserBookingHistory convertToEntity(UserBookingHistoryDTO userBookingHistoryDTO) {
         UserBookingHistory userBookingHistory = userBookingHistoryMapper.toEntity(userBookingHistoryDTO);
         userBookingHistory.setBookingDate(LocalDateTime.parse(userBookingHistoryDTO.getBookingDate()));

@@ -1,6 +1,7 @@
 package com.tennistime.backend.domain.repository;
 
 import com.tennistime.backend.domain.model.UserBookingHistory;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

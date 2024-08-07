@@ -11,7 +11,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/user/history")
@@ -22,12 +24,15 @@ public class UserBookingHistoryController {
 
     private final UserBookingHistoryService userBookingHistoryService;
 
-    @GetMapping("/{id}")
-    @Operation(summary = "Get user booking history by ID", description = "Retrieve a specific booking history record by its ID.")
-    public ResponseEntity<UserBookingHistoryDTO> getUserBookingHistory(@PathVariable Long id) {
-        Optional<UserBookingHistoryDTO> userBookingHistory = userBookingHistoryService.getUserBookingHistory(id);
-        return userBookingHistory.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    @GetMapping("/{userId}")
+    @Operation(summary = "Get user booking history by user ID", description = "Retrieve booking history records by user ID.")
+    public ResponseEntity<List<UserBookingHistoryDTO>> getUserBookingHistory(@PathVariable UUID userId) {
+        List<UserBookingHistoryDTO> userBookingHistory = userBookingHistoryService.getUserBookingHistoryByUserId(userId);
+        if (userBookingHistory.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(userBookingHistory);
+        }
     }
 
     @PostMapping
@@ -37,18 +42,18 @@ public class UserBookingHistoryController {
         return new ResponseEntity<>(savedUserBookingHistory, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
-    @Operation(summary = "Update user booking history by ID", description = "Allows users to update an existing booking history record.")
-    public ResponseEntity<UserBookingHistoryDTO> updateUserBookingHistory(@PathVariable Long id, @Valid @RequestBody UserBookingHistoryDTO updatedBookingHistoryDTO) {
-        Optional<UserBookingHistoryDTO> userBookingHistory = userBookingHistoryService.updateUserBookingHistory(id, updatedBookingHistoryDTO);
+    @PutMapping("/{userId}")
+    @Operation(summary = "Update user booking history by user ID", description = "Allows users to update an existing booking history record.")
+    public ResponseEntity<UserBookingHistoryDTO> updateUserBookingHistory(@PathVariable UUID userId, @Valid @RequestBody UserBookingHistoryDTO updatedBookingHistoryDTO) {
+        Optional<UserBookingHistoryDTO> userBookingHistory = userBookingHistoryService.updateUserBookingHistory(userId, updatedBookingHistoryDTO);
         return userBookingHistory.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/{id}")
-    @Operation(summary = "Delete user booking history by ID", description = "Allows users to delete a specific booking history record.")
-    public ResponseEntity<Void> deleteUserBookingHistory(@PathVariable Long id) {
-        userBookingHistoryService.deleteUserBookingHistory(id);
+    @DeleteMapping("/{userId}")
+    @Operation(summary = "Delete user booking history by user ID", description = "Allows users to delete a specific booking history record.")
+    public ResponseEntity<Void> deleteUserBookingHistory(@PathVariable UUID userId) {
+        userBookingHistoryService.deleteUserBookingHistoryByUserId(userId);
         return ResponseEntity.ok().build();
     }
 }
