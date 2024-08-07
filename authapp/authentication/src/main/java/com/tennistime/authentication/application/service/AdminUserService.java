@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -56,7 +57,7 @@ public class AdminUserService {
      * @param id the user ID
      * @return the user, or null if not found
      */
-    public UserDTO findById(Long id) {
+    public UserDTO findById(UUID id) {  // Changed from Long to UUID
         return userRepository.findById(id)
                 .map(appUserMapper::toDTO)
                 .orElse(null);
@@ -67,7 +68,7 @@ public class AdminUserService {
      *
      * @param id the user ID
      */
-    public void deleteById(Long id) {
+    public void deleteById(UUID id) {  // Changed from Long to UUID
         userRepository.deleteById(id);
     }
 }

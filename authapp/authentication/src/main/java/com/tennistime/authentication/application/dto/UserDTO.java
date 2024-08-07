@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import jakarta.validation.constraints.NotEmpty;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -13,7 +14,7 @@ import jakarta.validation.constraints.NotEmpty;
 public class UserDTO {
 
     @Schema(hidden = true)
-    private Long id;
+    private UUID id;  // Changed from Long to UUID
     @Schema(example = "me")
     private String username;
     @Schema(example = "me@mail.com")

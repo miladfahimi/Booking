@@ -16,6 +16,7 @@ import jakarta.mail.internet.MimeMessage;
 
 import java.time.LocalDateTime;
 import java.util.Random;
+import java.util.UUID;
 
 /**
  * Service class for managing OTP (One Time Password) operations.

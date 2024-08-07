@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Controller for user management operations like creating, reading, updating, and deleting users.
@@ -31,7 +32,7 @@ public class UserManagementController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get user by ID")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserDTO> getUserById(@PathVariable UUID id) {
         UserDTO user = appUserService.findById(id);
         return user != null ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();
     }
@@ -45,7 +46,7 @@ public class UserManagementController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a user by ID")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
         appUserService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

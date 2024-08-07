@@ -1,7 +1,7 @@
 package com.tennistime.authentication.application.controller;
 
-import com.tennistime.authentication.application.service.VerificationService;
 import com.tennistime.authentication.application.service.UserService;
+import com.tennistime.authentication.application.service.VerificationService;
 import com.tennistime.authentication.domain.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
