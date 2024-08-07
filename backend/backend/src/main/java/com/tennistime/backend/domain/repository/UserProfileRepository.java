@@ -9,5 +9,5 @@ public interface UserProfileRepository {
     Optional<UserProfile> findById(Long id);
     UserProfile save(UserProfile userProfile);
     void deleteById(Long id);
-    Optional<UserProfile> findByUserId(UUID userId); // Ensure this method is present
+    Optional<UserProfile> findByUserId(UUID userId);
 }

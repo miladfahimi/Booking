@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/user/profiles")
@@ -18,10 +19,10 @@ public class UserProfileController {
 
     private final UserProfileService userProfileService;
 
-    @GetMapping("/{id}")
-    @Operation(summary = "Get user profile", description = "Retrieve a user profile by ID")
-    public ResponseEntity<UserProfileDTO> getUserProfile(@PathVariable Long id) {
-        Optional<UserProfileDTO> userProfile = userProfileService.getUserProfile(id);
+    @GetMapping("/{userId}")
+    @Operation(summary = "Get user profile", description = "Retrieve a user profile by user ID")
+    public ResponseEntity<UserProfileDTO> getUserProfile(@PathVariable UUID userId) {
+        Optional<UserProfileDTO> userProfile = userProfileService.getUserProfileByUserId(userId);
         return userProfile.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -33,18 +34,18 @@ public class UserProfileController {
         return ResponseEntity.ok(savedUserProfile);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{userId}")
     @Operation(summary = "Update user profile", description = "Update an existing user profile")
-    public ResponseEntity<UserProfileDTO> updateUserProfile(@PathVariable Long id, @RequestBody UserProfileDTO updatedProfileDTO) {
-        Optional<UserProfileDTO> userProfile = userProfileService.updateUserProfile(id, updatedProfileDTO);
+    public ResponseEntity<UserProfileDTO> updateUserProfile(@PathVariable UUID userId, @RequestBody UserProfileDTO updatedProfileDTO) {
+        Optional<UserProfileDTO> userProfile = userProfileService.updateUserProfile(userId, updatedProfileDTO);
         return userProfile.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/{id}")
-    @Operation(summary = "Delete user profile", description = "Delete a user profile by ID")
-    public ResponseEntity<Void> deleteUserProfile(@PathVariable Long id) {
-        userProfileService.deleteUserProfile(id);
+    @DeleteMapping("/{userId}")
+    @Operation(summary = "Delete user profile", description = "Delete a user profile by user ID")
+    public ResponseEntity<Void> deleteUserProfile(@PathVariable UUID userId) {
+        userProfileService.deleteUserProfileByUserId(userId);
         return ResponseEntity.ok().build();
     }
 }
