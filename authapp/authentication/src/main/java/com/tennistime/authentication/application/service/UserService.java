@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
@@ -60,6 +61,7 @@ public class UserService {
         String rawPassword = userDTO.getPassword();
         userDTO.setPassword(passwordEncoder.encode(rawPassword));
         User user = appUserMapper.toEntity(userDTO);
+        user.setCreatedAt(LocalDateTime.now());  // Set created_at
         user = userRepository.save(user);
 
         try {
@@ -88,6 +90,9 @@ public class UserService {
                 }
                 UserDTO userDTO = appUserMapper.toDTO(user);
                 userDTO.setToken(token);
+
+                user.setLastLogin(LocalDateTime.now());  // Update last_login
+                userRepository.save(user);
 
                 logger.info("\033[1;32mSignin successful for user: {}\033[0m", emailOrPhone);
                 return userDTO;
@@ -144,6 +149,9 @@ public class UserService {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
                 String token = jwtUtil.generateToken(userDetails);
                 userDTO.setToken(token);
+
+                user.setLastLogin(LocalDateTime.now());  // Update last_login
+                userRepository.save(user);
 
                 logger.info("\033[1;36mSignin with OTP successful for user: {}\033[0m", email);
                 return userDTO;
