@@ -1,16 +1,15 @@
-package com.tennistime.backend.application.service;
+package com.tennistime.backend.application.service.userDetails;
 
 import com.github.mfathi91.time.PersianDate;
 import com.tennistime.backend.application.dto.userDetails.UserSubscriptionDTO;
-import com.tennistime.backend.application.mapper.UserSubscriptionMapper;
-import com.tennistime.backend.domain.model.UserSubscription;
-import com.tennistime.backend.domain.repository.UserSubscriptionRepository;
+import com.tennistime.backend.application.mapper.userDetails.UserSubscriptionMapper;
+import com.tennistime.backend.domain.model.userDetails.UserSubscription;
+import com.tennistime.backend.domain.repository.userDetails.UserSubscriptionRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 

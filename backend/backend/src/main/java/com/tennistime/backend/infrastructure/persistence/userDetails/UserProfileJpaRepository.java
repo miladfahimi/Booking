@@ -1,7 +1,7 @@
-package com.tennistime.backend.infrastructure.persistence;
+package com.tennistime.backend.infrastructure.persistence.userDetails;
 
-import com.tennistime.backend.domain.model.UserProfile;
-import com.tennistime.backend.domain.repository.UserProfileRepository;
+import com.tennistime.backend.domain.model.userDetails.UserProfile;
+import com.tennistime.backend.domain.repository.userDetails.UserProfileRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

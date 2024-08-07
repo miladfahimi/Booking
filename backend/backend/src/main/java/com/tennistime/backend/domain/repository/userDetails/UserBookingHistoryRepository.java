@@ -1,6 +1,6 @@
-package com.tennistime.backend.domain.repository;
+package com.tennistime.backend.domain.repository.userDetails;
 
-import com.tennistime.backend.domain.model.UserBookingHistory;
+import com.tennistime.backend.domain.model.userDetails.UserBookingHistory;
 
 import java.util.List;
 import java.util.Optional;

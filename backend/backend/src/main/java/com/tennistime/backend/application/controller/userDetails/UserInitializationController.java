@@ -2,7 +2,7 @@ package com.tennistime.backend.application.controller.userDetails;
 
 import com.tennistime.backend.application.dto.userDetails.UserInitializationRequestDTO;
 import com.tennistime.backend.application.dto.userDetails.UserInitializationResponseDTO;
-import com.tennistime.backend.application.service.UserInitializationService;
+import com.tennistime.backend.application.service.userDetails.UserInitializationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

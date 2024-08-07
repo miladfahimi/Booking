@@ -1,10 +1,10 @@
-package com.tennistime.backend.application.service;
+package com.tennistime.backend.application.service.userDetails;
 
 import com.github.mfathi91.time.PersianDate;
 import com.tennistime.backend.application.dto.userDetails.UserProfileDTO;
-import com.tennistime.backend.application.mapper.UserProfileMapper;
-import com.tennistime.backend.domain.model.UserProfile;
-import com.tennistime.backend.domain.repository.UserProfileRepository;
+import com.tennistime.backend.application.mapper.userDetails.UserProfileMapper;
+import com.tennistime.backend.domain.model.userDetails.UserProfile;
+import com.tennistime.backend.domain.repository.userDetails.UserProfileRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

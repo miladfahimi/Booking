@@ -1,6 +1,6 @@
-package com.tennistime.backend.domain.repository;
+package com.tennistime.backend.domain.repository.userDetails;
 
-import com.tennistime.backend.domain.model.UserProfile;
+import com.tennistime.backend.domain.model.userDetails.UserProfile;
 
 import java.util.Optional;
 import java.util.UUID;

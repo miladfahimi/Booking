@@ -1,4 +1,4 @@
-package com.tennistime.backend.domain.model;
+package com.tennistime.backend.domain.model.userDetails;
 
 import com.github.mfathi91.time.PersianDate;
 import jakarta.persistence.*;

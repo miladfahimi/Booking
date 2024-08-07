@@ -1,7 +1,7 @@
 package com.tennistime.backend.application.controller.userDetails;
 
 import com.tennistime.backend.application.dto.userDetails.UserProfileDTO;
-import com.tennistime.backend.application.service.UserProfileService;
+import com.tennistime.backend.application.service.userDetails.UserProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
