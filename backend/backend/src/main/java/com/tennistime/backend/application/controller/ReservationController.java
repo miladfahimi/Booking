@@ -16,7 +16,7 @@ import java.util.UUID;
  * Controller for handling reservation-related requests.
  */
 @RestController
-@RequestMapping("/api/v1/reservations")
+@RequestMapping("/reservations")
 @Tag(name = "Reservations", description = "API for managing reservations")
 public class ReservationController {
 

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -31,8 +32,8 @@ public class ReservationDTO {
     @Schema(example = "confirmed")
     private String status;
 
-    @Schema(example = "1")
-    private Long userProfileId;
+    @Schema(example = "d290f1ee-6c54-4b01-90e6-d701748f0851")
+    private UUID userId;
 
     @Schema(example = "1")
     private Long courtId;

@@ -57,7 +57,7 @@ public class ReservationService {
             reservation.setStartTime(reservationDTO.getStartTime());
             reservation.setEndTime(reservationDTO.getEndTime());
             reservation.setStatus(reservationDTO.getStatus());
-            reservation.setUserProfileId(reservationDTO.getUserProfileId());
+            reservation.setUserId(reservationDTO.getUserId()); // Update to use UUID
             Optional<Court> courtOpt = courtRepository.findById(reservationDTO.getCourtId());
             courtOpt.ifPresent(reservation::setCourt);
             Reservation updatedReservation = reservationRepository.save(reservation);

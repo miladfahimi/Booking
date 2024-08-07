@@ -31,9 +31,6 @@ public class Reservation {
     @Column(name = "end_time")
     private LocalTime endTime;
 
-    @Column(nullable = false)
-    private Long userProfileId;
-
     private String status;
 
     @ManyToOne
