@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/user/subscriptions")
@@ -18,10 +19,10 @@ public class UserSubscriptionController {
 
     private final UserSubscriptionService userSubscriptionService;
 
-    @GetMapping("/{id}")
+    @GetMapping("/{userId}")
     @Operation(summary = "Get user subscription", description = "Retrieve subscription information for a given user ID")
-    public ResponseEntity<UserSubscriptionDTO> getUserSubscription(@PathVariable Long id) {
-        Optional<UserSubscriptionDTO> userSubscription = userSubscriptionService.getUserSubscription(id);
+    public ResponseEntity<UserSubscriptionDTO> getUserSubscription(@PathVariable UUID userId) {
+        Optional<UserSubscriptionDTO> userSubscription = userSubscriptionService.getUserSubscriptionByUserId(userId);
         return userSubscription.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -33,18 +34,18 @@ public class UserSubscriptionController {
         return ResponseEntity.ok(savedUserSubscription);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{userId}")
     @Operation(summary = "Update user subscription", description = "Update an existing subscription for a user")
-    public ResponseEntity<UserSubscriptionDTO> updateUserSubscription(@PathVariable Long id, @RequestBody UserSubscriptionDTO updatedSubscriptionDTO) {
-        Optional<UserSubscriptionDTO> userSubscription = userSubscriptionService.updateUserSubscription(id, updatedSubscriptionDTO);
+    public ResponseEntity<UserSubscriptionDTO> updateUserSubscription(@PathVariable UUID userId, @RequestBody UserSubscriptionDTO updatedSubscriptionDTO) {
+        Optional<UserSubscriptionDTO> userSubscription = userSubscriptionService.updateUserSubscription(userId, updatedSubscriptionDTO);
         return userSubscription.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{userId}")
     @Operation(summary = "Delete user subscription", description = "Delete a user subscription")
-    public ResponseEntity<Void> deleteUserSubscription(@PathVariable Long id) {
-        userSubscriptionService.deleteUserSubscription(id);
+    public ResponseEntity<Void> deleteUserSubscription(@PathVariable UUID userId) {
+        userSubscriptionService.deleteUserSubscriptionByUserId(userId);
         return ResponseEntity.ok().build();
     }
 }

@@ -6,6 +6,8 @@ import com.tennistime.backend.application.mapper.UserSubscriptionMapper;
 import com.tennistime.backend.domain.model.UserSubscription;
 import com.tennistime.backend.domain.repository.UserSubscriptionRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -19,17 +21,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserSubscriptionService {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserSubscriptionService.class);
+
     private final UserSubscriptionRepository userSubscriptionRepository;
     private final UserSubscriptionMapper userSubscriptionMapper;
 
-    /**
-     * Retrieves a user subscription by its ID.
-     *
-     * @param id the ID of the user subscription
-     * @return an Optional containing the UserSubscriptionDTO if found, or empty if not found
-     */
-    public Optional<UserSubscriptionDTO> getUserSubscription(Long id) {
-        return userSubscriptionRepository.findById(id)
+    public Optional<UserSubscriptionDTO> getUserSubscriptionByUserId(UUID userId) {
+        logger.info("\033[0;34mFetching user subscription for user ID: {}\033[0m", userId);
+        return userSubscriptionRepository.findByUserId(userId)
                 .map(this::convertToDTO);
     }
 
@@ -40,49 +39,28 @@ public class UserSubscriptionService {
      * @return the created UserSubscriptionDTO
      */
     public UserSubscriptionDTO createUserSubscription(UserSubscriptionDTO userSubscriptionDTO) {
+        logger.info("\033[0;32mCreating new user subscription: {}\033[0m", userSubscriptionDTO);
         UserSubscription userSubscription = convertToEntity(userSubscriptionDTO);
         UserSubscription savedUserSubscription = userSubscriptionRepository.save(userSubscription);
         return convertToDTO(savedUserSubscription);
     }
 
-    /**
-     * Updates an existing user subscription.
-     *
-     * @param id the ID of the user subscription to update
-     * @param updatedSubscriptionDTO the DTO containing the updated subscription data
-     * @return an Optional containing the updated UserSubscriptionDTO if the update was successful, or empty if not
-     */
-    public Optional<UserSubscriptionDTO> updateUserSubscription(Long id, UserSubscriptionDTO updatedSubscriptionDTO) {
-        return userSubscriptionRepository.findById(id)
+    public Optional<UserSubscriptionDTO> updateUserSubscription(UUID userId, UserSubscriptionDTO updatedSubscriptionDTO) {
+        logger.info("\033[0;33mUpdating user subscription for user ID: {}\033[0m", userId);
+        return userSubscriptionRepository.findByUserId(userId)
                 .map(existingSubscription -> {
-                    existingSubscription.setSubscriptionPlan(updatedSubscriptionDTO.getSubscriptionPlan());
-                    existingSubscription.setStartDate(LocalDate.parse(updatedSubscriptionDTO.getStartDate()));
-                    existingSubscription.setEndDate(LocalDate.parse(updatedSubscriptionDTO.getEndDate()));
-                    existingSubscription.setStatus(updatedSubscriptionDTO.getStatus());
-                    existingSubscription.setStartDatePersian(
-                            updatedSubscriptionDTO.getStartDatePersian() != null && !updatedSubscriptionDTO.getStartDatePersian().equals("Does not filled by User")
-                                    ? PersianDate.parse(updatedSubscriptionDTO.getStartDatePersian())
-                                    : null
-                    );
-                    existingSubscription.setEndDatePersian(
-                            updatedSubscriptionDTO.getEndDatePersian() != null && !updatedSubscriptionDTO.getEndDatePersian().equals("Does not filled by User")
-                                    ? PersianDate.parse(updatedSubscriptionDTO.getEndDatePersian())
-                                    : null
-                    );
-                    // Handle other fields if any...
-
-                    UserSubscription savedSubscription = userSubscriptionRepository.save(existingSubscription);
-                    return convertToDTO(savedSubscription);
+                    UserSubscription updatedSubscription = convertToEntity(updatedSubscriptionDTO);
+                    updatedSubscription.setId(existingSubscription.getId());
+                    updatedSubscription.setUserId(userId); // Ensure the userId is set
+                    UserSubscription savedUserSubscription = userSubscriptionRepository.save(updatedSubscription);
+                    return convertToDTO(savedUserSubscription);
                 });
     }
 
-    /**
-     * Deletes a user subscription by its ID.
-     *
-     * @param id the ID of the user subscription to delete
-     */
-    public void deleteUserSubscription(Long id) {
-        userSubscriptionRepository.deleteById(id);
+    public void deleteUserSubscriptionByUserId(UUID userId) {
+        logger.info("\033[0;31mDeleting user subscription for user ID: {}\033[0m", userId);
+        userSubscriptionRepository.findByUserId(userId)
+                .ifPresent(userSubscription -> userSubscriptionRepository.deleteById(userSubscription.getId()));
     }
 
     /**
