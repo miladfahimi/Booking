@@ -1,7 +1,6 @@
 package com.tennistime.backend.domain.model;
 
 import com.github.mfathi91.time.PersianDate;
-import com.tennistime.backend.domain.model.userDetails.UserBookingHistory;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -47,15 +46,5 @@ public class Reservation {
 
     public void setReservationDatePersian(PersianDate persianDate) {
         this.reservationDate = persianDate.toGregorian();
-    }
-
-    public UserBookingHistory toUserBookingHistory() {
-        UserBookingHistory history = new UserBookingHistory();
-        history.setUserId(this.userId);
-        history.setCourt(this.court);
-        history.setBookingDate(this.reservationDate.atTime(this.startTime));
-        history.setStatus(this.status);
-        history.setBookingDatePersian(PersianDate.fromGregorian(this.reservationDate));
-        return history;
     }
 }
