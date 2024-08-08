@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.tennistime</groupId>
-    <artifactId>backend</artifactId>
+    <artifactId>profile</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>com.tennistime.profile</name>
     <description>profile service for TennisTime application</description>
@@ -316,7 +316,7 @@
                             <archive>
                                 <manifest>
                                     <addClasspath>true</addClasspath>
-                                    <mainClass>com.tennistime.backend</mainClass>
+                                    <mainClass>com.tennistime.profile</mainClass>
                                 </manifest>
                             </archive>
                         </configuration>
