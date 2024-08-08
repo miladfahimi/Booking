@@ -9,6 +9,8 @@
         <option value="$PROJECT_DIR$/backend/authentication/src/main/java/com/tennistime/authentication/pom.xml" />
         <option value="$PROJECT_DIR$/backend/backend/pom.xml" />
         <option value="$PROJECT_DIR$/backend/authentication/pom.xml" />
+        <option value="$PROJECT_DIR$/authentication/pom.xml" />
+        <option value="$PROJECT_DIR$/../authentication/pom.xml" />
       </list>
     </option>
   </component>
