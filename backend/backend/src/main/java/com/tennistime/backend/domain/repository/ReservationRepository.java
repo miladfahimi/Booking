@@ -9,10 +9,10 @@ import java.util.UUID;
 public interface ReservationRepository {
 
     List<Reservation> findAll();
-    Optional<Reservation> findById(Long id);
-    List<Reservation> findByUserId(UUID userId);  // Correct method signature
+    Optional<Reservation> findById(UUID id); // Updated from Long to UUID
+    List<Reservation> findByUserId(UUID userId);
     List<Reservation> findByCourtId(Long courtId);
     List<Reservation> findByReservationDate(LocalDate localDate);
     Reservation save(Reservation reservation);
-    void deleteById(Long id);
+    void deleteById(UUID id); // Updated from Long to UUID
 }

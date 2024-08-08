@@ -18,8 +18,8 @@ import java.util.UUID;
 public class Reservation {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id; // Updated from Long to UUID
 
     private UUID userId;
 

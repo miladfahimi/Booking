@@ -46,13 +46,13 @@ CREATE TABLE IF NOT EXISTS user_profile (
     date_of_birth DATE,
     profile_picture VARCHAR(255),
     preferences TEXT,
-    is_user_profiles_initiated BOOLEAN DEFAULT FALSE -- New column
+    is_user_profiles_initiated BOOLEAN DEFAULT FALSE
 );
 
 -- Create reservation table
 DROP TABLE IF EXISTS reservation CASCADE;
 CREATE TABLE IF NOT EXISTS reservation (
-    id BIGSERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY, -- Updated from BIGSERIAL to UUID
     reservation_date TIMESTAMP,
     start_time TIME,
     end_time TIME,

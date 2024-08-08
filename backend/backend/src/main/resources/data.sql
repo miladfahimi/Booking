@@ -22,9 +22,9 @@ INSERT INTO feedback (comment, rating, created_at, club_id, court_id) VALUES
 ('Nice court', 4, '2024-07-02 11:00:00', NULL, 1);
 
 -- Insert data into reservation table
-INSERT INTO reservation (reservation_date, start_time, end_time, status, user_id, court_id) VALUES
-('2024-07-02', '10:00', '11:00', 'CONFIRMED', '2fa85f64-5717-4562-b3fc-2c963f66afa7', 1),
-('2024-07-03', '12:00', '13:00', 'PENDING', '2fa85f64-5717-4562-b3fc-2c963f66afa7', 2);
+INSERT INTO reservation (id, reservation_date, start_time, end_time, status, user_id, court_id) VALUES
+('11111111-1111-1111-1111-111111111111', '2024-07-02', '10:00', '11:00', 'CONFIRMED', '2fa85f64-5717-4562-b3fc-2c963f66afa7', 1),
+('22222222-2222-2222-2222-222222222222', '2024-07-03', '12:00', '13:00', 'PENDING', '2fa85f64-5717-4562-b3fc-2c963f66afa7', 2);
 
 -- Insert data into user_subscription table
 INSERT INTO user_subscription (user_id, subscription_plan, start_date, end_date, status) VALUES

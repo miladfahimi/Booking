@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface ReservationJpaRepository extends ReservationRepository, JpaRepository<Reservation, Long> {
+public interface ReservationJpaRepository extends ReservationRepository, JpaRepository<Reservation, UUID> { // Updated from Long to UUID
     @Override
-    List<Reservation> findByUserId(UUID userId);  // Correct method signature
+    List<Reservation> findByUserId(UUID userId);
 }

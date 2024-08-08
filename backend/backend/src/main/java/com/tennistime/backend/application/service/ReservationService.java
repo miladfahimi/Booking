@@ -38,7 +38,7 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
-    public ReservationDTO findById(Long id) {
+    public ReservationDTO findById(UUID id) { // Updated from Long to UUID
         Optional<Reservation> reservation = reservationRepository.findById(id);
         return reservation.map(this::convertToDTO).orElse(null);
     }
@@ -49,7 +49,7 @@ public class ReservationService {
         return convertToDTO(savedReservation);
     }
 
-    public ReservationDTO updateReservation(Long id, ReservationDTO reservationDTO) {
+    public ReservationDTO updateReservation(UUID id, ReservationDTO reservationDTO) { // Updated from Long to UUID
         Optional<Reservation> reservationOpt = reservationRepository.findById(id);
         if (reservationOpt.isPresent()) {
             Reservation reservation = reservationOpt.get();
@@ -57,7 +57,7 @@ public class ReservationService {
             reservation.setStartTime(reservationDTO.getStartTime());
             reservation.setEndTime(reservationDTO.getEndTime());
             reservation.setStatus(reservationDTO.getStatus());
-            reservation.setUserId(reservationDTO.getUserId()); // Update to use UUID
+            reservation.setUserId(reservationDTO.getUserId());
             Optional<Court> courtOpt = courtRepository.findById(reservationDTO.getCourtId());
             courtOpt.ifPresent(reservation::setCourt);
             Reservation updatedReservation = reservationRepository.save(reservation);
@@ -66,7 +66,7 @@ public class ReservationService {
         return null;
     }
 
-    public ReservationDTO updateReservationStatus(Long id, String status) {
+    public ReservationDTO updateReservationStatus(UUID id, String status) { // Updated from Long to UUID
         Optional<Reservation> reservationOpt = reservationRepository.findById(id);
         if (reservationOpt.isPresent()) {
             Reservation reservation = reservationOpt.get();
@@ -77,7 +77,7 @@ public class ReservationService {
         return null;
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(UUID id) { // Updated from Long to UUID
         reservationRepository.deleteById(id);
     }
 
