@@ -47,7 +47,8 @@ public class DevSecurityConfig {
                                 "/webjars/**",
                                 "/swagger-ui.html",
                                 "/cache/invalidate",
-                                "/logout"
+                                "/logout",
+                                "/user/history/update"
                         ).permitAll()
                         // Allowing easy testing for authenticated endpoints
                         // Ensure that only authorized roles can access specific endpoints

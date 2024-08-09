@@ -17,26 +17,50 @@ import java.util.UUID;
 public class UserBookingHistory {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
 
     @Column(nullable = false)
     private UUID userId;
+
+    @Column(nullable = false)
+    private UUID reservationId;
+
+    @Column(nullable = false)
+    private Long courtId;
 
     @Column(name = "booking_date", nullable = false)
     private LocalDateTime bookingDate;
 
     private String status;
 
+    private boolean isItArchived = false;
+
+    private boolean isUserNotified = false;
+
+    private String notes;
+
     @Transient
     private PersianDate bookingDatePersian;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(nullable = false)
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
     public PersianDate getBookingDatePersian() {
         return PersianDate.fromGregorian(this.bookingDate.toLocalDate());
     }
 
     public void setBookingDatePersian(PersianDate persianDate) {
-        this.bookingDate = persianDate.toGregorian().atStartOfDay();
+        if (persianDate != null) {
+            this.bookingDate = persianDate.toGregorian().atStartOfDay();
+        }
     }
 
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }

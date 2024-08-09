@@ -57,4 +57,11 @@ public class UserBookingHistoryController {
         userBookingHistoryService.deleteUserBookingHistoryByUserId(userId);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/update")
+    @Operation(summary = "Update user booking history after reservation creation", description = "Updates the user's booking history after a reservation is created.")
+    public ResponseEntity<Void> updateUserBookingHistory(@RequestBody UserBookingHistoryDTO userBookingHistoryDTO) {
+        userBookingHistoryService.createUserBookingHistory(userBookingHistoryDTO);
+        return ResponseEntity.ok().build();
+    }
 }

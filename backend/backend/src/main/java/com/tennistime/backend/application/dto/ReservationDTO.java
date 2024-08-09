@@ -36,5 +36,5 @@ public class ReservationDTO {
     private UUID userId;
 
     @Schema(example = "1")
-    private Long courtId;
+    private Long courtId; // Ensure this is set before creating/updating a reservation
 }

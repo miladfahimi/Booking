@@ -107,11 +107,11 @@ public class UserInitializationService {
             userProfile.setUserId(userId);
             userProfile.setEmail(email);
             userProfile.setPhoneNumber(phoneNumber);
-            userProfile.setFirstName("Does not filled by User");
-            userProfile.setLastName("Does not filled by User");
-            userProfile.setAddress("Does not filled by User");
-            userProfile.setProfilePicture("Does not filled by User");
-            userProfile.setPreferences("Does not filled by User");
+            userProfile.setFirstName(null); // Now null by default
+            userProfile.setLastName(null);  // Now null by default
+            userProfile.setAddress(null);   // Now null by default
+            userProfile.setProfilePicture(null); // Now null by default
+            userProfile.setPreferences(null); // Now null by default
             userProfile.setDateOfBirth(null);
             userProfile.setUserProfilesInitiated(true);
             LOGGER.info("\u001B[32mUserProfile created for userId: " + userId + "\u001B[0m");
@@ -123,7 +123,7 @@ public class UserInitializationService {
         return userSubscriptionRepository.findByUserId(userId).orElseGet(() -> {
             UserSubscription userSubscription = new UserSubscription();
             userSubscription.setUserId(userId);
-            userSubscription.setSubscriptionPlan("Does not filled by User");
+            userSubscription.setSubscriptionPlan(null); // Now null by default
             userSubscription.setStatus("Inactive");
             userSubscription.setStartDate(null);
             userSubscription.setEndDate(null);
@@ -137,9 +137,9 @@ public class UserInitializationService {
             UserBookingHistoryDTO dto = new UserBookingHistoryDTO();
             dto.setId(booking.getId());
             dto.setUserId(userId);
-            dto.setBookingDate("Does not filled by User");
-            dto.setStatus("Does not filled by User");
-            dto.setBookingDatePersian("Does not filled by User");
+            dto.setBookingDate(null); // Now null by default
+            dto.setStatus(null); // Now null by default
+            dto.setBookingDatePersian(null); // Now null by default
             return dto;
         }).collect(Collectors.toList());
     }
@@ -150,7 +150,7 @@ public class UserInitializationService {
         dto.setUserId(userBookingHistory.getUserId());
         dto.setBookingDate(userBookingHistory.getBookingDate().toString());
         dto.setStatus(userBookingHistory.getStatus());
-        dto.setBookingDatePersian(userBookingHistory.getBookingDatePersian() != null ? userBookingHistory.getBookingDatePersian().toString() : "Does not filled by User");
+        dto.setBookingDatePersian(userBookingHistory.getBookingDatePersian() != null ? userBookingHistory.getBookingDatePersian().toString() : null);
         return dto;
     }
 }
