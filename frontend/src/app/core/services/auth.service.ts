@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';  // Import HttpParams
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
@@ -8,11 +8,13 @@ import { tap } from 'rxjs/operators';
 })
 export class AuthService {
   private baseUrl = 'http://localhost:8095/api/v1/auth';
-  private tokenKey = 'authToken';
+  private tokenKey = 'authToken';  // Key to store the JWT token in local storage
 
   constructor(private http: HttpClient) {}
 
   signIn(email: string, password: string): Observable<any> {
+    const params = new HttpParams().set('email', email).set('password', password);  // Use HttpParams
+
     return this.http.post(`${this.baseUrl}/signin`, { email, password }).pipe(
       tap((response: any) => this.storeToken(response.token))
     );
@@ -22,6 +24,9 @@ export class AuthService {
     return this.http.post(`${this.baseUrl}/signup`, { username, email, password, phone, role });
   }
 
+  signOut(): void {
+    this.removeToken();
+  }
 
   private storeToken(token: string): void {
     localStorage.setItem(this.tokenKey, token);
@@ -29,10 +34,6 @@ export class AuthService {
 
   getToken(): string | null {
     return localStorage.getItem(this.tokenKey);
-  }
-
-  signOut(): void {
-    this.removeToken();
   }
 
   private removeToken(): void {

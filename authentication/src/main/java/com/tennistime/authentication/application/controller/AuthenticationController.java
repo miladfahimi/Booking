@@ -1,5 +1,6 @@
 package com.tennistime.authentication.application.controller;
 
+import com.tennistime.authentication.application.dto.SignInRequest;
 import com.tennistime.authentication.application.dto.UserDTO;
 import com.tennistime.authentication.application.service.UserService;
 import com.tennistime.authentication.infrastructure.security.JwtUtil;
@@ -49,7 +50,9 @@ public class AuthenticationController {
 
     @PostMapping("/signin")
     @Operation(summary = "Sign in a user")
-    public ResponseEntity<UserDTO> signin(@RequestParam String email, @RequestParam String password) {
+    public ResponseEntity<UserDTO> signin(@RequestBody SignInRequest signInRequest) {
+        String email = signInRequest.getEmail();
+        String password = signInRequest.getPassword();
         UserDTO signedInUser = userService.signin(email, password);
 
         // Logging

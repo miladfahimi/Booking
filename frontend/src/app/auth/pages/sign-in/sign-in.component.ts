@@ -11,7 +11,6 @@ import { Router } from '@angular/router';
 export class SignInComponent {
   signInForm: FormGroup;
   errorMessage: string = '';
-  responseData: any;
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.signInForm = this.fb.group({
@@ -26,12 +25,15 @@ export class SignInComponent {
       this.authService.signIn(email, password).subscribe({
         next: (response) => {
           console.log('Sign in successful', response);
-          this.responseData = response;
-          this.router.navigate(['/profile']);  // Navigate to a different page after sign-in
+          this.router.navigate(['/home']);  // Redirect to home or dashboard
         },
         error: (err) => {
-          console.error('Sign in error', err);
-          this.errorMessage = 'Invalid email or password. Please try again.';
+          if (err.status === 403) {
+            this.errorMessage = 'Invalid email or password. Please try again.';
+          } else {
+            console.error('Sign in error', err);
+            this.errorMessage = 'An error occurred during sign-in. Please try again.';
+          }
         }
       });
     }
