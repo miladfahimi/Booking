@@ -4,7 +4,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CoreModule } from './core/core.module';
-import { ProfileModule } from './profile/profile.module';  // Manually add this import
 
 @NgModule({
   declarations: [
@@ -13,9 +12,8 @@ import { ProfileModule } from './profile/profile.module';  // Manually add this 
   imports: [
     BrowserModule,
     HttpClientModule,
-    AppRoutingModule,
-    CoreModule,
-    ProfileModule  // Add CoreModule to imports array
+    AppRoutingModule,  // Routing module handles lazy loading
+    CoreModule         // CoreModule can include services and common components
   ],
   bootstrap: [AppComponent]
 })

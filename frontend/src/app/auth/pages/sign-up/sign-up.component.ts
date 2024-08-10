@@ -19,14 +19,14 @@ export class SignUpComponent {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(3)]],
       phone: ['', Validators.required],
-      role: ['USER', Validators.required] // Default to 'USER' or let the user choose
+      role: ['USER']  // Default to 'USER'
     });
   }
 
   onSubmit() {
     if (this.signUpForm.valid) {
-      const { username, email, password, phone, role } = this.signUpForm.value;
-      this.authService.signUp(username, email, password, phone, role).subscribe({
+      const { username, email, password, phone } = this.signUpForm.value;
+      this.authService.signUp(username, email, password, phone, 'USER').subscribe({
         next: (response) => {
           console.log('Sign up successful', response);
           this.responseData = response;

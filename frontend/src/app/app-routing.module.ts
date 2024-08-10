@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   { path: 'auth', loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule) },
+  { path: 'profile', loadChildren: () => import('./profile/profile.module').then(m => m.ProfileModule) },
   { path: '', redirectTo: 'auth/signin', pathMatch: 'full' },  // Redirect root to signin
   { path: '**', redirectTo: 'auth/signin' }  // Fallback to signin on any undefined route
 ];

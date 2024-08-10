@@ -1,24 +1,53 @@
-<h2>Sign In</h2>
-<form [formGroup]="signInForm" (ngSubmit)="onSubmit()">
-  <div class="form-group">
-    <label for="email">Email</label>
-    <input id="email" formControlName="email" type="email" class="form-control" />
-    <div *ngIf="signInForm.get('email')?.invalid && signInForm.get('email')?.touched" class="text-danger">
-      A valid email is required.
+<!-- src/app/signin/signin.component.html -->
+<div class="limiter">
+  <div class="container-login100">
+    <div class="wrap-login100">
+      <!-- Form Group Binding -->
+      <form [formGroup]="signInForm" (ngSubmit)="onSubmit()" class="login100-form">
+                <span class="login100-form-title">
+                    ورود
+                </span>
+
+        <!-- Email Input Field -->
+        <div class="wrap-input100" [ngClass]="{'invalid': signInForm.get('email')?.invalid && signInForm.get('email')?.touched}">
+          <input formControlName="email" class="input100" type="email" placeholder="ایمیل">
+          <!-- Email Validation Error Message -->
+          <div *ngIf="signInForm.get('email')?.invalid && signInForm.get('email')?.touched" class="error-message">
+            <small *ngIf="signInForm.get('email')?.errors?.['required']">ایمیل الزامی است</small>
+            <small *ngIf="signInForm.get('email')?.errors?.['email']">ایمیل معتبر نیست</small>
+          </div>
+        </div>
+
+        <!-- Password Input Field -->
+        <div class="wrap-input100 password-container" [ngClass]="{'invalid': signInForm.get('password')?.invalid && signInForm.get('password')?.touched}">
+          <input formControlName="password" class="input100" type="password" placeholder="رمز عبور">
+          <span class="show-password" (click)="togglePasswordVisibility()">نمایش</span>
+          <!-- Password Validation Error Message -->
+          <div *ngIf="signInForm.get('password')?.invalid && signInForm.get('password')?.touched" class="error-message">
+            <small *ngIf="signInForm.get('password')?.errors?.['required']">رمز عبور الزامی است</small>
+            <small *ngIf="signInForm.get('password')?.errors?.['minlength']">رمز عبور باید حداقل ۳ کاراکتر باشد</small>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="container-login100-form-btn">
+          <button type="submit" class="login100-form-btn" [disabled]="signInForm.invalid">
+            ورود
+          </button>
+        </div>
+
+        <!-- Error Message Display -->
+        <div *ngIf="errorMessage" class="text-center p-t-20">
+          <small class="error-message">{{ errorMessage }}</small>
+        </div>
+
+        <!-- Forgot Password Link -->
+        <div class="text-center p-t-20">
+          <a href="#" class="txt1">
+            رمز عبورم را فراموش کردم؟
+          </a>
+        </div>
+      </form>
     </div>
   </div>
-
-  <div class="form-group">
-    <label for="password">Password</label>
-    <input id="password" formControlName="password" type="password" class="form-control" />
-    <div *ngIf="signInForm.get('password')?.invalid && signInForm.get('password')?.touched" class="text-danger">
-      Password is required (min 6 characters).
-    </div>
-  </div>
-
-  <button type="submit" class="btn btn-primary" [disabled]="signInForm.invalid">Sign In</button>
-</form>
-
-<div *ngIf="errorMessage" class="mt-3 text-danger">
-  {{ errorMessage }}
 </div>

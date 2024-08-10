@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 export class SignInComponent {
   signInForm: FormGroup;
   errorMessage: string = '';
+  showPassword: boolean = false;
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.signInForm = this.fb.group({
@@ -38,4 +39,11 @@ export class SignInComponent {
       });
     }
   }
-}
+
+togglePasswordVisibility(): void {
+  this.showPassword = !this.showPassword;
+  const passwordField = this.signInForm.get('password');
+  if (passwordField) {
+    (document.querySelector('[formControlName="password"]') as HTMLInputElement).type = this.showPassword ? 'text' : 'password';
+  }
+}}

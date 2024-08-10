@@ -92,6 +92,7 @@ public class DevSecurityConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.addAllowedOrigin("http://localhost:4200"); // Allow frontend origin
+        corsConfiguration.addAllowedOrigin("http://192.168.0.16:4200");
         corsConfiguration.addAllowedMethod("*"); // Allow all HTTP methods
         corsConfiguration.addAllowedHeader("*"); // Allow all headers
         corsConfiguration.setAllowCredentials(true); // Allow credentials (cookies, authorization headers)
