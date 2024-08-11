@@ -4,12 +4,13 @@
     <div class="wrap-login100">
       <!-- Form Group Binding -->
       <form [formGroup]="signInForm" (ngSubmit)="onSubmit()" class="login100-form">
-                <span class="login100-form-title">
-                    ورود
-                </span>
+        <span class="login100-form-title">
+          ورود
+        </span>
 
         <!-- Email Input Field -->
-        <div class="wrap-input100" [ngClass]="{'invalid': signInForm.get('email')?.invalid && signInForm.get('email')?.touched}">
+        <div class="wrap-input100"
+          [ngClass]="{'invalid': signInForm.get('email')?.invalid && signInForm.get('email')?.touched}">
           <input formControlName="email" class="input100" type="email" placeholder="ایمیل">
           <!-- Email Validation Error Message -->
           <div *ngIf="signInForm.get('email')?.invalid && signInForm.get('email')?.touched" class="error-message">
@@ -19,7 +20,8 @@
         </div>
 
         <!-- Password Input Field -->
-        <div class="wrap-input100 password-container" [ngClass]="{'invalid': signInForm.get('password')?.invalid && signInForm.get('password')?.touched}">
+        <div class="wrap-input100 password-container"
+          [ngClass]="{'invalid': signInForm.get('password')?.invalid && signInForm.get('password')?.touched}">
           <input formControlName="password" class="input100" type="password" placeholder="رمز عبور">
           <span class="show-password" (click)="togglePasswordVisibility()">نمایش</span>
           <!-- Password Validation Error Message -->
@@ -45,6 +47,13 @@
         <div class="text-center p-t-20">
           <a href="#" class="txt1">
             رمز عبورم را فراموش کردم؟
+          </a>
+        </div>
+
+        <!-- Forgot Password Link -->
+        <div class="text-center p-r-20">
+          <a href="/auth/signup" class="txt1">
+            ثبت نام
           </a>
         </div>
       </form>

@@ -6,6 +6,7 @@
   direction: rtl;
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
 }
 
 .limiter {
@@ -16,6 +17,7 @@
   justify-content: center;
   padding: 15px;
   min-height: 100vh;
+  box-sizing: border-box;
 }
 
 .container-profile100 {
