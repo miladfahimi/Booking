@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { SignUpReq } from '../../auth/store/auth.models';
 
 @Injectable({
   providedIn: 'root'
@@ -28,8 +29,8 @@ export class AuthService {
     );
   }
 
-  signUp(username: string, email: string, password: string, phone: string, role: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/signup`, { username, email, password, phone, role });
+  signUp(signUpReq: SignUpReq): Observable<any> {
+    return this.http.post(`${this.baseUrl}/signup`, signUpReq);
   }
 
   signOut(): void {

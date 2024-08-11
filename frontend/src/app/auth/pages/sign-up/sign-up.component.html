@@ -1,64 +1,79 @@
-<!-- src/app/signup/signup.component.html -->
 <div class="limiter">
   <div class="container-login100">
     <div class="wrap-login100">
       <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()" class="login100-form">
-        <span class="login100-form-title">
-          ثبت نام
-        </span>
+        <span class="login100-form-title">ثبت نام</span>
 
         <!-- Username Input Field -->
-        <div class="wrap-input100" [ngClass]="{'has-error': signUpForm.get('username')?.invalid && signUpForm.get('username')?.touched}">
+        <div class="wrap-input100"
+          [ngClass]="{ 'has-error': signUpForm.get('username')?.invalid && signUpForm.get('username')?.touched }">
           <input class="input100" type="text" formControlName="username" placeholder="نام کاربری">
-          <div *ngIf="signUpForm.get('username')?.invalid && signUpForm.get('username')?.touched" class="error-message">
-            Username is required.
+          @if (signUpForm.get('username')?.invalid && signUpForm.get('username')?.touched) {
+          <div class="error-message">
+            <small>نام کاربری الزامی است</small>
           </div>
+          }
         </div>
 
         <!-- Email Input Field -->
-        <div class="wrap-input100" [ngClass]="{'has-error': signUpForm.get('email')?.invalid && signUpForm.get('email')?.touched}">
+        <div class="wrap-input100"
+          [ngClass]="{ 'has-error': signUpForm.get('email')?.invalid && signUpForm.get('email')?.touched }">
           <input class="input100" type="email" formControlName="email" placeholder="ایمیل">
-          <div *ngIf="signUpForm.get('email')?.invalid && signUpForm.get('email')?.touched" class="error-message">
-            A valid email is required.
+          @if (signUpForm.get('email')?.invalid && signUpForm.get('email')?.touched) {
+          <div class="error-message">
+            <small>ایمیل معتبر نیست</small>
           </div>
+          }
         </div>
 
         <!-- Password Input Field -->
-        <div class="wrap-input100" [ngClass]="{'has-error': signUpForm.get('password')?.invalid && signUpForm.get('password')?.touched}">
+        <div class="wrap-input100"
+          [ngClass]="{ 'has-error': signUpForm.get('password')?.invalid && signUpForm.get('password')?.touched }">
           <input class="input100" type="password" formControlName="password" placeholder="رمز عبور">
-          <div *ngIf="signUpForm.get('password')?.invalid && signUpForm.get('password')?.touched" class="error-message">
-            Password is required (min 6 characters).
+          @if (signUpForm.get('password')?.invalid && signUpForm.get('password')?.touched) {
+          <div class="error-message">
+            <small>رمز عبور الزامی است (حداقل ۳ کاراکتر)</small>
           </div>
+          }
         </div>
 
         <!-- Phone Input Field -->
-        <div class="wrap-input100" [ngClass]="{'has-error': signUpForm.get('phone')?.invalid && signUpForm.get('phone')?.touched}">
+        <div class="wrap-input100"
+          [ngClass]="{ 'has-error': signUpForm.get('phone')?.invalid && signUpForm.get('phone')?.touched }">
           <input class="input100" type="text" formControlName="phone" placeholder="تلفن همراه">
-          <div *ngIf="signUpForm.get('phone')?.invalid && signUpForm.get('phone')?.touched" class="error-message">
-            Phone number is required.
+          @if (signUpForm.get('phone')?.invalid && signUpForm.get('phone')?.touched) {
+          <div class="error-message">
+            <small>تلفن همراه الزامی است</small>
           </div>
+          }
         </div>
 
         <!-- Submit Button -->
         <div class="container-login100-form-btn">
-          <button class="login100-form-btn" type="submit" [disabled]="signUpForm.invalid">
+          <button class="login100-form-btn" type="submit"
+            [disabled]="signUpForm.invalid || (loadingStatus$ | async)?.loading">
             ثبت نام
           </button>
         </div>
 
-        <!-- Error Message -->
-        <div *ngIf="errorMessage" class="alert alert-danger">
-          {{ errorMessage }}
+        <!-- Loading Indicator -->
+        @if ((loadingStatus$ | async)?.loading) {
+        <div class="text-center p-t-20">
+          <small>در حال ثبت نام...</small>
         </div>
+        }
+
+        <!-- Error Message -->
+        <ng-container *ngIf="errorMessage$ | async as errorMessage">
+          @if (errorMessage) {
+          <div class="alert alert-danger">{{ errorMessage }}</div>
+          }
+        </ng-container>
 
         <!-- Sign In Link -->
         <div class="flex-col-c p-t-155">
-          <span class="txt1 p-b-17">
-            ورود با متود دیگر
-          </span>
-          <a href="/auth/signin" class="txt2">
-            کاربر قبلی هستم
-          </a>
+          <span class="txt1 p-b-17">ورود با متود دیگر</span>
+          <a href="/auth/signin" class="txt2">کاربر قبلی هستم</a>
         </div>
       </form>
     </div>

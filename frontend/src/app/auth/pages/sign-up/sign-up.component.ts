@@ -1,19 +1,30 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from 'src/app/core/services/auth.service';
+import { Store, select } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { AuthState } from '../../store/auth.reducer';
+import { signUp } from '../../store/auth.actions';
+import { selectAuthError, selectLoadingStatus, selectIsAuthenticated } from '../../store/auth.selectors';
+import { LoadingStatus, SignUpReq } from '../../store/auth.models';
 
 @Component({
   selector: 'app-sign-up',
   templateUrl: './sign-up.component.html',
   styleUrls: ['./sign-up.component.scss']
 })
-export class SignUpComponent {
+export class SignUpComponent implements OnInit {
   signUpForm: FormGroup;
-  errorMessage: string = '';
-  responseData: any;
+  errorMessage$: Observable<string | null>;
+  loadingStatus$: Observable<LoadingStatus>;
+  isAuthenticated$: Observable<boolean>;
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private store: Store<AuthState>,
+    private router: Router
+  ) {
     this.signUpForm = this.fb.group({
       username: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -21,26 +32,29 @@ export class SignUpComponent {
       phone: ['', Validators.required],
       role: ['USER']  // Default to 'USER'
     });
+
+    this.errorMessage$ = this.store.pipe(select(selectAuthError));
+    this.loadingStatus$ = this.store.pipe(select(selectLoadingStatus));
+    this.isAuthenticated$ = this.store.pipe(select(selectIsAuthenticated));
+  }
+
+  ngOnInit(): void {
+    // Navigate to sign-in page if sign-up is successful
+    this.isAuthenticated$
+      .pipe(
+        tap((isAuthenticated: boolean) => {  // Explicitly define the type as boolean
+          if (isAuthenticated) {
+            this.router.navigate(['/auth/signin']);
+          }
+        })
+      )
+      .subscribe();
   }
 
   onSubmit() {
     if (this.signUpForm.valid) {
-      const { username, email, password, phone } = this.signUpForm.value;
-      this.authService.signUp(username, email, password, phone, 'USER').subscribe({
-        next: (response) => {
-          console.log('Sign up successful', response);
-          this.responseData = response;
-          this.router.navigate(['/auth/signin']);
-        },
-        error: (err) => {
-          if (err.status === 409) {
-            this.errorMessage = 'Email is already registered. Please use a different email.';
-          } else {
-            console.error('Sign up error', err);
-            this.errorMessage = 'An error occurred during sign-up. Please try again.';
-          }
-        }
-      });
+      const signUpData: SignUpReq = this.signUpForm.value;
+      this.store.dispatch(signUp({ ...signUpData }));
     }
   }
 }
