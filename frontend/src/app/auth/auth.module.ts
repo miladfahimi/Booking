@@ -7,13 +7,15 @@ import { EffectsModule } from '@ngrx/effects';
 import { AuthRoutingModule } from './auth-routing.module';
 import { SignInComponent } from './pages/sign-in/sign-in.component';
 import { SignUpComponent } from './pages/sign-up/sign-up.component';
+import { SpinnerComponent } from '../shared/spinner/spinner.component';
 import { authReducer } from './store/auth.reducer';
 import { AuthEffects } from './store/auth.effects';
 
 @NgModule({
   declarations: [
     SignInComponent,
-    SignUpComponent
+    SignUpComponent,
+    SpinnerComponent
   ],
   imports: [
     CommonModule,

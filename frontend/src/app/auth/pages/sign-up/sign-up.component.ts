@@ -42,7 +42,7 @@ export class SignUpComponent implements OnInit {
     // Navigate to sign-in page if sign-up is successful
     this.isAuthenticated$
       .pipe(
-        tap((isAuthenticated: boolean) => {  // Explicitly define the type as boolean
+        tap((isAuthenticated: boolean) => {
           if (isAuthenticated) {
             this.router.navigate(['/auth/signin']);
           }

@@ -4,6 +4,9 @@
       <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()" class="login100-form">
         <span class="login100-form-title">ثبت نام</span>
 
+        <!-- Show Spinner when loading -->
+        <app-spinner *ngIf="(loadingStatus$ | async)?.loading"></app-spinner>
+
         <!-- Username Input Field -->
         <div class="wrap-input100"
           [ngClass]="{ 'has-error': signUpForm.get('username')?.invalid && signUpForm.get('username')?.touched }">

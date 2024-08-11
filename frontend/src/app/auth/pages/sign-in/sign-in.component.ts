@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Store, select } from '@ngrx/store';
 import { Observable } from 'rxjs';
@@ -11,16 +11,13 @@ import { selectAuthError, selectLoadingStatus } from '../../store/auth.selectors
   templateUrl: './sign-in.component.html',
   styleUrls: ['./sign-in.component.scss']
 })
-export class SignInComponent implements OnInit {
+export class SignInComponent {
   signInForm: FormGroup;
   errorMessage$: Observable<string | null>;
   loadingStatus$: Observable<{ loaded: boolean; loading: boolean }>;
   showPassword: boolean = false;
 
-  constructor(
-    private fb: FormBuilder,
-    private store: Store<AuthState>
-  ) {
+  constructor(private fb: FormBuilder, private store: Store<AuthState>) {
     this.signInForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(3)]]
