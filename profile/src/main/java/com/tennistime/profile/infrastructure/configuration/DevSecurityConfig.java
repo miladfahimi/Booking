@@ -11,6 +11,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -63,5 +66,21 @@ public class DevSecurityConfig {
                 .headers(headers -> headers.frameOptions().sameOrigin());
 
         return http.build();
+    }
+
+    // CORS configuration
+    @Bean
+    public CorsFilter corsFilter() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.addAllowedOrigin("http://localhost:4200"); // Allow frontend origin
+        corsConfiguration.addAllowedOrigin("http://192.168.0.16:4200");
+        corsConfiguration.addAllowedMethod("*"); // Allow all HTTP methods
+        corsConfiguration.addAllowedHeader("*"); // Allow all headers
+        corsConfiguration.setAllowCredentials(true); // Allow credentials (cookies, authorization headers)
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfiguration); // Apply CORS to all paths
+
+        return new CorsFilter(source);
     }
 }

@@ -1,46 +1,130 @@
-/* welcome.component.scss */
-.welcome-container {
+:host {
+  display: block;
+  font-family: "Vazirmatn", sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+  direction: rtl;
+  margin: 0;
+  padding: 0;
+}
+
+.limiter {
+  width: 100%;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-  background: linear-gradient(135deg, #3f51b5, #1a237e);
-  color: white;
-  text-align: center;
-  padding: 20px;
+  padding: 15px;
+  min-height: 100vh;
 }
 
-.welcome-banner {
-  background-color: rgba(255, 255, 255, 0.1);
-  padding: 40px;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+.container-profile100 {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
 }
 
-.welcome-banner h1 {
-  font-size: 2.5rem;
+.wrap-profile100 {
+  width: 100%;
+  max-width: 400px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px 30px;
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
-  color: #fff;
 }
 
-.welcome-banner p {
-  font-size: 1.2rem;
-  margin-bottom: 30px;
-  color: #e0e0e0;
+.profile-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
 }
 
-.cta-button {
-  padding: 15px 30px;
-  font-size: 1rem;
-  color: #3f51b5;
-  background-color: #fff;
-  border: none;
-  border-radius: 5px;
+.header-link {
+  font-size: 14px;
+  color: #64c271;
+  text-decoration: none;
   cursor: pointer;
-  transition: background-color 0.3s, transform 0.3s;
 }
 
-.cta-button:hover {
-  background-color: #c5cae9;
-  transform: translateY(-2px);
+.header-link:hover {
+  text-decoration: underline;
+}
+
+.profile-picture {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.profile-picture img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-info {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.user-name {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+}
+
+.user-role {
+  font-size: 14px;
+  color: #666;
+}
+
+.profile-tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.tab-button {
+  font-size: 16px;
+  color: #666;
+  background: none;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.tab-button.active {
+  color: #64c271;
+  border-bottom: 2px solid #64c271;
+}
+
+.user-details {
+  margin-top: 20px;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.detail-label {
+  font-weight: bold;
+  color: #333;
+}
+
+.detail-value {
+  color: #666;
 }
