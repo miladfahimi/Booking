@@ -58,10 +58,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "tennis-time-frontend:build:production"
+              "buildTarget": "tennis-time-frontend:build:production"
             },
             "development": {
-              "browserTarget": "tennis-time-frontend:build:development"
+              "buildTarget": "tennis-time-frontend:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -69,7 +69,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "tennis-time-frontend:build"
+            "buildTarget": "tennis-time-frontend:build"
           }
         },
         "test": {
