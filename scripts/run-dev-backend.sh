@@ -44,11 +44,7 @@ fi
 # Run the Java application if the run flag is set
 if [ "$RUN" = true ]; then
   echo "Running the application..."
-<<<<<<< Updated upstream
-  java -jar target/backend-0.0.1-SNAPSHOT-exec.jar --spring.profiles.active=dev
-=======
   java -jar backend/target/backend-0.0.1-SNAPSHOT-exec.jar --spring.profiles.active=dev
->>>>>>> Stashed changes
 fi
 
 # If neither build nor run was specified, show usage
