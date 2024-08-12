@@ -1,0 +1,48 @@
+<div class="limiter">
+  <div class="container-profile100">
+    <div class="wrap-profile100">
+
+      <!-- Profile Header with Navigation -->
+      <div class="profile-header">
+        <a href="#" class="header-link">تنظیمات</a>
+        <h1 class="profile-title">پروفایل</h1>
+        <a href="#" class="header-link">خروج</a>
+      </div>
+
+      <!-- Profile Picture -->
+      <div class="profile-picture">
+        <img ngSrc="/profile-pic.png" alt="Profile Picture" height="225"
+             width="225">
+      </div>
+
+      <!-- User Name and Role -->
+      <div class="user-info">
+        <h2 class="user-name">میلاد فهیمی</h2>
+        <p class="user-role">کاربر متخصص</p>
+      </div>
+
+      <!-- Profile Details Tabs -->
+      <div class="profile-tabs">
+        <button class="tab-button active">مشخصات</button>
+        <button class="tab-button">عکس‌ها</button>
+      </div>
+
+      <!-- User Details -->
+      <div class="user-details">
+        <div class="detail-item">
+          <span class="detail-label">نام:</span>
+          <span class="detail-value">{{ userData.userProfileDTO.name || 'نام وجود ندارد' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">نام کاربری:</span>
+          <span class="detail-value">{{ userData.userProfileDTO.username || 'نام کاربری وجود ندارد' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">ایمیل:</span>
+          <span class="detail-value">{{ userData.userProfileDTO.email || 'ایمیل وجود ندارد' }}</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
