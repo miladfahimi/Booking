@@ -14,13 +14,12 @@
 
       <!-- Profile Picture -->
       <div class="profile-picture">
-        <img ngSrc="/profile-pic.png" alt="Profile Picture" height="225"
-             width="225">
+        <img ngSrc="/profile-pic.png" alt="Profile Picture" height="225" width="225">
       </div>
 
       <!-- User Name and Role -->
-      <div class="user-info">
-        <h2 class="user-name">میلاد فهیمی</h2>
+      <div class="user-info" *ngIf="userData$ | async as userData">
+        <h2 class="user-name">{{ userData.firstName }} {{ userData.lastName }}</h2>
         <p class="user-role">کاربر متخصص</p>
       </div>
 
@@ -31,18 +30,18 @@
       </div>
 
       <!-- User Details -->
-      <div class="user-details">
+      <div class="user-details" *ngIf="userData$ | async as userData">
         <div class="detail-item">
           <span class="detail-label">نام:</span>
-          <span class="detail-value">{{ userData.userProfileDTO.name || 'نام وجود ندارد' }}</span>
+          <span class="detail-value">{{ userData.firstName || 'نام وجود ندارد' }}</span>
         </div>
         <div class="detail-item">
-          <span class="detail-label">نام کاربری:</span>
-          <span class="detail-value">{{ userData.userProfileDTO.username || 'نام کاربری وجود ندارد' }}</span>
+          <span class="detail-label">نام خانوادگی:</span>
+          <span class="detail-value">{{ userData.lastName || 'نام خانوادگی وجود ندارد' }}</span>
         </div>
         <div class="detail-item">
           <span class="detail-label">ایمیل:</span>
-          <span class="detail-value">{{ userData.userProfileDTO.email || 'ایمیل وجود ندارد' }}</span>
+          <span class="detail-value">{{ userData.email || 'ایمیل وجود ندارد' }}</span>
         </div>
       </div>
 

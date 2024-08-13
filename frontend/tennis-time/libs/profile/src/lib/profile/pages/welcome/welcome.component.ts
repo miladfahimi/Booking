@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { ProfileService } from '../../services/profile.service';
-import {LoadingStatus} from "@tennis-time/auth";
-import {Observable, of} from "rxjs";
-import {selectLoadingStatus} from "../../../../../../auth/src/lib/auth/store/auth.selectors";
-import {select, Store} from "@ngrx/store";
+import { Store, select } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { ProfileState } from '../../store/profile.reducer';
+import { UserProfileDTO } from '../../types';
+import { selectProfile } from '../../store/profile.selectors';
+import * as ProfileActions from '../../store/profile.actions';
+import { CoreAuthService } from '@tennis-time/core';
+import {selectLoadingStatus} from "../../../../../../auth/src/lib/auth/store/auth.selectors"; // Import CoreAuthService
 
 @Component({
   selector: 'app-welcome',
@@ -12,25 +15,32 @@ import {select, Store} from "@ngrx/store";
 })
 export class WelcomeComponent implements OnInit {
 
-  userData: any;
-  loadingStatus$: Observable<LoadingStatus>;
+  userData$: Observable<UserProfileDTO | null>;
+  loadingStatus$: Observable<any>;
 
-
-  constructor(private profileService: ProfileService, private store: Store) {
-
+  constructor(
+    private store: Store<ProfileState>,
+    private coreAuthService: CoreAuthService  // Inject CoreAuthService
+  ) {
+    this.userData$ = this.store.pipe(select(selectProfile));
     this.loadingStatus$ = this.store.pipe(select(selectLoadingStatus));
-
   }
 
   ngOnInit(): void {
-    this.profileService.initializeUser().subscribe(
-      data => {
-        this.userData = data;  // Store the user data
-        console.log('User data:', this.userData);  // Log the user data for debugging
-      },
-      error => {
-        console.error('Error fetching user data:', error);  // Log any errors
-      }
-    );
+    // Retrieve the userId from CoreAuthService
+    const userId = this.coreAuthService.getUserId();
+    this.userData$.subscribe({
+      next: e => console.log(JSON.stringify(e)),
+      error: err => console.error('Error:', err),
+      complete: () => console.log('Subscription complete')
+    });
+
+
+    if (userId) {
+      // Dispatch an action to load the profile data using the retrieved userId
+      this.store.dispatch(ProfileActions.loadProfile({ userId }));
+    } else {
+      console.error('No userId found in local storage');
+    }
   }
 }

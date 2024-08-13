@@ -5,7 +5,11 @@ import { CoreAuthService } from '@tennis-time/core';
 import { ProfileRoutingModule } from './profile-routing.module';
 import { WelcomeComponent } from './pages/welcome/welcome.component';
 import { ProfileService } from './services/profile.service';
-import {SharedModule} from "@tennis-time/shared";  // Correct import for ProfileService
+import {SharedModule} from "@tennis-time/shared";
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
+import { profileReducer } from './store/profile.reducer';
+import { ProfileEffects } from './store/profile.effects';
 
 @NgModule({
   declarations: [
@@ -15,7 +19,9 @@ import {SharedModule} from "@tennis-time/shared";  // Correct import for Profile
     CommonModule,
     ProfileRoutingModule,
     NgOptimizedImage,
-    SharedModule
+    SharedModule,
+    StoreModule.forFeature('profile', profileReducer),
+    EffectsModule.forFeature([ProfileEffects])
   ],
   providers: [
     ProfileService,  // Ensure ProfileService is provided here if not provided in root
