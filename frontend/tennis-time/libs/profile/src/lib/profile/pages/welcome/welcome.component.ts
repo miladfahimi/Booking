@@ -3,7 +3,7 @@ import { Store, select } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { ProfileState } from '../../store/profile.reducer';
 import { UserProfileDTO } from '../../types';
-import { selectProfile } from '../../store/profile.selectors';
+import {selectProfile, selectProfileLoading} from '../../store/profile.selectors';
 import * as ProfileActions from '../../store/profile.actions';
 import { CoreAuthService } from '@tennis-time/core';
 import {selectLoadingStatus} from "../../../../../../auth/src/lib/auth/store/auth.selectors"; // Import CoreAuthService
@@ -16,14 +16,14 @@ import {selectLoadingStatus} from "../../../../../../auth/src/lib/auth/store/aut
 export class WelcomeComponent implements OnInit {
 
   userData$: Observable<UserProfileDTO | null>;
-  loadingStatus$: Observable<any>;
+  loadingStatus$: Observable<boolean>;
 
   constructor(
     private store: Store<ProfileState>,
     private coreAuthService: CoreAuthService  // Inject CoreAuthService
   ) {
     this.userData$ = this.store.pipe(select(selectProfile));
-    this.loadingStatus$ = this.store.pipe(select(selectLoadingStatus));
+    this.loadingStatus$ = this.store.pipe(select(selectProfileLoading));
   }
 
   ngOnInit(): void {

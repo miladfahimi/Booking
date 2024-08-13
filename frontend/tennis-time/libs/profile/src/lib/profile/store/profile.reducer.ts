@@ -8,7 +8,6 @@ export interface ProfileState {
   error: any;
 }
 
-// Updated initialState with the correct type for profile
 export const initialState: ProfileState = {
   profile: null,
   loadingStatus: { loading: false, loaded: false },
@@ -22,18 +21,12 @@ export const profileReducer = createReducer(
     loadingStatus: { loading: true, loaded: false },
     error: null,
   })),
-  on(ProfileActions.loadProfileSuccess, (state, { profile }) => {
-    const newState = {
-      ...state,
-      profile,  // Assign the loaded profile
-      loadingStatus: { loading: false, loaded: true },
-      error: null,
-    };
-
-    console.log('New State:', JSON.stringify(newState)); // Log the new state as a JSON string
-
-    return newState;
-  }),
+  on(ProfileActions.loadProfileSuccess, (state, { profile }) => ({
+    ...state,
+    profile,
+    loadingStatus: { loading: false, loaded: true },
+    error: null,
+  })),
   on(ProfileActions.loadProfileFailure, (state, { error }) => ({
     ...state,
     error,

@@ -1,14 +1,13 @@
 import { NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
+import {HttpClientModule, provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-
+import { SharedModule } from '@tennis-time/shared';
 
 // Import your application's reducers and metaReducers
 import { reducers, metaReducers } from './reducers';  // Assume you have a central place for reducers
@@ -23,10 +22,9 @@ import { CoreModule } from '@tennis-time/core';
   imports: [
     BrowserModule,
     HttpClientModule,
-    AppRoutingModule,  // Handles routing and lazy loading
-    CoreModule,  // CoreModule imported from the Nx library
-
-    // NgRx Store Setup
+    AppRoutingModule,
+    CoreModule,
+    SharedModule,
     StoreModule.forRoot(reducers, { metaReducers }),  // Global store configuration
     EffectsModule.forRoot([]),  // Register global effects, if any
     StoreDevtoolsModule.instrument({
