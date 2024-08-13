@@ -4,7 +4,8 @@ import { CoreAuthService } from '@tennis-time/core';
 
 import { ProfileRoutingModule } from './profile-routing.module';
 import { WelcomeComponent } from './pages/welcome/welcome.component';
-import { ProfileService } from './services/profile.service';  // Correct import for ProfileService
+import { ProfileService } from './services/profile.service';
+import {SharedModule} from "@tennis-time/shared";  // Correct import for ProfileService
 
 @NgModule({
   declarations: [
@@ -13,7 +14,8 @@ import { ProfileService } from './services/profile.service';  // Correct import 
   imports: [
     CommonModule,
     ProfileRoutingModule,
-    NgOptimizedImage
+    NgOptimizedImage,
+    SharedModule
   ],
   providers: [
     ProfileService,  // Ensure ProfileService is provided here if not provided in root

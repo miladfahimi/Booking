@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Store, select } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { AuthState } from '@tennis-time/auth';
+import {AuthState, LoadingStatus} from '@tennis-time/auth';
 import { signIn } from '@tennis-time/auth';
 import { selectAuthError, selectLoadingStatus } from '../../store/auth.selectors';
 
@@ -14,7 +14,7 @@ import { selectAuthError, selectLoadingStatus } from '../../store/auth.selectors
 export class SignInComponent {
   signInForm: FormGroup;
   errorMessage$: Observable<string | null>;
-  loadingStatus$: Observable<{ loaded: boolean; loading: boolean }>;
+  loadingStatus$: Observable<LoadingStatus>;
   showPassword: boolean = false;
 
   constructor(private fb: FormBuilder, private store: Store<AuthState>) {

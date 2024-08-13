@@ -9,6 +9,9 @@
         <a href="#" class="header-link">خروج</a>
       </div>
 
+      <!-- Show Spinner when loading -->
+      <app-spinner *ngIf="(loadingStatus$ | async)?.loading"></app-spinner>
+
       <!-- Profile Picture -->
       <div class="profile-picture">
         <img ngSrc="/profile-pic.png" alt="Profile Picture" height="225"
