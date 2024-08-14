@@ -34,15 +34,17 @@
   max-width: 400px;
   background: #fff;
   border-radius: 10px;
-  padding: 20px 30px;
+  padding: 0 30px 20px 30px;
   box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
   position: relative;
+  overflow: hidden; /* Ensure the background does not overflow */
 }
+
 
 .profile-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: baseline;
   margin-bottom: 20px;
 }
 
@@ -54,7 +56,7 @@
 
 .header-link {
   font-size: 14px;
-  color: #64c271;
+  color: #03470d;
   text-decoration: none;
   cursor: pointer;
 }
@@ -70,8 +72,8 @@
 }
 
 .profile-picture img {
-  width: 100px;
-  height: 100px;
+  width: 130px;
+  height: 130px;
   border-radius: 50%;
   object-fit: cover;
 }
@@ -129,4 +131,38 @@
 
 .detail-value {
   color: #666;
+}
+
+/* MOBILES */
+/* Styles for small screens */
+@media (max-width: 768px) {
+  .limiter {
+    padding: 0;
+  }
+
+  .wrap-profile100 {
+    background: linear-gradient(to bottom, #64c271 28%, #fff 28%); /* Vertical gradient */
+    width: 100%; /* Expand to full screen width */
+    max-width: none; /* Remove the maximum width constraint */
+    border-radius: 0; /* Remove rounded corners */
+    box-shadow: none; /* Remove the box shadow */
+    padding: 0px 40px 0px 40px; /* Adjust padding */
+    min-height: 100vh; /* Ensure the background covers the full height */
+  }
+
+  .profile-title {
+    margin-top: 20px; /* Add margin from the top */
+    padding-top: 20px; /* Add some padding for spacing */
+  }
+
+  .container-profile100 {
+    padding: 0; /* Remove any extra padding to ensure full-width background */
+  }
+}
+
+/* Additional styles for landscape mode on small phones */
+@media (max-height: 667px) and (orientation: landscape) {
+  .wrap-profile100 {
+    background: linear-gradient(to bottom, #64c271 38%, #fff 38%); /* Horizontal gradient */
+  }
 }
