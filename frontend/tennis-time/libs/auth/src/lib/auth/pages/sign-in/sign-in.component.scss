@@ -167,3 +167,38 @@
 .invalid .input100 {
   border-color: red;
 }
+
+
+/* MOBILES */
+/* Styles for small screens */
+@media (max-width: 768px) {
+  .limiter{
+    padding: 0;
+  }
+
+  .wrap-login100 {
+    width: 100%; /* Expand to full screen width */
+    max-width: none; /* Set a maximum width for the form */
+    border-radius: 0; /* Remove rounded corners */
+    box-shadow: none; /* Remove the box shadow */
+    padding: 62px 40px 0px 40px; /* Adjust padding */
+    min-height: 100vh; /* Ensure the background covers the full height */
+  }
+
+  .login100-form-title {
+    top: 20px; /* Move the title closer to the top */
+    margin-top: 0; /* Remove any margin-top */
+    padding-top: 20px; /* Add some padding for spacing */
+  }
+
+  .container-login100 {
+    padding: 0; /* Remove any extra padding to ensure full-width background */
+  }
+}
+
+/* Additional styles for landscape mode on small phones */
+@media (max-height: 667px) and (orientation: landscape) {
+  .wrap-login100 {
+    padding: 62px 160px 0px 160px; /* Apply specific padding for landscape mode */
+  }
+}
