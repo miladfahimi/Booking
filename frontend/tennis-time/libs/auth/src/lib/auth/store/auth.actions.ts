@@ -1,9 +1,10 @@
 import { createAction, props } from '@ngrx/store';
 import { SignUpReq } from './auth.models';
 
+// Updated signIn action to include deviceModel, os, and browser
 export const signIn = createAction(
   '[Auth] Sign In',
-  props<{ email: string; password: string }>()
+  props<{ email: string; password: string; deviceModel: string; os: string; browser: string }>()
 );
 
 export const signInSuccess = createAction(

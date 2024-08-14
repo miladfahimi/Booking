@@ -15,20 +15,19 @@ export class CoreAuthService {
 
   constructor(private http: HttpClient, private router: Router) { }
 
-  signIn(email: string, password: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/signin`, { email, password }).pipe(
+  signIn(email: string, password: string, deviceModel: string, os: string, browser: string): Observable<any> {
+    // Include deviceModel, os, and browser in the sign-in request
+    return this.http.post(`${this.baseUrl}/signin`, { email, password, deviceModel, os, browser }).pipe(
       tap((response: any) => {
         console.log('Sign-in successful, redirecting to welcome page...', response);  // Debugging
         this.storeToken(response.token);  // Store the received JWT token
         this.storeUserId(response.id);     // Store the received userId (note: response.id)
         this.router.navigate(['/profile/welcome']).then(() => {
           console.log('Navigation to welcome page complete.');
-          this.router.navigate(['/profile/welcome']);  // Redirect to the welcome page
         });
       })
     );
   }
-
 
   signUp(signUpReq: SignUpReq): Observable<any> {
     return this.http.post(`${this.baseUrl}/signup`, signUpReq);

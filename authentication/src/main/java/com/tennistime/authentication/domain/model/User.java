@@ -31,6 +31,17 @@ public class User implements UserDetails {
     private LocalDateTime createdAt;
     private LocalDateTime lastLogin;
 
+    // Additional fields for tracking sign-in and sign-up details
+    private String lastLoginIp;
+    private String lastLoginDeviceModel;
+    private String lastLoginOS;
+    private String lastLoginBrowser;
+
+    private String signUpIp;
+    private String signUpDeviceModel;
+    private String signUpOS;
+    private String signUpBrowser;
+
     // OTP fields
     private String otp;
     private LocalDateTime otpExpirationTime;
@@ -68,5 +79,23 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    // Method to update login information
+    public void updateLoginInfo(String ip, String deviceModel, String os, String browser) {
+        this.lastLoginIp = ip;
+        this.lastLoginDeviceModel = deviceModel;
+        this.lastLoginOS = os;
+        this.lastLoginBrowser = browser;
+        this.lastLogin = LocalDateTime.now();
+    }
+
+    // Method to update sign-up information
+    public void updateSignUpInfo(String ip, String deviceModel, String os, String browser) {
+        this.signUpIp = ip;
+        this.signUpDeviceModel = deviceModel;
+        this.signUpOS = os;
+        this.signUpBrowser = browser;
+        this.createdAt = LocalDateTime.now();
     }
 }

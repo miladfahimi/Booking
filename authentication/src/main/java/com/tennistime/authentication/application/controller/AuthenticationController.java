@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 /**
@@ -33,16 +34,22 @@ public class AuthenticationController {
 
     @PostMapping("/signup")
     @Operation(summary = "Sign up a new user")
-    public ResponseEntity<?> signup(@Valid @RequestBody UserDTO userDTO) {
+    public ResponseEntity<?> signup(@Valid @RequestBody UserDTO userDTO, HttpServletRequest request) {
         try {
-            UserDTO signedUpUser = userService.signup(userDTO);
 
-            // Logging
-            System.out.println("\033[1;35m----------------------------\033[0m");
-            System.out.println("\033[1;35m[AuthenticationController] Signup response: " + signedUpUser + "\033[0m");
-            System.out.println("\033[1;35m----------------------------\033[0m");
+            String ip = request.getRemoteAddr();
+            String deviceModel = userDTO.getDeviceModel();
+            String os = userDTO.getOs();
+            String browser = userDTO.getBrowser();
 
-            return ResponseEntity.ok(signedUpUser);
+            userDTO = userService.signup(userDTO, ip, deviceModel, os, browser);
+
+            // Logging the new data
+            System.out.println("\033[1;32m----------------------------\033[0m");
+            System.out.println("\033[1;32m[AuthenticationController] Signup new data: IP=" + ip + ", DeviceModel=" + deviceModel + ", OS=" + os + ", Browser=" + browser + "\033[0m");
+            System.out.println("\033[1;32m----------------------------\033[0m");
+
+            return ResponseEntity.ok(userDTO);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
@@ -50,14 +57,23 @@ public class AuthenticationController {
 
     @PostMapping("/signin")
     @Operation(summary = "Sign in a user")
-    public ResponseEntity<UserDTO> signin(@RequestBody SignInRequest signInRequest) {
+    public ResponseEntity<UserDTO> signin(@RequestBody SignInRequest signInRequest, HttpServletRequest request) {
+        // Logging the new data
+        System.out.println("\033[1;32m----------------------------\033[0m");
+        System.out.println("Received SignInRequest: " + signInRequest);
+        System.out.println("\033[1;32m----------------------------\033[0m");
         String email = signInRequest.getEmail();
         String password = signInRequest.getPassword();
-        UserDTO signedInUser = userService.signin(email, password);
+        String ip = request.getRemoteAddr();
+        String deviceModel = signInRequest.getDeviceModel();
+        String os = signInRequest.getOs();
+        String browser = signInRequest.getBrowser();
 
-        // Logging
+        UserDTO signedInUser = userService.signin(email, password, ip, deviceModel, os, browser);
+
+        // Logging the new data
         System.out.println("\033[1;32m----------------------------\033[0m");
-        System.out.println("\033[1;32m[AuthenticationController] Signin response: " + signedInUser + "\033[0m");
+        System.out.println("\033[1;32m[AuthenticationController] Signin new data: IP=" + ip + ", DeviceModel=" + deviceModel + ", OS=" + os + ", Browser=" + browser + "\033[0m");
         System.out.println("\033[1;32m----------------------------\033[0m");
 
         return ResponseEntity.ok(signedInUser);
@@ -79,5 +95,21 @@ public class AuthenticationController {
             System.out.println("\033[1;31m----------------------------\033[0m");
         }
         return ResponseEntity.noContent().build();
+    }
+
+    // Utility methods to extract device, OS, and browser from the User-Agent string
+    private String extractDeviceModel(String userAgent) {
+        // Implement logic or use a library to parse the User-Agent string
+        return "unknown device";
+    }
+
+    private String extractOperatingSystem(String userAgent) {
+        // Implement logic or use a library to parse the User-Agent string
+        return "unknown OS";
+    }
+
+    private String extractBrowser(String userAgent) {
+        // Implement logic or use a library to parse the User-Agent string
+        return "unknown browser";
     }
 }

@@ -11,5 +11,7 @@ public class SignInRequest {
 
     private String email;
     private String password;
-
+    private String deviceModel;
+    private String os;
+    private String browser;
 }

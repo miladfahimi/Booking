@@ -48,7 +48,7 @@ public class UserService {
     @Autowired
     private UserDetailsService userDetailsService;
 
-    public UserDTO signup(UserDTO userDTO) {
+    public UserDTO signup(UserDTO userDTO, String ip, String deviceModel, String os, String browser) {
         if (userRepository.findByEmail(userDTO.getEmail()).isPresent()) {
             logger.error("\033[1;35mSignup attempt with already registered email: {}\033[0m", userDTO.getEmail());
             throw new IllegalArgumentException("Email already in use");
@@ -61,7 +61,7 @@ public class UserService {
         String rawPassword = userDTO.getPassword();
         userDTO.setPassword(passwordEncoder.encode(rawPassword));
         User user = appUserMapper.toEntity(userDTO);
-        user.setCreatedAt(LocalDateTime.now());  // Set created_at
+        user.updateSignUpInfo(ip, deviceModel, os, browser);  // Update signup info
         user = userRepository.save(user);
 
         try {
@@ -73,10 +73,10 @@ public class UserService {
 
         logger.info("\033[1;35mSignup successful for user: {}\033[0m", user.getEmail());
 
-        return signin(userDTO.getEmail(), rawPassword);
+        return signin(userDTO.getEmail(), rawPassword, ip, deviceModel, os, browser);
     }
 
-    public UserDTO signin(String emailOrPhone, String password) {
+    public UserDTO signin(String emailOrPhone, String password, String ip, String deviceModel, String os, String browser) {
         Optional<User> appUserOptional = userRepository.findByEmail(emailOrPhone)
                 .or(() -> userRepository.findByPhone(emailOrPhone));
 
@@ -91,7 +91,7 @@ public class UserService {
                 UserDTO userDTO = appUserMapper.toDTO(user);
                 userDTO.setToken(token);
 
-                user.setLastLogin(LocalDateTime.now());  // Update last_login
+                user.updateLoginInfo(ip, deviceModel, os, browser);  // Update login info
                 userRepository.save(user);
 
                 logger.info("\033[1;32mSignin successful for user: {}\033[0m", emailOrPhone);

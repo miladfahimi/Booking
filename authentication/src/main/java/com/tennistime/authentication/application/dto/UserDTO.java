@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import jakarta.validation.constraints.NotEmpty;
+
 import java.util.UUID;
 
 @Data
@@ -29,5 +30,11 @@ public class UserDTO {
     private String role;
 
     @Schema(hidden = true)
-    private String token; // Add this field to store JWT token
+    private String token;
+    @Schema(hidden = true)
+    private String deviceModel;
+    @Schema(hidden = true)
+    private String os;
+    @Schema(hidden = true)
+    private String browser;
 }

@@ -1,17 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Store, select } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import {AuthState, LoadingStatus} from '@tennis-time/auth';
+import { AuthState, LoadingStatus } from '@tennis-time/auth';
 import { signIn } from '@tennis-time/auth';
 import { selectAuthError, selectLoadingStatus } from '../../store/auth.selectors';
+import * as UAParser from 'ua-parser-js';
 
 @Component({
   selector: 'app-sign-in',
   templateUrl: './sign-in.component.html',
   styleUrls: ['./sign-in.component.scss']
 })
-export class SignInComponent {
+export class SignInComponent implements OnInit {
   signInForm: FormGroup;
   errorMessage$: Observable<string | null>;
   loadingStatus$: Observable<LoadingStatus>;
@@ -28,13 +29,19 @@ export class SignInComponent {
   }
 
   ngOnInit(): void {
-    console.log('SignInComponent initialized');
   }
 
   onSubmit() {
     if (this.signInForm.valid) {
       const { email, password } = this.signInForm.value;
-      this.store.dispatch(signIn({ email, password }));
+
+      const parser = new UAParser();
+      const uaResult = parser.getResult();
+      const deviceModel = uaResult.device.model || 'unknown device';
+      const os = uaResult.os.name || 'unknown OS';
+      const browser = uaResult.browser.name || 'unknown browser';
+
+      this.store.dispatch(signIn({ email, password, deviceModel, os, browser }));
     }
   }
 
