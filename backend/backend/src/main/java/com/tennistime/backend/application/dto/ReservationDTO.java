@@ -15,7 +15,7 @@ import java.util.UUID;
 public class ReservationDTO {
 
     @Schema(hidden = true)
-    private UUID id; // Updated from Long to UUID
+    private UUID id; // Updated from UUID to UUID
 
     @Schema(example = "2024-08-05")
     private LocalDate reservationDate; // Changed to LocalDate

@@ -8,9 +8,9 @@ import java.util.UUID;
 
 public interface FeedbackRepository {
     List<Feedback> findAll();
-    Optional<Feedback> findById(Long id);
+    Optional<Feedback> findById(UUID id);
     List<Feedback> findByProviderId(UUID providerId);
     List<Feedback> findByCourtId(UUID courtId);
     Feedback save(Feedback feedback);
-    void deleteById(Long id);
+    void deleteById(UUID id);
 }

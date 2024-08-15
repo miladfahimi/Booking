@@ -26,7 +26,7 @@ public interface ReservationRepository {
      * @param id UUID of the reservation to retrieve.
      * @return Optional containing the found Reservation entity, or empty if not found.
      */
-    Optional<Reservation> findById(UUID id); // Updated from Long to UUID
+    Optional<Reservation> findById(UUID id); // Updated from UUID to UUID
 
     /**
      * Finds all reservations made by a specific user.
@@ -65,5 +65,5 @@ public interface ReservationRepository {
      *
      * @param id UUID of the reservation to delete.
      */
-    void deleteById(UUID id); // Updated from Long to UUID
+    void deleteById(UUID id); // Updated from UUID to UUID
 }

@@ -13,7 +13,7 @@ import java.util.UUID;
  * Extends JpaRepository to provide standard CRUD operations and custom queries defined in ReservationRepository.
  */
 @Repository
-public interface ReservationJpaRepository extends ReservationRepository, JpaRepository<Reservation, UUID> { // Updated from Long to UUID
+public interface ReservationJpaRepository extends ReservationRepository, JpaRepository<Reservation, UUID> { // Updated from UUID to UUID
 
     /**
      * Finds all reservations made by a specific user.

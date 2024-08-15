@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS court (
 -- Create feedback table
 DROP TABLE IF EXISTS feedback CASCADE;
 CREATE TABLE IF NOT EXISTS feedback (
-    id BIGSERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     comment VARCHAR(255),
     rating INT,
     created_at TIMESTAMP,

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface FeedbackJpaRepository extends FeedbackRepository, JpaRepository<Feedback, Long> {
+public interface FeedbackJpaRepository extends FeedbackRepository, JpaRepository<Feedback, UUID> {
     @Override
     List<Feedback> findByProviderId(UUID providerId);
 

@@ -45,7 +45,7 @@ public class CourtService {
         courtRepository.deleteById(id);
     }
 
-//    public CourtDTO deleteById(Long id) {
+//    public CourtDTO deleteById(UUID id) {
 //        Court court = courtMapper.toEntity(courtRepository.findById(id));
 //        Court deletedCourt = courtRepository.deleteById(id);
 //        return courtMapper.toDTO(deletedCourt);

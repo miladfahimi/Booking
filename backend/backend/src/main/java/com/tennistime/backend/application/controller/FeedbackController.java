@@ -29,7 +29,7 @@ public class FeedbackController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get feedback by ID")
-    public ResponseEntity<FeedbackDTO> getFeedbackById(@PathVariable Long id) {
+    public ResponseEntity<FeedbackDTO> getFeedbackById(@PathVariable UUID id) {
         FeedbackDTO feedback = feedbackService.findById(id);
         return feedback != null ? ResponseEntity.ok(feedback) : ResponseEntity.notFound().build();
     }
@@ -71,7 +71,7 @@ public class FeedbackController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a feedback by ID")
-    public ResponseEntity<Void> deleteFeedback(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteFeedback(@PathVariable UUID id) {
         feedbackService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

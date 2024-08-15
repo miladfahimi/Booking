@@ -18,7 +18,7 @@ public class Reservation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id; // Updated from Long to UUID
+    private UUID id; // Updated from UUID to UUID
 
     private UUID userId;
 

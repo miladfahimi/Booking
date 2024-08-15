@@ -33,7 +33,7 @@ public class ReservationController {
     @GetMapping("/{id}")
     @Operation(summary = "Get reservation by ID", description = "Retrieve a reservation by its ID")
     public ResponseEntity<ReservationDTO> getReservationById(
-            @Parameter(description = "ID of the reservation to retrieve", required = true) @PathVariable UUID id) { // Updated from Long to UUID
+            @Parameter(description = "ID of the reservation to retrieve", required = true) @PathVariable UUID id) { // Updated from UUID to UUID
         ReservationDTO reservation = reservationService.findById(id);
         return reservation != null ? ResponseEntity.ok(reservation) : ResponseEntity.notFound().build();
     }
@@ -49,7 +49,7 @@ public class ReservationController {
     @PutMapping("/{id}")
     @Operation(summary = "Update a reservation", description = "Update an existing reservation with the provided details")
     public ResponseEntity<ReservationDTO> updateReservation(
-            @Parameter(description = "ID of the reservation to update", required = true) @PathVariable UUID id, // Updated from Long to UUID
+            @Parameter(description = "ID of the reservation to update", required = true) @PathVariable UUID id, // Updated from UUID to UUID
             @Parameter(description = "Updated details of the reservation", required = true) @RequestBody ReservationDTO reservationDTO) {
         ReservationDTO updatedReservation = reservationService.updateReservation(id, reservationDTO);
         return updatedReservation != null ? ResponseEntity.ok(updatedReservation) : ResponseEntity.notFound().build();
@@ -58,7 +58,7 @@ public class ReservationController {
     @PutMapping("/{id}/status")
     @Operation(summary = "Update reservation status", description = "Update the status of an existing reservation")
     public ResponseEntity<ReservationDTO> updateReservationStatus(
-            @Parameter(description = "ID of the reservation to update the status", required = true) @PathVariable UUID id, // Updated from Long to UUID
+            @Parameter(description = "ID of the reservation to update the status", required = true) @PathVariable UUID id, // Updated from UUID to UUID
             @Parameter(description = "New status of the reservation", required = true) @RequestParam String status) {
         ReservationDTO updatedReservation = reservationService.updateReservationStatus(id, status);
         return updatedReservation != null ? ResponseEntity.ok(updatedReservation) : ResponseEntity.notFound().build();
@@ -67,7 +67,7 @@ public class ReservationController {
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a reservation", description = "Delete a reservation by its ID")
     public ResponseEntity<Void> deleteReservation(
-            @Parameter(description = "ID of the reservation to delete", required = true) @PathVariable UUID id) { // Updated from Long to UUID
+            @Parameter(description = "ID of the reservation to delete", required = true) @PathVariable UUID id) { // Updated from UUID to UUID
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

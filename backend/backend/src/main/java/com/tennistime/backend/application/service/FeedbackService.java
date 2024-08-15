@@ -28,7 +28,7 @@ public class FeedbackService {
                 .collect(Collectors.toList());
     }
 
-    public FeedbackDTO findById(Long id) {
+    public FeedbackDTO findById(UUID id) {
         Optional<Feedback> feedback = feedbackRepository.findById(id);
         return feedback.map(feedbackMapper::toDTO).orElse(null);
     }
@@ -39,7 +39,7 @@ public class FeedbackService {
         return feedbackMapper.toDTO(savedFeedback);
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(UUID id) {
         feedbackRepository.deleteById(id);
     }
 

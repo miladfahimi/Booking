@@ -11,7 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FeedbackDTO {
-    private Long id;
+    private UUID id;
     private String comment;
     private int rating;
     private LocalDateTime createdAt;
