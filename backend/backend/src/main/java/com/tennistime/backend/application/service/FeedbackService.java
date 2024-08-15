@@ -43,8 +43,8 @@ public class FeedbackService {
         feedbackRepository.deleteById(id);
     }
 
-    public List<FeedbackDTO> findByClubId(UUID clubId) {
-        return feedbackRepository.findByClubId(clubId)
+    public List<FeedbackDTO> findByProviderId(UUID ProviderId) {
+        return feedbackRepository.findByProviderId(ProviderId)
                 .stream()
                 .map(feedbackMapper::toDTO)
                 .collect(Collectors.toList());
@@ -57,8 +57,8 @@ public class FeedbackService {
                 .collect(Collectors.toList());
     }
 
-    public List<FeedbackDTO> findTopRatedFeedbacksByClub(UUID clubId) {
-        return feedbackRepository.findByClubId(clubId)
+    public List<FeedbackDTO> findTopRatedFeedbacksByProvider(UUID ProviderId) {
+        return feedbackRepository.findByProviderId(ProviderId)
                 .stream()
                 .sorted((f1, f2) -> Integer.compare(f2.getRating(), f1.getRating()))
                 .limit(10)

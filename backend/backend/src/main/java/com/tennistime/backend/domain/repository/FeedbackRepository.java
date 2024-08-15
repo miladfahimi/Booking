@@ -9,7 +9,7 @@ import java.util.UUID;
 public interface FeedbackRepository {
     List<Feedback> findAll();
     Optional<Feedback> findById(Long id);
-    List<Feedback> findByClubId(UUID clubId);
+    List<Feedback> findByProviderId(UUID providerId);
     List<Feedback> findByCourtId(Long courtId);
     Feedback save(Feedback feedback);
     void deleteById(Long id);

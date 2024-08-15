@@ -1,17 +1,17 @@
--- Insert data into club table
-INSERT INTO club (id,name, address, phone, email, description) VALUES
-(uuid_generate_v4(), 'Tennis Club 1', '123 Main St', '3334567890', 'club1@example.com', 'Best club in town'),
-(uuid_generate_v4(), 'Tennis Club 2', '456 Main St', '1114567890', 'club2@example.com', 'A big tennis club in the west city'),
-(uuid_generate_v4(), 'Tennis Club 3', '789 Main St', '2224567890', 'club3@example.com', 'Tournament club');
+-- Insert data into provider table
+INSERT INTO provider (id,name, address, phone, email, description) VALUES
+(uuid_generate_v4(), 'Tennis Provider 1', '123 Main St', '3334567890', 'provider1@example.com', 'Best provider in town'),
+(uuid_generate_v4(), 'Tennis Provider 2', '456 Main St', '1114567890', 'provider2@example.com', 'A big tennis provider in the west city'),
+(uuid_generate_v4(), 'Tennis Provider 3', '789 Main St', '2224567890', 'provider3@example.com', 'Tournament provider');
 
 -- Insert data into court table
-INSERT INTO court (name, type, availability, club_id) VALUES
-('Court 1', 'CLAY', true, (SELECT id FROM club WHERE name = 'Tennis Club 1')),
-('Court 2', 'GRASS', true, (SELECT id FROM club WHERE name = 'Tennis Club 2'));
+INSERT INTO court (name, type, availability, provider_id) VALUES
+('Court 1', 'CLAY', true, (SELECT id FROM provider WHERE name = 'Tennis Provider 1')),
+('Court 2', 'GRASS', true, (SELECT id FROM provider WHERE name = 'Tennis Provider 2'));
 
 -- Insert data into feedback table
-INSERT INTO feedback (comment, rating, created_at, club_id, court_id) VALUES
-('Great club!', 5, '2024-07-01 10:00:00',(SELECT id FROM club WHERE name = 'Tennis Club 1'), NULL),
+INSERT INTO feedback (comment, rating, created_at, provider_id, court_id) VALUES
+('Great provider!', 5, '2024-07-01 10:00:00',(SELECT id FROM provider WHERE name = 'Tennis Provider 1'), NULL),
 ('Nice court', 4, '2024-07-02 11:00:00', NULL, 1);
 
 -- Insert data into reservation table

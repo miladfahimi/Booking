@@ -14,8 +14,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "club")
-public class Club {
+@Table(name = "provider")
+public class Provider {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
@@ -25,21 +25,21 @@ public class Club {
     private String email;
     private String description;
 
-    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "provider", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Court> courts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "provider", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Feedback> feedbacks = new ArrayList<>();
 
     public void addCourt(Court court) {
         courts.add(court);
-        court.setClub(this);
+        court.setProvider(this);
     }
 
     public void addFeedback(Feedback feedback) {
         feedbacks.add(feedback);
-        feedback.setClub(this);
+        feedback.setProvider(this);
     }
 }

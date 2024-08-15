@@ -8,9 +8,9 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface CourtMapper {
 
-    @Mapping(source = "club.id", target = "clubId")
+    @Mapping(source = "provider.id", target = "providerId")
     CourtDTO toDTO(Court court);
 
-    @Mapping(source = "clubId", target = "club.id")
+    @Mapping(source = "providerId", target = "provider.id")
     Court toEntity(CourtDTO courtDTO);
 }

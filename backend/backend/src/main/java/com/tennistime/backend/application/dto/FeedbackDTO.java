@@ -15,6 +15,6 @@ public class FeedbackDTO {
     private String comment;
     private int rating;
     private LocalDateTime createdAt;
-    private UUID clubId;
+    private UUID providerId;
     private Long courtId;
 }

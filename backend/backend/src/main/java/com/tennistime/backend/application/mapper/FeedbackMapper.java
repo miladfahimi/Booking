@@ -8,11 +8,11 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface FeedbackMapper {
 
-    @Mapping(source = "club.id", target = "clubId")
+    @Mapping(source = "provider.id", target = "providerId")
     @Mapping(source = "court.id", target = "courtId")
     FeedbackDTO toDTO(Feedback feedback);
 
-    @Mapping(source = "clubId", target = "club.id")
+    @Mapping(source = "providerId", target = "provider.id")
     @Mapping(source = "courtId", target = "court.id")
     Feedback toEntity(FeedbackDTO feedbackDTO);
 }

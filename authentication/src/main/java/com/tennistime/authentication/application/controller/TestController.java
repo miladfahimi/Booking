@@ -19,9 +19,9 @@ public class TestController {
         return ResponseEntity.ok("Admin Endpoint");
     }
 
-    @GetMapping("/club")
-    public ResponseEntity<String> clubOwnerEndpoint() {
-        return ResponseEntity.ok("Club Owner Endpoint");
+    @GetMapping("/provider")
+    public ResponseEntity<String> providerOwnerEndpoint() {
+        return ResponseEntity.ok("Provider Owner Endpoint");
     }
 
     @GetMapping("/user")

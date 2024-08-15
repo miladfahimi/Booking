@@ -12,7 +12,7 @@ import java.util.UUID;
 @Repository
 public interface FeedbackJpaRepository extends FeedbackRepository, JpaRepository<Feedback, Long> {
     @Override
-    List<Feedback> findByClubId(UUID clubId);
+    List<Feedback> findByProviderId(UUID providerId);
 
     @Override
     List<Feedback> findByCourtId(Long courtId);

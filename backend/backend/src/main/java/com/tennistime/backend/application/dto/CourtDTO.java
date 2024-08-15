@@ -16,5 +16,5 @@ public class CourtDTO {
     private String name;
     private String type;
     private boolean availability;
-    private UUID clubId; // Assuming a court belongs to a club
+    private UUID providerId; // Assuming a court belongs to a provider
 }

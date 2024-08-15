@@ -27,7 +27,7 @@ public class User implements UserDetails {
     private String email;
     private String phone;
     private String password;
-    private String role; // "ADMIN", "CLUB_OWNER", "CLIENT"
+    private String role; // "ADMIN", "PROVIDER_OWNER", "CLIENT"
     private LocalDateTime createdAt;
     private LocalDateTime lastLogin;
 

@@ -76,7 +76,7 @@ public class DevSecurityConfig {
                         ).permitAll()
                         // Easier testing for different roles
                         .requestMatchers("/test/admin").hasRole("ADMIN")
-                        .requestMatchers("/test/club").hasRole("CLUB_OWNER")
+                        .requestMatchers("/test/provider").hasRole("PROVIDER_OWNER")
                         .requestMatchers("/test/user").hasRole("USER")
                         .anyRequest().authenticated()
                 )

@@ -34,10 +34,10 @@ public class FeedbackController {
         return feedback != null ? ResponseEntity.ok(feedback) : ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/club/{clubId}")
-    @Operation(summary = "Get feedbacks by club ID")
-    public ResponseEntity<List<FeedbackDTO>> getFeedbacksByClubId(@PathVariable UUID clubId) {
-        List<FeedbackDTO> feedbacks = feedbackService.findByClubId(clubId);
+    @GetMapping("/provider/{providerId}")
+    @Operation(summary = "Get feedbacks by provider ID")
+    public ResponseEntity<List<FeedbackDTO>> getFeedbacksByProviderId(@PathVariable UUID providerId) {
+        List<FeedbackDTO> feedbacks = feedbackService.findByProviderId(providerId);
         return ResponseEntity.ok(feedbacks);
     }
 
@@ -48,10 +48,10 @@ public class FeedbackController {
         return ResponseEntity.ok(feedbacks);
     }
 
-    @GetMapping("/club/{clubId}/top-rated")
-    @Operation(summary = "Get top-rated feedbacks by club ID")
-    public ResponseEntity<List<FeedbackDTO>> getTopRatedFeedbacksByClub(@PathVariable UUID clubId) {
-        List<FeedbackDTO> feedbacks = feedbackService.findTopRatedFeedbacksByClub(clubId);
+    @GetMapping("/provider/{providerId}/top-rated")
+    @Operation(summary = "Get top-rated feedbacks by provider ID")
+    public ResponseEntity<List<FeedbackDTO>> getTopRatedFeedbacksByProvider(@PathVariable UUID providerId) {
+        List<FeedbackDTO> feedbacks = feedbackService.findTopRatedFeedbacksByProvider(providerId);
         return ResponseEntity.ok(feedbacks);
     }
 

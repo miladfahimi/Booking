@@ -30,9 +30,9 @@ public class Court {
     private boolean availability;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "club_id")
-    @JsonBackReference(value = "club-courts")
-    private Club club;
+    @JoinColumn(name = "provider_id")
+    @JsonBackReference(value = "provider-courts")
+    private Provider provider;
 
     @OneToMany(mappedBy = "court", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Feedback> feedbacks;

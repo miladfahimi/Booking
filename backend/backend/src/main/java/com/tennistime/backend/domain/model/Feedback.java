@@ -20,7 +20,7 @@ public class Feedback {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Schema(example = "Great club!")
+    @Schema(example = "Great provider!")
     private String comment;
 
     @Schema(example = "5")
@@ -30,10 +30,10 @@ public class Feedback {
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "club_id")
-    @JsonBackReference(value = "club-feedbacks")
+    @JoinColumn(name = "provider_id")
+    @JsonBackReference(value = "provider-feedbacks")
     @Schema(hidden = true)
-    private Club club;
+    private Provider provider;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "court_id")
