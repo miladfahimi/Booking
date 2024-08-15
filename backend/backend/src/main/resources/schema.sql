@@ -3,7 +3,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- Create club table
 DROP TABLE IF EXISTS club CASCADE;
 CREATE TABLE IF NOT EXISTS club (
-    id BIGSERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(255) NOT NULL,
     address VARCHAR(255),
     phone VARCHAR(50),
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS court (
     name VARCHAR(255) NOT NULL,
     type VARCHAR(50),
     availability BOOLEAN,
-    club_id BIGINT,
+    club_id UUID,
     FOREIGN KEY (club_id) REFERENCES club(id)
 );
 
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS feedback (
     comment VARCHAR(255),
     rating INT,
     created_at TIMESTAMP,
-    club_id BIGINT,
+    club_id UUID,
     court_id BIGINT,
     FOREIGN KEY (club_id) REFERENCES club(id),
     FOREIGN KEY (court_id) REFERENCES court(id)

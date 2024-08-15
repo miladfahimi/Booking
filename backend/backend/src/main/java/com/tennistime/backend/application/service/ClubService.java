@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,7 +38,7 @@ public class ClubService {
                 .collect(Collectors.toList());
     }
 
-    public ClubDTO findById(Long id) {
+    public ClubDTO findById(UUID id) {
         Optional<Club> club = clubRepository.findById(id);
         return club.map(clubMapper::toDTO).orElse(null);
     }
@@ -48,7 +49,7 @@ public class ClubService {
         return clubMapper.toDTO(savedClub);
     }
 
-    public ClubDTO addCourtToClub(Long clubId, CourtDTO courtDTO) {
+    public ClubDTO addCourtToClub(UUID clubId, CourtDTO courtDTO) {
         Optional<Club> clubOptional = clubRepository.findById(clubId);
         if (clubOptional.isPresent()) {
             Club club = clubOptional.get();
@@ -62,7 +63,7 @@ public class ClubService {
         }
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(UUID id) {
         clubRepository.deleteById(id);
     }
 }

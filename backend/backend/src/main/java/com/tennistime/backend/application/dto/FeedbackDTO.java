@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -14,6 +15,6 @@ public class FeedbackDTO {
     private String comment;
     private int rating;
     private LocalDateTime createdAt;
-    private Long clubId;
+    private UUID clubId;
     private Long courtId;
 }

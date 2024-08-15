@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,7 +43,7 @@ public class FeedbackService {
         feedbackRepository.deleteById(id);
     }
 
-    public List<FeedbackDTO> findByClubId(Long clubId) {
+    public List<FeedbackDTO> findByClubId(UUID clubId) {
         return feedbackRepository.findByClubId(clubId)
                 .stream()
                 .map(feedbackMapper::toDTO)
@@ -56,7 +57,7 @@ public class FeedbackService {
                 .collect(Collectors.toList());
     }
 
-    public List<FeedbackDTO> findTopRatedFeedbacksByClub(Long clubId) {
+    public List<FeedbackDTO> findTopRatedFeedbacksByClub(UUID clubId) {
         return feedbackRepository.findByClubId(clubId)
                 .stream()
                 .sorted((f1, f2) -> Integer.compare(f2.getRating(), f1.getRating()))

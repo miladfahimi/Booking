@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/feedbacks")
@@ -35,7 +36,7 @@ public class FeedbackController {
 
     @GetMapping("/club/{clubId}")
     @Operation(summary = "Get feedbacks by club ID")
-    public ResponseEntity<List<FeedbackDTO>> getFeedbacksByClubId(@PathVariable Long clubId) {
+    public ResponseEntity<List<FeedbackDTO>> getFeedbacksByClubId(@PathVariable UUID clubId) {
         List<FeedbackDTO> feedbacks = feedbackService.findByClubId(clubId);
         return ResponseEntity.ok(feedbacks);
     }
@@ -49,7 +50,7 @@ public class FeedbackController {
 
     @GetMapping("/club/{clubId}/top-rated")
     @Operation(summary = "Get top-rated feedbacks by club ID")
-    public ResponseEntity<List<FeedbackDTO>> getTopRatedFeedbacksByClub(@PathVariable Long clubId) {
+    public ResponseEntity<List<FeedbackDTO>> getTopRatedFeedbacksByClub(@PathVariable UUID clubId) {
         List<FeedbackDTO> feedbacks = feedbackService.findTopRatedFeedbacksByClub(clubId);
         return ResponseEntity.ok(feedbacks);
     }
