@@ -37,12 +37,12 @@ public interface ReservationRepository {
     List<Reservation> findByUserId(UUID userId);
 
     /**
-     * Finds all reservations for a specific court.
+     * Finds all reservations for a specific service.
      *
-     * @param courtId ID of the court whose reservations are being retrieved.
-     * @return List of Reservation entities associated with the specified court.
+     * @param serviceId ID of the service whose reservations are being retrieved.
+     * @return List of Reservation entities associated with the specified service.
      */
-    List<Reservation> findByCourtId(UUID courtId);
+    List<Reservation> findByServiceId(UUID serviceId);
 
     /**
      * Finds all reservations made on a specific date.

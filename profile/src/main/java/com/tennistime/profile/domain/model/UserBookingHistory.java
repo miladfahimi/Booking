@@ -27,7 +27,7 @@ public class UserBookingHistory {
     private UUID reservationId;
 
     @Column(nullable = false)
-    private Long courtId;
+    private UUID serviceId;
 
     @Column(name = "booking_date", nullable = false)
     private LocalDateTime bookingDate;

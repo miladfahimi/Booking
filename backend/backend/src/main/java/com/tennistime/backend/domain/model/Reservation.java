@@ -34,8 +34,8 @@ public class Reservation {
     private String status;
 
     @ManyToOne
-    @JoinColumn(name = "court_id")
-    private Court court;
+    @JoinColumn(name = "service_id")
+    private Service service;
 
     @Transient
     private PersianDate reservationDatePersian;

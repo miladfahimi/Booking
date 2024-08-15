@@ -34,7 +34,7 @@ DROP TABLE IF EXISTS user_booking_history CASCADE;
 CREATE TABLE IF NOT EXISTS user_booking_history (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL,
-    court_id BIGINT NOT NULL,
+    service_id UUID NOT NULL,
     booking_date TIMESTAMP,
     status VARCHAR(50),
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),

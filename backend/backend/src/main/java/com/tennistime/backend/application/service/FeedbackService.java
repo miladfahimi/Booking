@@ -50,8 +50,8 @@ public class FeedbackService {
                 .collect(Collectors.toList());
     }
 
-    public List<FeedbackDTO> findByCourtId(UUID courtId) {
-        return feedbackRepository.findByCourtId(courtId)
+    public List<FeedbackDTO> findByServiceId(UUID serviceId) {
+        return feedbackRepository.findByServiceId(serviceId)
                 .stream()
                 .map(feedbackMapper::toDTO)
                 .collect(Collectors.toList());
@@ -66,8 +66,8 @@ public class FeedbackService {
                 .collect(Collectors.toList());
     }
 
-    public List<FeedbackDTO> findTopRatedFeedbacksByCourt(UUID courtId) {
-        return feedbackRepository.findByCourtId(courtId)
+    public List<FeedbackDTO> findTopRatedFeedbacksByService(UUID serviceId) {
+        return feedbackRepository.findByServiceId(serviceId)
                 .stream()
                 .sorted((f1, f2) -> Integer.compare(f2.getRating(), f1.getRating()))
                 .limit(10)

@@ -22,8 +22,8 @@ public class UserBookingHistoryDTO {
     @Schema(description = "Unique identifier of the reservation", example = "d290f1ee-6c54-4b01-90e6-d701748f0851")
     private UUID reservationId;
 
-    @Schema(description = "Unique identifier of the court", example = "2")
-    private Long courtId;
+    @Schema(description = "Unique identifier of the service", example = "2")
+    private UUID serviceId;
 
     @Schema(description = "Booking date of the user", example = "2024-01-01T10:15:30")
     private String bookingDate;

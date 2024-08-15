@@ -10,11 +10,11 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CourtDTO {
+public class ServiceDTO {
     @Schema(hidden = true)
     private UUID id;
     private String name;
     private String type;
     private boolean availability;
-    private UUID providerId; // Assuming a court belongs to a provider
+    private UUID providerId; // Assuming a service belongs to a provider
 }

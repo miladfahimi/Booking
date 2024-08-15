@@ -15,13 +15,13 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Court {
+public class Service {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private UUID id;
 
-    @Schema(example = "Court 1")
+    @Schema(example = "Service 1")
     private String name;
 
     @Schema(example = "Clay")
@@ -32,13 +32,13 @@ public class Court {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "provider_id")
-    @JsonBackReference(value = "provider-courts")
+    @JsonBackReference(value = "provider-services")
     private Provider provider;
 
-    @OneToMany(mappedBy = "court", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Feedback> feedbacks;
 
-    @OneToMany(mappedBy = "court")
-    @JsonBackReference(value = "court-reservations")
+    @OneToMany(mappedBy = "service")
+    @JsonBackReference(value = "service-reservations")
     private List<Reservation> reservations;
 }

@@ -1,9 +1,9 @@
 package com.tennistime.backend.application.controller;
 
 import com.tennistime.backend.application.dto.ProviderDTO;
-import com.tennistime.backend.application.dto.CourtDTO;
+import com.tennistime.backend.application.dto.ServiceDTO;
 import com.tennistime.backend.application.service.ProviderService;
-import com.tennistime.backend.application.service.CourtService;
+import com.tennistime.backend.application.service.ServiceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +21,12 @@ import java.util.UUID;
 public class ProviderController {
 
     private final ProviderService providerService;
-    private final CourtService courtService;
+    private final ServiceService serviceService;
 
     @Autowired
-    public ProviderController(ProviderService providerService, CourtService courtService) {
+    public ProviderController(ProviderService providerService, ServiceService serviceService) {
         this.providerService = providerService;
-        this.courtService = courtService;
+        this.serviceService = serviceService;
     }
 
     @GetMapping
@@ -49,10 +49,10 @@ public class ProviderController {
         return new ResponseEntity<>(createdProvider, HttpStatus.CREATED);
     }
 
-    @PostMapping(value = "/{providerId}/courts", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Add a court to a provider")
-    public ResponseEntity<ProviderDTO> addCourtToProvider(@PathVariable UUID providerId, @RequestBody CourtDTO courtDTO) {
-        ProviderDTO updatedProvider = providerService.addCourtToProvider(providerId, courtDTO);
+    @PostMapping(value = "/{providerId}/services", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Add a service to a provider")
+    public ResponseEntity<ProviderDTO> addServiceToProvider(@PathVariable UUID providerId, @RequestBody ServiceDTO serviceDTO) {
+        ProviderDTO updatedProvider = providerService.addServiceToProvider(providerId, serviceDTO);
         return updatedProvider != null ? ResponseEntity.ok(updatedProvider) : ResponseEntity.notFound().build();
     }
 }

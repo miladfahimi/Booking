@@ -80,11 +80,11 @@ public class ReservationController {
         return ResponseEntity.ok(reservations);
     }
 
-    @GetMapping("/court/{courtId}")
-    @Operation(summary = "Get reservations by court ID", description = "Retrieve all reservations for a specific court")
-    public ResponseEntity<List<ReservationDTO>> getReservationsByCourtId(
-            @Parameter(description = "ID of the court whose reservations to retrieve", required = true) @PathVariable UUID courtId) {
-        List<ReservationDTO> reservations = reservationService.findReservationsByCourtId(courtId);
+    @GetMapping("/service/{serviceId}")
+    @Operation(summary = "Get reservations by service ID", description = "Retrieve all reservations for a specific service")
+    public ResponseEntity<List<ReservationDTO>> getReservationsByServiceId(
+            @Parameter(description = "ID of the service whose reservations to retrieve", required = true) @PathVariable UUID serviceId) {
+        List<ReservationDTO> reservations = reservationService.findReservationsByServiceId(serviceId);
         return ResponseEntity.ok(reservations);
     }
 

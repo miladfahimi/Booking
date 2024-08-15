@@ -15,6 +15,6 @@ public interface FeedbackJpaRepository extends FeedbackRepository, JpaRepository
     List<Feedback> findByProviderId(UUID providerId);
 
     @Override
-    List<Feedback> findByCourtId(UUID courtId);
+    List<Feedback> findByServiceId(UUID serviceId);
 
 }

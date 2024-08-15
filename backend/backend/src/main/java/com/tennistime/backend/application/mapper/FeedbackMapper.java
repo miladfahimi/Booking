@@ -9,10 +9,10 @@ import org.mapstruct.Mapping;
 public interface FeedbackMapper {
 
     @Mapping(source = "provider.id", target = "providerId")
-    @Mapping(source = "court.id", target = "courtId")
+    @Mapping(source = "service.id", target = "serviceId")
     FeedbackDTO toDTO(Feedback feedback);
 
     @Mapping(source = "providerId", target = "provider.id")
-    @Mapping(source = "courtId", target = "court.id")
+    @Mapping(source = "serviceId", target = "service.id")
     Feedback toEntity(FeedbackDTO feedbackDTO);
 }

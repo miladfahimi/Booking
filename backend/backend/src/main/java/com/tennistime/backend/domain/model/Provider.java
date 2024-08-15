@@ -27,15 +27,15 @@ public class Provider {
 
     @OneToMany(mappedBy = "provider", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonBackReference
-    private List<Court> courts = new ArrayList<>();
+    private List<Service> services = new ArrayList<>();
 
     @OneToMany(mappedBy = "provider", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Feedback> feedbacks = new ArrayList<>();
 
-    public void addCourt(Court court) {
-        courts.add(court);
-        court.setProvider(this);
+    public void addService(Service service) {
+        services.add(service);
+        service.setProvider(this);
     }
 
     public void addFeedback(Feedback feedback) {

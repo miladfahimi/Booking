@@ -13,8 +13,8 @@ INSERT INTO user_subscription (user_id, subscription_plan, start_date, end_date,
 ('4fa85f64-5717-4562-b3fc-2c963f66afaa', 'Premium', '2024-01-01', '2024-12-31', 'Active');
 
 -- Insert data into user_booking_history table
-INSERT INTO user_booking_history (id, user_id, court_id, booking_date, status, created_at, updated_at, is_it_archived, is_user_notified, notes, reservation_id) VALUES
-(uuid_generate_v4(), '2fa85f64-5717-4562-b3fc-2c963f66afa7', 2, '2024-07-02 11:00:00', 'Pending', '2024-07-02 10:00:00', '2024-07-02 10:00:00', FALSE, FALSE, 'User requested early check-in.', uuid_generate_v4()),
-(uuid_generate_v4(), '2fa85f64-5717-4562-b3fc-2c963f66afa7', 2, '2024-07-02 11:00:00', 'Confirmed', '2024-07-02 11:00:00', '2024-07-02 11:00:00', FALSE, TRUE, '', uuid_generate_v4()),
-(uuid_generate_v4(), '1fa85f64-5717-4562-b3fc-2c963f66afa8', 2, '2024-07-02 11:00:00', 'Pending', '2024-07-02 09:30:00', '2024-07-02 09:30:00', FALSE, FALSE, '', uuid_generate_v4()),
-(uuid_generate_v4(), '1fa85f64-5717-4562-b3fc-2c963f66afa8', 2, '2024-07-02 11:00:00', 'Pending', '2024-07-02 09:45:00', '2024-07-02 09:45:00', FALSE, FALSE, '', uuid_generate_v4());
+INSERT INTO user_booking_history (id, user_id, service_id, booking_date, status, created_at, updated_at, is_it_archived, is_user_notified, notes, reservation_id) VALUES
+(uuid_generate_v4(), '2fa85f64-5717-4562-b3fc-2c963f66afa7', uuid_generate_v4(), '2024-07-02 11:00:00', 'Pending', '2024-07-02 10:00:00', '2024-07-02 10:00:00', FALSE, FALSE, 'User requested early check-in.', uuid_generate_v4()),
+(uuid_generate_v4(), '2fa85f64-5717-4562-b3fc-2c963f66afa7', uuid_generate_v4(), '2024-07-02 11:00:00', 'Confirmed', '2024-07-02 11:00:00', '2024-07-02 11:00:00', FALSE, TRUE, '', uuid_generate_v4()),
+(uuid_generate_v4(), '1fa85f64-5717-4562-b3fc-2c963f66afa8', uuid_generate_v4(), '2024-07-02 11:00:00', 'Pending', '2024-07-02 09:30:00', '2024-07-02 09:30:00', FALSE, FALSE, '', uuid_generate_v4()),
+(uuid_generate_v4(), '1fa85f64-5717-4562-b3fc-2c963f66afa8', uuid_generate_v4(), '2024-07-02 11:00:00', 'Pending', '2024-07-02 09:45:00', '2024-07-02 09:45:00', FALSE, FALSE, '', uuid_generate_v4());

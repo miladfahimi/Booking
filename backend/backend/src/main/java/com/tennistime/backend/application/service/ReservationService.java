@@ -5,12 +5,11 @@ import com.tennistime.backend.application.dto.ReservationDTO;
 import com.tennistime.backend.application.dto.UserBookingHistoryUpdateRequest;
 import com.tennistime.backend.infrastructure.feign.UserBookingHistoryClient;
 import com.tennistime.backend.application.mapper.ReservationMapper;
-import com.tennistime.backend.domain.model.Court;
+import com.tennistime.backend.domain.model.Service;
 import com.tennistime.backend.domain.model.Reservation;
 import com.tennistime.backend.domain.repository.ReservationRepository;
-import com.tennistime.backend.domain.repository.CourtRepository;
+import com.tennistime.backend.domain.repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +23,7 @@ import java.util.stream.Collectors;
  * Service class responsible for managing reservations.
  * This includes creating, updating, retrieving, and deleting reservation records.
  */
-@Service
+@org.springframework.stereotype.Service
 public class ReservationService {
 
     private static final Logger logger = LoggerFactory.getLogger(ReservationService.class);
@@ -33,7 +32,7 @@ public class ReservationService {
     private ReservationRepository reservationRepository;
 
     @Autowired
-    private CourtRepository courtRepository;
+    private ServiceRepository serviceRepository;
 
     @Autowired
     private ReservationMapper reservationMapper;
@@ -75,17 +74,17 @@ public class ReservationService {
     public ReservationDTO save(ReservationDTO reservationDTO) {
         logger.info("[ReservationService][Save]: Creating new reservation.");
 
-        // Retrieve the Court entity based on the courtId from the reservationDTO
-        Optional<Court> courtOpt = courtRepository.findById(reservationDTO.getCourtId());
+        // Retrieve the Service entity based on the serviceId from the reservationDTO
+        Optional<Service> serviceOpt = serviceRepository.findById(reservationDTO.getServiceId());
 
-        if (courtOpt.isEmpty()) {
-            logger.error("[ReservationService][Save]: Court with ID: {} not found.", reservationDTO.getCourtId());
-            throw new RuntimeException("Court not found");
+        if (serviceOpt.isEmpty()) {
+            logger.error("[ReservationService][Save]: Service with ID: {} not found.", reservationDTO.getServiceId());
+            throw new RuntimeException("Service not found");
         }
 
-        // Convert DTO to Reservation entity and set the court
+        // Convert DTO to Reservation entity and set the service
         Reservation reservation = convertToEntity(reservationDTO);
-        reservation.setCourt(courtOpt.get());
+        reservation.setService(serviceOpt.get());
 
         Reservation savedReservation = reservationRepository.save(reservation);
 
@@ -96,7 +95,7 @@ public class ReservationService {
         UserBookingHistoryUpdateRequest updateRequest = new UserBookingHistoryUpdateRequest(
                 savedReservation.getUserId(),
                 savedReservation.getId(),
-                savedReservation.getCourt().getId(),  // Ensure the court ID is set
+                savedReservation.getService().getId(),  // Ensure the service ID is set
                 bookingDate,
                 savedReservation.getStatus(),
                 savedReservation.getReservationDatePersian().toString(),
@@ -134,8 +133,8 @@ public class ReservationService {
             reservation.setEndTime(reservationDTO.getEndTime());
             reservation.setStatus(reservationDTO.getStatus());
             reservation.setUserId(reservationDTO.getUserId());
-            Optional<Court> courtOpt = courtRepository.findById(reservationDTO.getCourtId());
-            courtOpt.ifPresent(reservation::setCourt);
+            Optional<Service> serviceOpt = serviceRepository.findById(reservationDTO.getServiceId());
+            serviceOpt.ifPresent(reservation::setService);
             Reservation updatedReservation = reservationRepository.save(reservation);
             return convertToDTO(updatedReservation);
         }
@@ -188,14 +187,14 @@ public class ReservationService {
     }
 
     /**
-     * Retrieves all reservations for a specific court.
+     * Retrieves all reservations for a specific service.
      *
-     * @param courtId ID of the court whose reservations to retrieve.
-     * @return List of ReservationDTO representing the court's reservations.
+     * @param serviceId ID of the service whose reservations to retrieve.
+     * @return List of ReservationDTO representing the service's reservations.
      */
-    public List<ReservationDTO> findReservationsByCourtId(UUID courtId) {
-        logger.info("[ReservationService][FindByCourtId]: Fetching reservations for court ID: {}", courtId);
-        return reservationRepository.findByCourtId(courtId)
+    public List<ReservationDTO> findReservationsByServiceId(UUID serviceId) {
+        logger.info("[ReservationService][FindByServiceId]: Fetching reservations for service ID: {}", serviceId);
+        return reservationRepository.findByServiceId(serviceId)
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());

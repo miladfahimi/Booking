@@ -17,5 +17,5 @@ public class ProviderDTO {
     private String phone;
     private String email;
     private String description;
-    private List<CourtDTO> courts;
+    private List<ServiceDTO> services;
 }

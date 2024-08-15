@@ -16,5 +16,5 @@ public class FeedbackDTO {
     private int rating;
     private LocalDateTime createdAt;
     private UUID providerId;
-    private UUID courtId;
+    private UUID serviceId;
 }

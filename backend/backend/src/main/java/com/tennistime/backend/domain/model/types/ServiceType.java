@@ -1,6 +1,6 @@
 package com.tennistime.backend.domain.model.types;
 
-public enum CourtType {
+public enum ServiceType {
     CLAY,
     GRASS,
     HARD,

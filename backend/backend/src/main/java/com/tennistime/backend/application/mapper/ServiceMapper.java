@@ -1,16 +1,16 @@
 package com.tennistime.backend.application.mapper;
 
-import com.tennistime.backend.application.dto.CourtDTO;
-import com.tennistime.backend.domain.model.Court;
+import com.tennistime.backend.application.dto.ServiceDTO;
+import com.tennistime.backend.domain.model.Service;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
-public interface CourtMapper {
+public interface ServiceMapper {
 
     @Mapping(source = "provider.id", target = "providerId")
-    CourtDTO toDTO(Court court);
+    ServiceDTO toDTO(Service service);
 
     @Mapping(source = "providerId", target = "provider.id")
-    Court toEntity(CourtDTO courtDTO);
+    Service toEntity(ServiceDTO serviceDTO);
 }

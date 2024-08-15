@@ -2,14 +2,13 @@ package com.tennistime.backend.application.service;
 
 
 import com.tennistime.backend.application.dto.ProviderDTO;
-import com.tennistime.backend.application.dto.CourtDTO;
+import com.tennistime.backend.application.dto.ServiceDTO;
 import com.tennistime.backend.application.mapper.ProviderMapper;
-import com.tennistime.backend.application.mapper.CourtMapper;
+import com.tennistime.backend.application.mapper.ServiceMapper;
 import com.tennistime.backend.domain.model.Provider;
-import com.tennistime.backend.domain.model.Court;
+import com.tennistime.backend.domain.model.Service;
 import com.tennistime.backend.domain.repository.ProviderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 
 import java.util.List;
@@ -17,18 +16,18 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@Service
+@org.springframework.stereotype.Service
 public class ProviderService {
 
     private final ProviderRepository providerRepository;
     private final ProviderMapper providerMapper;
-    private final CourtMapper courtMapper;
+    private final ServiceMapper serviceMapper;
 
     @Autowired
-    public ProviderService(ProviderRepository providerRepository, ProviderMapper providerMapper, CourtMapper courtMapper) {
+    public ProviderService(ProviderRepository providerRepository, ProviderMapper providerMapper, ServiceMapper serviceMapper) {
         this.providerRepository = providerRepository;
         this.providerMapper = providerMapper;
-        this.courtMapper = courtMapper;
+        this.serviceMapper = serviceMapper;
     }
 
     public List<ProviderDTO> findAll() {
@@ -49,13 +48,13 @@ public class ProviderService {
         return providerMapper.toDTO(savedProvider);
     }
 
-    public ProviderDTO addCourtToProvider(UUID providerId, CourtDTO courtDTO) {
+    public ProviderDTO addServiceToProvider(UUID providerId, ServiceDTO serviceDTO) {
         Optional<Provider> providerOptional = providerRepository.findById(providerId);
         if (providerOptional.isPresent()) {
             Provider provider = providerOptional.get();
-            Court court = courtMapper.toEntity(courtDTO);
-            court.setProvider(provider);
-            provider.getCourts().add(court);
+            Service service = serviceMapper.toEntity(serviceDTO);
+            service.setProvider(provider);
+            provider.getServices().add(service);
             Provider updatedProvider = providerRepository.save(provider);
             return providerMapper.toDTO(updatedProvider);
         } else {

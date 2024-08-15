@@ -37,8 +37,8 @@ public class Feedback {
     private Provider provider;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "court_id")
-    @JsonBackReference(value = "court-feedbacks")
+    @JoinColumn(name = "service_id")
+    @JsonBackReference(value = "service-feedbacks")
     @Schema(hidden = true)
-    private Court court;
+    private Service service;
 }
