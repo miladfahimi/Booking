@@ -5,14 +5,14 @@ INSERT INTO provider (id,name, address, phone, email, description) VALUES
 (uuid_generate_v4(), 'Tennis Provider 3', '789 Main St', '2224567890', 'provider3@example.com', 'Tournament provider');
 
 -- Insert data into court table
-INSERT INTO court (name, type, availability, provider_id) VALUES
-('Court 1', 'CLAY', true, (SELECT id FROM provider WHERE name = 'Tennis Provider 1')),
-('Court 2', 'GRASS', true, (SELECT id FROM provider WHERE name = 'Tennis Provider 2'));
+INSERT INTO court (id,name, type, availability, provider_id) VALUES
+(uuid_generate_v4(),'Court 1', 'CLAY', true, (SELECT id FROM provider WHERE name = 'Tennis Provider 1')),
+(uuid_generate_v4(),'Court 2', 'GRASS', true, (SELECT id FROM provider WHERE name = 'Tennis Provider 2'));
 
 -- Insert data into feedback table
 INSERT INTO feedback (comment, rating, created_at, provider_id, court_id) VALUES
 ('Great provider!', 5, '2024-07-01 10:00:00',(SELECT id FROM provider WHERE name = 'Tennis Provider 1'), NULL),
-('Nice court', 4, '2024-07-02 11:00:00', NULL, 1);
+('Nice court', 4, '2024-07-02 11:00:00', NULL, (SELECT id FROM provider WHERE name = 'Court 2'));
 
 -- Insert data into reservation table
 INSERT INTO reservation (id, reservation_date, start_time, end_time, status, user_id, court_id) VALUES

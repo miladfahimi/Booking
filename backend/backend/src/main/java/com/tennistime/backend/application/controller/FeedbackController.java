@@ -43,7 +43,7 @@ public class FeedbackController {
 
     @GetMapping("/court/{courtId}")
     @Operation(summary = "Get feedbacks by court ID")
-    public ResponseEntity<List<FeedbackDTO>> getFeedbacksByCourtId(@PathVariable Long courtId) {
+    public ResponseEntity<List<FeedbackDTO>> getFeedbacksByCourtId(@PathVariable UUID courtId) {
         List<FeedbackDTO> feedbacks = feedbackService.findByCourtId(courtId);
         return ResponseEntity.ok(feedbacks);
     }
@@ -57,7 +57,7 @@ public class FeedbackController {
 
     @GetMapping("/court/{courtId}/top-rated")
     @Operation(summary = "Get top-rated feedbacks by court ID")
-    public ResponseEntity<List<FeedbackDTO>> getTopRatedFeedbacksByCourt(@PathVariable Long courtId) {
+    public ResponseEntity<List<FeedbackDTO>> getTopRatedFeedbacksByCourt(@PathVariable UUID courtId) {
         List<FeedbackDTO> feedbacks = feedbackService.findTopRatedFeedbacksByCourt(courtId);
         return ResponseEntity.ok(feedbacks);
     }

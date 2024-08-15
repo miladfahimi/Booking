@@ -13,7 +13,7 @@ public class UserBookingHistoryUpdateRequest {
 
     private UUID userId;
     private UUID reservationId;
-    private Long courtId;
+    private UUID courtId;
     private String bookingDate;  // Ensure this is in ISO_LOCAL_DATE_TIME format
     private String status;
     private String bookingDatePersian;

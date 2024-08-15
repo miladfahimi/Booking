@@ -42,7 +42,7 @@ public interface ReservationRepository {
      * @param courtId ID of the court whose reservations are being retrieved.
      * @return List of Reservation entities associated with the specified court.
      */
-    List<Reservation> findByCourtId(Long courtId);
+    List<Reservation> findByCourtId(UUID courtId);
 
     /**
      * Finds all reservations made on a specific date.

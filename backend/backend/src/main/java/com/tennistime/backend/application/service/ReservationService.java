@@ -193,7 +193,7 @@ public class ReservationService {
      * @param courtId ID of the court whose reservations to retrieve.
      * @return List of ReservationDTO representing the court's reservations.
      */
-    public List<ReservationDTO> findReservationsByCourtId(Long courtId) {
+    public List<ReservationDTO> findReservationsByCourtId(UUID courtId) {
         logger.info("[ReservationService][FindByCourtId]: Fetching reservations for court ID: {}", courtId);
         return reservationRepository.findByCourtId(courtId)
                 .stream()

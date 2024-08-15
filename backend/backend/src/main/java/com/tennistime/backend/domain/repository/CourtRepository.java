@@ -4,10 +4,11 @@ import com.tennistime.backend.domain.model.Court;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface CourtRepository {
     List<Court> findAll();
-    Optional<Court> findById(Long id);
+    Optional<Court> findById(UUID id);
     Court save(Court court);
-    void deleteById(Long id);
+    void deleteById(UUID id);
 }

@@ -10,7 +10,7 @@ public interface FeedbackRepository {
     List<Feedback> findAll();
     Optional<Feedback> findById(Long id);
     List<Feedback> findByProviderId(UUID providerId);
-    List<Feedback> findByCourtId(Long courtId);
+    List<Feedback> findByCourtId(UUID courtId);
     Feedback save(Feedback feedback);
     void deleteById(Long id);
 }

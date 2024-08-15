@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,7 +30,7 @@ public class CourtService {
                 .collect(Collectors.toList());
     }
 
-    public CourtDTO findById(Long id) {
+    public CourtDTO findById(UUID id) {
         Optional<Court> court = courtRepository.findById(id);
         return court.map(courtMapper::toDTO).orElse(null);
     }
@@ -40,7 +41,7 @@ public class CourtService {
         return courtMapper.toDTO(savedCourt);
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(UUID id) {
         courtRepository.deleteById(id);
     }
 

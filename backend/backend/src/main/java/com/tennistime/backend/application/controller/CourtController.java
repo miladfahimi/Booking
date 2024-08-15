@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/courts")
@@ -31,7 +32,7 @@ public class CourtController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get court by ID")
-    public ResponseEntity<CourtDTO> getCourtById(@PathVariable Long id) {
+    public ResponseEntity<CourtDTO> getCourtById(@PathVariable UUID id) {
         CourtDTO court = courtService.findById(id);
         return court != null ? ResponseEntity.ok(court) : ResponseEntity.notFound().build();
     }
@@ -45,7 +46,7 @@ public class CourtController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Update a court by ID")
-    public ResponseEntity<CourtDTO> updateCourt(@PathVariable Long id, @RequestBody CourtDTO courtDTO) {
+    public ResponseEntity<CourtDTO> updateCourt(@PathVariable UUID id, @RequestBody CourtDTO courtDTO) {
         courtDTO.setId(id);
         CourtDTO updatedCourt = courtService.save(courtDTO);
         return ResponseEntity.ok(updatedCourt);
@@ -53,7 +54,7 @@ public class CourtController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a court by ID")
-    public ResponseEntity<Void> deleteCourt(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteCourt(@PathVariable UUID id) {
         courtService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

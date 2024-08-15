@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS provider (
 -- Create court table
 DROP TABLE IF EXISTS court CASCADE;
 CREATE TABLE IF NOT EXISTS court (
-    id BIGSERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(255) NOT NULL,
     type VARCHAR(50),
     availability BOOLEAN,
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS feedback (
     rating INT,
     created_at TIMESTAMP,
     provider_id UUID,
-    court_id BIGINT,
+    court_id UUID,
     FOREIGN KEY (provider_id) REFERENCES provider(id),
     FOREIGN KEY (court_id) REFERENCES court(id)
 );

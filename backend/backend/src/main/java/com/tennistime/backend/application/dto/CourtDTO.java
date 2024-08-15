@@ -12,7 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class CourtDTO {
     @Schema(hidden = true)
-    private Long id;
+    private UUID id;
     private String name;
     private String type;
     private boolean availability;
