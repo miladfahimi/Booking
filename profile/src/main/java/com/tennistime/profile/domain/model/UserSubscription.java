@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -15,6 +16,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "user_subscription")
 public class UserSubscription {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,6 +34,12 @@ public class UserSubscription {
 
     @Transient
     private PersianDate endDatePersian;
+
+    private Boolean isAutoRenew;  // Indicates if the subscription auto-renews
+    private LocalDateTime cancelledAt;  // Timestamp when the subscription was cancelled
+    private String cancellationReason;  // Reason for subscription cancellation
+    private String lastUpdatedBy;  // Tracks who last updated the subscription
+    private String createdBy;  // Tracks who created the subscription
 
     public PersianDate getStartDatePersian() {
         return startDate != null ? PersianDate.fromGregorian(startDate) : null;

@@ -29,15 +29,16 @@ public class UserBookingHistory {
     @Column(nullable = false)
     private UUID serviceId;
 
+    @Column(nullable = false)
+    private UUID providerId;
+
     @Column(name = "booking_date", nullable = false)
     private LocalDateTime bookingDate;
 
     private String status;
 
     private boolean isItArchived = false;
-
     private boolean isUserNotified = false;
-
     private String notes;
 
     @Transient
@@ -49,6 +50,17 @@ public class UserBookingHistory {
     @Column(nullable = false)
     private LocalDateTime updatedAt = LocalDateTime.now();
 
+    private String bookingType;
+    private LocalDateTime cancelledAt;
+    private String cancellationReason;
+    private String lastUpdatedBy;
+    private String createdBy;
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();  // Update timestamp on modification
+    }
+
     public PersianDate getBookingDatePersian() {
         return PersianDate.fromGregorian(this.bookingDate.toLocalDate());
     }
@@ -57,10 +69,5 @@ public class UserBookingHistory {
         if (persianDate != null) {
             this.bookingDate = persianDate.toGregorian().atStartOfDay();
         }
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
     }
 }

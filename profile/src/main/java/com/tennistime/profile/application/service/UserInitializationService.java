@@ -106,11 +106,11 @@ public class UserInitializationService {
             UserProfile userProfile = new UserProfile();
             userProfile.setUserId(userId);
             userProfile.setEmail(email);
-            userProfile.setPhoneNumber(phoneNumber);
+            userProfile.setPhone(phoneNumber);
             userProfile.setFirstName(null); // Now null by default
             userProfile.setLastName(null);  // Now null by default
             userProfile.setAddress(null);   // Now null by default
-            userProfile.setProfilePicture(null); // Now null by default
+            userProfile.setProfilePictureUrl(null); // Now null by default
             userProfile.setPreferences(null); // Now null by default
             userProfile.setDateOfBirth(null);
             userProfile.setUserProfilesInitiated(true);

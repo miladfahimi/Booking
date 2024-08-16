@@ -13,7 +13,7 @@ import java.util.UUID;
 @Schema(description = "User profile data transfer object")
 public class UserProfileDTO {
     @Schema(description = "ID of the user profile", example = "1")
-    private Long id;
+    private UUID id;
 
     @Schema(description = "User ID", example = "d290f1ee-6c54-4b01-90e6-d701748f0851")
     private UUID userId;
@@ -32,6 +32,9 @@ public class UserProfileDTO {
 
     @Schema(description = "Address", example = "123 Main St")
     private String address = "Does not filled by User";
+
+    @Schema(description = "Gender", example = "Male")
+    private String gender = "Does not filled by User";
 
     @Schema(description = "Date of birth", example = "1990-01-01")
     private String dateOfBirth;

@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface UserProfileJpaRepository extends UserProfileRepository, JpaRepository<UserProfile, Long> {
+public interface UserProfileJpaRepository extends UserProfileRepository, JpaRepository<UserProfile, UUID> {
     @Override
     Optional<UserProfile> findByUserId(UUID userId);
 }

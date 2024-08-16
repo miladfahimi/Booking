@@ -6,8 +6,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface UserProfileRepository {
-    Optional<UserProfile> findById(Long id);
+    Optional<UserProfile> findById(UUID id);
     UserProfile save(UserProfile userProfile);
-    void deleteById(Long id);
+    void deleteById(UUID id);
     Optional<UserProfile> findByUserId(UUID userId);
 }
