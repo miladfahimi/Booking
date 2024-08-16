@@ -7,9 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-
 
 @Data
 @NoArgsConstructor
@@ -41,4 +42,19 @@ public class Service {
     @OneToMany(mappedBy = "service")
     @JsonBackReference(value = "service-reservations")
     private List<Reservation> reservations;
+
+    private BigDecimal price;
+    private String currency;
+    private Integer duration;
+    private String imageUrl;
+    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime updatedAt = LocalDateTime.now();
+    private String status = "available";
+    private Integer maxCapacity;
+    private String tags;
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }
