@@ -1,5 +1,6 @@
 package com.tennistime.authentication.domain.model;
 
+import com.tennistime.authentication.application.util.PersianDateUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,16 +23,34 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;  // Changed from Long to UUID
+    private UUID id;
     private String username;
     private String email;
     private String phone;
     private String password;
-    private String role; // "ADMIN", "PROVIDER_OWNER", "CLIENT"
+    private String role; // "ADMIN", "PROVIDER_OWNER", "USER"
     private LocalDateTime createdAt;
     private LocalDateTime lastLogin;
 
-    // Additional fields for tracking sign-in and sign-up details
+    private String status;
+    private LocalDateTime updatedAt;
+    private Boolean accountNonLocked = true;
+    private Boolean accountNonExpired = true;
+    private Boolean credentialsNonExpired = true;
+    private Boolean enabled = true;
+    private Integer failedLoginAttempts;
+    private LocalDateTime lockoutExpirationTime;
+    private LocalDateTime passwordChangedAt;
+    private String passwordResetToken;
+    private LocalDateTime passwordResetTokenExpirationTime;
+    private Boolean twoFactorEnabled;
+    private String twoFactorSecret;
+    private Boolean emailVerified;
+    private String emailVerificationToken;
+    private LocalDateTime emailVerificationTokenExpirationTime;
+    private LocalDateTime lastPasswordChangeAt;
+
+    // tracking sign-in and sign-up details
     private String lastLoginIp;
     private String lastLoginDeviceModel;
     private String lastLoginOS;
@@ -58,30 +77,40 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.username; // use email as the username
+        return this.username;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return this.accountNonExpired;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return this.accountNonLocked;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return this.credentialsNonExpired;
     }
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.enabled;
     }
 
-    // Method to update login information
+    @Transient
+    private String jalaliCreatedAt;
+
+    public String getJalaliCreatedAt() {
+        return PersianDateUtil.localDateToString(this.createdAt.toLocalDate());
+    }
+
+    public void setJalaliCreatedAt(String jalaliCreatedAt) {
+        this.createdAt = PersianDateUtil.stringToLocalDate(jalaliCreatedAt).atStartOfDay();
+    }
+
     public void updateLoginInfo(String ip, String deviceModel, String os, String browser) {
         this.lastLoginIp = ip;
         this.lastLoginDeviceModel = deviceModel;
@@ -90,7 +119,6 @@ public class User implements UserDetails {
         this.lastLogin = LocalDateTime.now();
     }
 
-    // Method to update sign-up information
     public void updateSignUpInfo(String ip, String deviceModel, String os, String browser) {
         this.signUpIp = ip;
         this.signUpDeviceModel = deviceModel;
