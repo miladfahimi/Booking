@@ -39,10 +39,6 @@ public class Service {
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Feedback> feedbacks;
 
-    @OneToMany(mappedBy = "service")
-    @JsonBackReference(value = "service-reservations")
-    private List<Reservation> reservations;
-
     private BigDecimal price;
     private String currency;
     private Integer duration;
