@@ -6,7 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
 
@@ -18,11 +20,12 @@ public class Reservation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id; // Updated from UUID to UUID
+    private UUID id;
 
     private UUID userId;
     private UUID providerId;
     private UUID serviceId;
+    private UUID paymentId;
 
     @Column(name = "reservation_date")
     private LocalDate reservationDate;
@@ -33,8 +36,22 @@ public class Reservation {
     @Column(name = "end_time")
     private LocalTime endTime;
 
-    private String status;
+    private LocalDateTime bookedAt = LocalDateTime.now();
+    private LocalDateTime expirationDate;
+    private Boolean reminderEnabled = false;
+    private LocalDateTime reminderSentAt;
 
+    private String status;
+    private String paymentStatus;
+
+    private String externalId;
+    private String thirdPartyBookingId;
+
+    private String createdBy;
+    private String updatedBy;
+
+    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
     @Transient
     private PersianDate reservationDatePersian;
@@ -45,5 +62,10 @@ public class Reservation {
 
     public void setReservationDatePersian(PersianDate persianDate) {
         this.reservationDate = persianDate.toGregorian();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 }

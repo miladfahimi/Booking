@@ -35,6 +35,9 @@ public class ReservationDTO {
     @Schema(example = "d290f1ee-6c54-4b01-90e6-d701748f0851")
     private UUID userId;
 
+    @Schema(example = "d290f1ee-6c54-4b01-90e6-d701733344441")
+    private UUID providerId;
+
     @Schema(example = "d290f1ee-6c54-4b01-90e6-d70173333331")
-    private UUID serviceId; // Ensure this is set before creating/updating a reservation
+    private UUID serviceId;
 }
