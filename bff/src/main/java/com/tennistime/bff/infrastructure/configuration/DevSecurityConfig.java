@@ -51,10 +51,10 @@ public class DevSecurityConfig {
                         ).permitAll()
                         // Allowing easy testing for authenticated endpoints
                         // Ensure that only authorized roles can access specific endpoints
-                        .requestMatchers("/test/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/user/initialize/**").hasAnyRole("ADMIN","PROVIDER_OWNER","USER")
-                        .requestMatchers("/test/provider/**").hasRole("PROVIDER_OWNER")
-                        .requestMatchers("/test/user/**").hasRole("USER")
+                        .requestMatchers("/portal/test/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/portal/test/public/**").hasAnyRole("ADMIN","PROVIDER_OWNER","USER")
+                        .requestMatchers("/portal/test/provider/**").hasRole("PROVIDER_OWNER")
+                        .requestMatchers("/portal/test/user/**").hasRole("USER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

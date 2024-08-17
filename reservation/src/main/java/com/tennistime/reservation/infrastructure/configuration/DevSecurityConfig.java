@@ -47,14 +47,15 @@ public class DevSecurityConfig {
                                 "/webjars/**",
                                 "/swagger-ui.html",
                                 "/cache/invalidate",
-                                "/logout"
+                                "/logout",
+                                "/reservations/**"
                         ).permitAll()
                         // Allowing easy testing for authenticated endpoints
                         // Ensure that only authorized roles can access specific endpoints
-                        .requestMatchers("/test/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/user/initialize/**").hasAnyRole("ADMIN","PROVIDER_OWNER","USER")
-                        .requestMatchers("/test/provider/**").hasRole("PROVIDER_OWNER")
-                        .requestMatchers("/test/user/**").hasRole("USER")
+                        .requestMatchers("/reservations/test/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/reservations/test/public/**").hasAnyRole("ADMIN","PROVIDER_OWNER","USER")
+                        .requestMatchers("/reservations/test/provider/**").hasRole("PROVIDER_OWNER")
+                        .requestMatchers("/reservations/test/user/**").hasRole("USER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
