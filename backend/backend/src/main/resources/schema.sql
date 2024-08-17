@@ -50,15 +50,3 @@ CREATE TABLE IF NOT EXISTS feedback (
     FOREIGN KEY (provider_id) REFERENCES provider(id),
     FOREIGN KEY (service_id) REFERENCES service(id)
 );
-
--- Create reservation table
-DROP TABLE IF EXISTS reservation CASCADE;
-CREATE TABLE IF NOT EXISTS reservation (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    reservation_date TIMESTAMP,
-    start_time TIME,
-    end_time TIME,
-    status VARCHAR(50),
-    service_id BIGINT,
-    user_id UUID -- No foreign key constraint here
-);
