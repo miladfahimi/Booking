@@ -19,11 +19,11 @@ export class CoreAuthService {
     // Include deviceModel, os, and browser in the sign-in request
     return this.http.post(`${this.baseUrl}/signin`, { email, password, deviceModel, os, browser }).pipe(
       tap((response: any) => {
-        console.log('Sign-in successful, redirecting to welcome page...', response);  // Debugging
+        console.log('Sign-in successful, redirecting to book page...', response);  // Debugging
         this.storeToken(response.token);  // Store the received JWT token
         this.storeUserId(response.id);     // Store the received userId (note: response.id)
         this.router.navigate(['/profile/welcome']).then(() => {
-          console.log('Navigation to welcome page complete.');
+          console.log('Navigation to book page complete.');
         });
       })
     );

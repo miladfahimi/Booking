@@ -1,0 +1,134 @@
+:host {
+  display: block;
+  font-family: "Vazirmatn", sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+  direction: rtl;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.limiter {
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.container-calendar {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+}
+
+.wrap-calendar {
+  width: 100%;
+  max-width: 400px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 0 30px 20px 30px;
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 20px;
+}
+
+.calendar-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+.calendar-week {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.calendar-day {
+  text-align: center;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.calendar-day.selected {
+  background-color: #64c271;
+  color: #ffffff;
+}
+
+.calendar-time-slots,
+.calendar-available-slots,
+.calendar-location {
+  width: 100%;
+  margin: 15px 0;
+}
+
+.slot-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.slot-options button {
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background-color: #e0e0e0;
+  cursor: pointer;
+}
+
+.slot-options button.selected {
+  background-color: #64c271;
+  color: #ffffff;
+}
+
+.calendar-buttons {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.calendar-button {
+  padding: 15px 20px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.calendar-button.primary {
+  background-color: #64c271;
+  color: #ffffff;
+}
+
+.calendar-button.secondary {
+  background-color: #e0e0e0;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  .wrap-calendar {
+    padding: 15px;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .calendar-day {
+    margin-bottom: 10px;
+  }
+}

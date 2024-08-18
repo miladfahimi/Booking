@@ -6,7 +6,6 @@ import { UserProfileDTO } from '../../types';
 import {selectProfile, selectProfileLoading} from '../../store/profile.selectors';
 import * as ProfileActions from '../../store/profile.actions';
 import { CoreAuthService } from '@tennis-time/core';
-import {selectLoadingStatus} from "../../../../../../auth/src/lib/auth/store/auth.selectors"; // Import CoreAuthService
 
 @Component({
   selector: 'app-welcome',
