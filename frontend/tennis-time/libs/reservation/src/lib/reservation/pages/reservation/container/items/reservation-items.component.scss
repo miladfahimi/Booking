@@ -1,0 +1,31 @@
+.time-slots {
+  width: 100%;
+  margin: 15px 0;
+  padding: 15px; /* Adjust padding */
+
+  label {
+    display: block;
+    margin-top: 10px;  /* Adds space above the label */
+    margin-bottom: 10px;  /* Adds space below the label */
+    font-weight: bold;  /* Optional: makes the label stand out */
+  }
+}
+
+.slot-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  button {
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    background-color: #e0e0e0;
+    cursor: pointer;
+
+    &.selected {
+      background-color: #64c271;
+      color: #ffffff;
+    }
+  }
+}

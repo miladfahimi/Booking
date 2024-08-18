@@ -1,0 +1,21 @@
+
+
+<div *ngIf="isMobile" class="calendar-week">
+  <button class="nav-button prev" (click)="onGoToPrevious()">
+    <img src="/right.png" alt="Previous" class="nav-icon">
+  </button>
+  <div *ngFor="let day of week" class="calendar-day" [class.selected]="day.selected" (click)="onSelectDay(day)">
+    <div class="day-of-week">{{ day.label }}</div>
+    <div class="date">{{ day.date | date: 'dd' }}</div>
+  </div>
+  <button class="nav-button next" (click)="onGoToNext()">
+    <img src="/left.png" alt="Next" class="nav-icon">
+  </button>
+</div>
+
+<div *ngIf="!isMobile" class="calendar-month">
+  <div *ngFor="let day of month" class="calendar-day" [class.selected]="day.selected" (click)="onSelectDay(day)">
+    <div class="day-of-week">{{ day.label }}</div>
+    <div class="date">{{ day.date | date: 'dd' }}</div>
+  </div>
+</div>

@@ -1,0 +1,10 @@
+<div class="time-slots">
+  <label>انتخاب موارد موجود برای رزرو</label>
+  <div class="slot-options">
+    <button *ngFor="let item of items"
+            (click)="onSelectDuration(item)"
+            [class.selected]="item.selected">
+      {{ item.label }}
+    </button>
+  </div>
+</div>

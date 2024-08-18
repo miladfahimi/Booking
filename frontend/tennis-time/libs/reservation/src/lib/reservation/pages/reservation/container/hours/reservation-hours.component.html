@@ -1,0 +1,10 @@
+<div class="time-slots">
+  <label>انتخاب زمان</label>
+  <div class="slot-options">
+    <button *ngFor="let slot of timeSlots"
+            (click)="onSelectSlot(slot)"
+            [class.selected]="slot.selected">
+      {{ slot.time }}
+    </button>
+  </div>
+</div>

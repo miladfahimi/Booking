@@ -31,10 +31,10 @@
 
 .wrap-calendar {
   width: 100%;
-  max-width: 400px;
+  max-width: 600px;
   background: #fff;
   border-radius: 10px;
-  padding: 0 30px 20px 30px;
+  padding: 0 0 0 0;
   box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: hidden;
@@ -53,10 +53,42 @@
   color: #333;
 }
 
-.calendar-week {
+.calendar-navigation {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.nav-button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.nav-button.prev {
+  float: left;
+}
+
+.nav-button.next {
+  float: right;
+}
+
+/* Monthly Calendar Layout for Desktop */
+.calendar-month {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
   width: 100%;
+}
+
+/* Weekly Calendar Layout for Mobile */
+.calendar-week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
 }
 
 .calendar-day {
@@ -100,8 +132,9 @@
 .calendar-buttons {
   display: flex;
   justify-content: space-between;
-  width: 100%;
   margin-top: 20px;
+  padding: 15px;
+
 }
 
 .calendar-button {
@@ -122,13 +155,44 @@
 
 /* Mobile-specific styles */
 @media (max-width: 768px) {
+  .limiter{
+    padding: 0;
+  }
   .wrap-calendar {
-    padding: 15px;
-    border-radius: 0;
-    box-shadow: none;
+    width: 100%; /* Expand to full screen width */
+    max-width: none; /* Set a maximum width for the form */
+    border-radius: 0; /* Remove rounded corners */
+    box-shadow: none; /* Remove the box shadow */
+    min-height: 100vh; /* Ensure the background covers the full height */
+  }
+
+  .container-calendar {
+    padding: 0; /* Remove padding to allow full width */
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .calendar-month {
+    display: none;
+    box-sizing: border-box;
+  }
+
+  .calendar-week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
   }
 
   .calendar-day {
-    margin-bottom: 10px;
+    padding: 5px;
+  }
+
+  .calendar-day .day-of-week,
+  .calendar-day .date {
+    font-size: 14px;
+  }
+
+  .calendar-buttons {
+    margin-top: 10px;
   }
 }

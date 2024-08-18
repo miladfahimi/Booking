@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { BookComponent } from './pages/book/book.component';
 import { AuthGuard } from '@tennis-time/core';
+import {ReservationContainerComponent} from "./pages/reservation/container/reservation-container.component";
 
 
 const routes: Routes = [
-  { path: 'book', component: BookComponent, canActivate: [AuthGuard] },
+  { path: 'book', component: ReservationContainerComponent, canActivate: [AuthGuard] },
 ];
 
 @NgModule({
