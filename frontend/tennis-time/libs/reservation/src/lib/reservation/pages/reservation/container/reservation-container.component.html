@@ -1,11 +1,18 @@
 <div class="limiter">
   <div class="container-calendar">
     <div class="wrap-calendar">
-      <!-- Calendar Component -->
-      <app-reservation-calendar
+      <!-- Load Mobile or Desktop Calendar Component -->
+      @if (isMobileView) {
+        <app-reservation-calendar-mobile
+          [isMobile]="isMobileView"
+          (selectDay)="onDaySelected($event)">
+        </app-reservation-calendar-mobile>
+      } @else {
+      <app-reservation-calendar-desktop
         [isMobile]="isMobileView"
         (selectDay)="onDaySelected($event)">
-      </app-reservation-calendar>
+      </app-reservation-calendar-desktop>
+      }
 
       <!-- Items Component -->
       <app-reservation-items
@@ -21,7 +28,7 @@
 
       <!-- Action Buttons -->
       <div class="calendar-buttons">
-        <button class="calendar-button primary" (click)="book()">رزرو </button>
+        <button class="calendar-button primary" (click)="book()">رزرو</button>
         <button class="calendar-button secondary" (click)="cancel()">لغو</button>
       </div>
     </div>

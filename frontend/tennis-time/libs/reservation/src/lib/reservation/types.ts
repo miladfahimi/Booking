@@ -22,5 +22,6 @@ export interface Day {
   date: Date;
   jalaliDate: string;
   selected: boolean;
+  isToday: boolean;
+  areOtherMonths: boolean;
 }
-

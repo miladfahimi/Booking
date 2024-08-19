@@ -15,7 +15,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 15px;
   min-height: 100vh;
   box-sizing: border-box;
 }
@@ -26,10 +25,10 @@
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  padding: 15px;
 }
 
 .wrap-calendar {
+  margin-top: 60px;
   width: 100%;
   max-width: 600px;
   background: #fff;
@@ -38,6 +37,7 @@
   box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: hidden;
+  padding: 50px;
 }
 
 .calendar-header {
@@ -133,8 +133,6 @@
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
-  padding: 15px;
-
 }
 
 .calendar-button {
@@ -159,11 +157,13 @@
     padding: 0;
   }
   .wrap-calendar {
+    margin-top: 0;
     width: 100%; /* Expand to full screen width */
     max-width: none; /* Set a maximum width for the form */
     border-radius: 0; /* Remove rounded corners */
     box-shadow: none; /* Remove the box shadow */
     min-height: 100vh; /* Ensure the background covers the full height */
+    padding: 30px;
   }
 
   .container-calendar {

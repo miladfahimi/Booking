@@ -11,16 +11,20 @@ import { EffectsModule } from '@ngrx/effects';
 import { reservationReducer } from './store/reservation.reducer';
 import { ReservationEffects } from './store/reservation.effects';
 import {ReservationContainerComponent} from "./pages/reservation/container/reservation-container.component";
-import {ReservationCalendarComponent} from "./pages/reservation/container/calendar/reservation-calendar.component";
+import {ReservationCalendarDesktopComponent} from "./pages/reservation/container/calendar/calendar-desktop/reservation-calendar-desktop.component";
 import {
   ReservationItemsComponent
 } from "./pages/reservation/container/items/reservation-items.component";
 import {ReservationHoursComponent} from "./pages/reservation/container/hours/reservation-hours.component";
+import {
+  ReservationCalendarMobileComponent
+} from "./pages/reservation/container/calendar/calendar-mobile/reservation-calendar-mobile.component";
 
 @NgModule({
   declarations: [
+    ReservationCalendarMobileComponent,
     ReservationContainerComponent,
-    ReservationCalendarComponent,
+    ReservationCalendarDesktopComponent,
     ReservationItemsComponent,
     ReservationHoursComponent,
   ],

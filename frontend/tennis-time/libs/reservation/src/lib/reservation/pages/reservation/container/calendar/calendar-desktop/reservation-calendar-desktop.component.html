@@ -1,0 +1,39 @@
+<div class="calendar-container">
+  <!-- Month name, navigation buttons, and Today button -->
+  <div class="calendar-header">
+    <button class="nav-button prev" (click)="onGoToPrevious()">
+      <img src="/right.png" alt="Previous" class="nav-icon">
+    </button>
+
+    <div class="calendar-month-names">
+      <span class="gregorian-month">{{ jalaliMonthName }}</span>
+      <span class="jalali-month">({{ gregorianMonthName }})</span>
+      <button class="today-button" (click)="onGoToToday()">Today</button>
+    </div>
+
+    <button class="nav-button next" (click)="onGoToNext()">
+      <img src="/left.png" alt="Next" class="nav-icon">
+    </button>
+  </div>
+
+  <!-- Day labels row (shown once at the top) -->
+  <div class="calendar-week day-labels">
+    @for (label of dayLabels; track label) {
+      <div class="calendar-day-label">{{ label }}</div>
+    }
+  </div>
+
+  <!-- Monthly view -->
+  <div class="calendar-month">
+    @for (day of month; track day.date) {
+      <div class="calendar-day"
+           [class.selected]="day.selected"
+           [class.other-month]="day.areOtherMonths"
+           [class.today]="day.isToday"
+           (click)="onSelectDay(day)">
+        <div class="jalali-date">{{ day.jalaliDate }}</div>
+        <div class="date">{{ day.date | date: 'dd' }}</div>
+      </div>
+    }
+  </div>
+</div>

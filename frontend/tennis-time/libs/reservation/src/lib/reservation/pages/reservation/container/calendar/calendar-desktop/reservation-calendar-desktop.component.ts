@@ -1,14 +1,14 @@
 import { Component, Input, Output, EventEmitter, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { DateService } from '../../../../services/calendar/DateService.service';
-import {Day} from "../../../../types";
+import { DateService } from '../../../../../services/calendar/DateService.service';
+import { Day } from "../../../../../types";
 
 @Component({
-  selector: 'app-reservation-calendar',
-  templateUrl: './reservation-calendar.component.html',
-  styleUrls: ['./reservation-calendar.component.scss'],
+  selector: 'app-reservation-calendar-desktop',
+  templateUrl: './reservation-calendar-desktop.component.html',
+  styleUrls: ['./reservation-calendar-desktop.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ReservationCalendarComponent implements OnInit {
+export class ReservationCalendarDesktopComponent implements OnInit {
   @Input() isMobile: boolean = false;
   @Output() selectDay = new EventEmitter<Day>();
 
@@ -17,7 +17,8 @@ export class ReservationCalendarComponent implements OnInit {
   selectedDay: Day | null = null;
   gregorianMonthName: string = '';
   jalaliMonthName: string = '';
-  baseDate: Date = new Date();  // Track the current base date
+  baseDate: Date = new Date();
+  dayLabels: string[] = [];
 
   constructor(private dateService: DateService) {}
 
@@ -28,21 +29,22 @@ export class ReservationCalendarComponent implements OnInit {
   private updateCalendarView(): void {
     this.gregorianMonthName = this.dateService.getGregorianMonthName(this.baseDate);
     this.jalaliMonthName = this.dateService.getJalaliMonthName(this.baseDate);
+    this.dayLabels = this.dateService.getDayLabels();
 
     if (this.isMobile) {
       this.week = this.dateService.generateWeek(this.baseDate);
-      this.selectedDay = this.week[0];
     } else {
       this.month = this.dateService.generateMonth(this.baseDate);
-      this.selectedDay = this.month[0];
     }
+
+    this.clearSelection();
   }
 
   onSelectDay(day: Day): void {
     this.clearSelection();
     day.selected = true;
     this.selectedDay = day;
-    this.selectDay.emit(day);
+    this.selectDay.emit(day);  // Emit the selected day as data
   }
 
   private clearSelection(): void {
@@ -51,23 +53,29 @@ export class ReservationCalendarComponent implements OnInit {
     } else {
       this.month.forEach(d => d.selected = false);
     }
+    this.selectedDay = null;
   }
 
   onGoToPrevious(): void {
     if (this.isMobile) {
-      this.baseDate.setDate(this.baseDate.getDate() - 7);  // Go to the previous week
+      this.baseDate.setDate(this.baseDate.getDate() - 7);
     } else {
-      this.baseDate.setMonth(this.baseDate.getMonth() - 1);  // Go to the previous month
+      this.baseDate.setMonth(this.baseDate.getMonth() - 1);
     }
     this.updateCalendarView();
   }
 
   onGoToNext(): void {
     if (this.isMobile) {
-      this.baseDate.setDate(this.baseDate.getDate() + 7);  // Go to the next week
+      this.baseDate.setDate(this.baseDate.getDate() + 7);
     } else {
-      this.baseDate.setMonth(this.baseDate.getMonth() + 1);  // Go to the next month
+      this.baseDate.setMonth(this.baseDate.getMonth() + 1);
     }
+    this.updateCalendarView();
+  }
+
+  onGoToToday(): void {
+    this.baseDate = new Date();
     this.updateCalendarView();
   }
 }
