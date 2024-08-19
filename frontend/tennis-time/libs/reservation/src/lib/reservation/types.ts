@@ -16,3 +16,11 @@ export interface LoadingStatus {
   loaded: boolean;
   loading: boolean;
 }
+
+export interface Day {
+  label: string;
+  date: Date;
+  jalaliDate: string;
+  selected: boolean;
+}
+

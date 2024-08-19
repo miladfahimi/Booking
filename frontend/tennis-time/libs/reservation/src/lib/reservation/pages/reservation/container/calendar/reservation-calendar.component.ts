@@ -1,79 +1,73 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
-import {of} from "rxjs";
+import { Component, Input, Output, EventEmitter, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { DateService } from '../../../../services/calendar/DateService.service';
+import {Day} from "../../../../types";
 
 @Component({
   selector: 'app-reservation-calendar',
   templateUrl: './reservation-calendar.component.html',
-  styleUrls: ['./reservation-calendar.component.scss']
+  styleUrls: ['./reservation-calendar.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReservationCalendarComponent implements OnInit {
   @Input() isMobile: boolean = false;
-  @Output() selectDay = new EventEmitter<any>();
+  @Output() selectDay = new EventEmitter<Day>();
 
-  month: any[] = [];
-  week: any[] = [];
-  selectedDay: any = null;
+  month: Day[] = [];
+  week: Day[] = [];
+  selectedDay: Day | null = null;
+  gregorianMonthName: string = '';
+  jalaliMonthName: string = '';
+  baseDate: Date = new Date();  // Track the current base date
+
+  constructor(private dateService: DateService) {}
 
   ngOnInit(): void {
-    this.generateMonth();
-    this.generateWeek();
+    this.updateCalendarView();
   }
 
-  generateMonth(baseDate = new Date()) {
-    this.month = [];
-    const currentMonth = baseDate.getMonth();
-    const firstDay = new Date(baseDate.getFullYear(), currentMonth, 1);
-    const lastDay = new Date(baseDate.getFullYear(), currentMonth + 1, 0);
+  private updateCalendarView(): void {
+    this.gregorianMonthName = this.dateService.getGregorianMonthName(this.baseDate);
+    this.jalaliMonthName = this.dateService.getJalaliMonthName(this.baseDate);
 
-    for (let day = firstDay; day <= lastDay; day.setDate(day.getDate() + 1)) {
-      this.month.push({
-        label: this.getDayLabel(day),
-        date: new Date(day),
-        selected: this.month.length === 0
-      });
-    }
-    this.selectedDay = this.month[0];
-  }
-
-  generateWeek(baseDate = new Date()) {
-    this.week = [];
-    const firstDayOfWeek = new Date(baseDate.setDate(baseDate.getDate() - baseDate.getDay()));
-    for (let i = 0; i < 7; i++) {
-      const day = new Date(firstDayOfWeek);
-      day.setDate(firstDayOfWeek.getDate() + i);
-      this.week.push({
-        label: this.getDayLabel(day),
-        date: new Date(day),
-        selected: i === 0
-      });
-    }
-    this.selectedDay = this.week[0];
-  }
-
-  getDayLabel(date: Date) {
-    const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-    return days[date.getDay()];
-  }
-
-  onSelectDay(day: any) {
-    console.log('%cDay Selected:', 'color: blue', day);
     if (this.isMobile) {
-      this.week.forEach(d => d.selected = false);
+      this.week = this.dateService.generateWeek(this.baseDate);
+      this.selectedDay = this.week[0];
     } else {
-      this.month.forEach(d => d.selected = false);
+      this.month = this.dateService.generateMonth(this.baseDate);
+      this.selectedDay = this.month[0];
     }
+  }
+
+  onSelectDay(day: Day): void {
+    this.clearSelection();
     day.selected = true;
     this.selectedDay = day;
     this.selectDay.emit(day);
   }
 
-  onGoToPrevious() {
-    console.log('%cGo to Previous:', 'color: orange');
+  private clearSelection(): void {
+    if (this.isMobile) {
+      this.week.forEach(d => d.selected = false);
+    } else {
+      this.month.forEach(d => d.selected = false);
+    }
   }
 
-  onGoToNext() {
-    console.log('%cGo to Next:', 'color: orange');
+  onGoToPrevious(): void {
+    if (this.isMobile) {
+      this.baseDate.setDate(this.baseDate.getDate() - 7);  // Go to the previous week
+    } else {
+      this.baseDate.setMonth(this.baseDate.getMonth() - 1);  // Go to the previous month
+    }
+    this.updateCalendarView();
   }
 
-  protected readonly of = of;
+  onGoToNext(): void {
+    if (this.isMobile) {
+      this.baseDate.setDate(this.baseDate.getDate() + 7);  // Go to the next week
+    } else {
+      this.baseDate.setMonth(this.baseDate.getMonth() + 1);  // Go to the next month
+    }
+    this.updateCalendarView();
+  }
 }

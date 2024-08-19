@@ -1,31 +1,41 @@
-@if (isMobile) {
-  <div class="calendar-week">
-    <button class="nav-button prev" (click)="onGoToPrevious()">
-      <img src="/right.png" alt="Previous" class="nav-icon">
-    </button>
+<div class="calendar-container">
 
-    <!-- Use @for for looping over week days -->
-    @for (day of week; track day.date) {
-      <div class="calendar-day" [class.selected]="day.selected" (click)="onSelectDay(day)">
-        <div class="day-of-week">{{ day.label }}</div>
-        <div class="date">{{ day.date | date: 'dd' }}</div>
-      </div>
-    }
+  @if (isMobile) {
+    <div class="calendar-week">
+      <button class="nav-button prev" (click)="onGoToPrevious()">
+        <img src="/right.png" alt="Previous" class="nav-icon">
+      </button>
 
-    <button class="nav-button next" (click)="onGoToNext()">
-      <img src="/left.png" alt="Next" class="nav-icon">
-    </button>
+      @for (day of week; track day.date) {
+        <div class="calendar-day" [class.selected]="day.selected" (click)="onSelectDay(day)">
+          <div class="day-of-week">{{ day.label }}</div>
+          <div class="date">{{ day.jalaliDate }}</div> <!-- Display Jalali date -->
+          <div class="jalali-date">{{ day.date | date: 'dd' }}</div>
+        </div>
+      }
+
+      <button class="nav-button next" (click)="onGoToNext()">
+        <img src="/left.png" alt="Next" class="nav-icon">
+      </button>
+    </div>
+  }
+
+  <div class="calendar-month-names">
+    <span class="gregorian-month">{{ jalaliMonthName }}</span>
+    <span class="jalali-month">({{ gregorianMonthName }})</span>
   </div>
-}
 
-@if (!isMobile) {
-  <div class="calendar-month">
-    <!-- Use @for for looping over month days -->
-    @for (day of month; track day.date) {
-      <div class="calendar-day" [class.selected]="day.selected" (click)="onSelectDay(day)">
-        <div class="day-of-week">{{ day.label }}</div>
-        <div class="date">{{ day.date | date: 'dd' }}</div>
-      </div>
-    }
-  </div>
-}
+  @if (!isMobile) {
+    <div class="calendar-month">
+      @for (day of month; track day.date) {
+        <div class="calendar-day" [class.selected]="day.selected" (click)="onSelectDay(day)">
+          <div class="day-of-week">{{ day.label }}</div>
+          <div class="date">{{ day.date | date: 'dd' }}</div>
+          <div class="jalali-date">{{ day.jalaliDate }}</div> <!-- Display Jalali date -->
+        </div>
+      }
+    </div>
+  }
+
+</div>
+
