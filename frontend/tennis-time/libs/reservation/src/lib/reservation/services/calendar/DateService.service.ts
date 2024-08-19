@@ -39,14 +39,18 @@ export class DateService {
 
   getGregorianMonthName(date: Date): string {
     const monthIndex = date.getMonth();
-    return this.isFarsi ? this.gregorianMonthsFarsi[monthIndex] : this.gregorianMonths[monthIndex];
+    const monthName = this.isFarsi ? this.gregorianMonthsFarsi[monthIndex] : this.gregorianMonths[monthIndex];
+    const year = this.isFarsi ? this.convertNumberToFarsi(date.getFullYear().toString()) : date.getFullYear().toString();
+    return `${monthName} ${year}`;
   }
+
 
   getJalaliMonthName(date: Date): string {
     const jDate = jalaali.toJalaali(date.getFullYear(), date.getMonth() + 1, date.getDate());
-    return this.isFarsi ? this.jalaliMonthsFarsi[jDate.jm - 1] : this.jalaliMonths[jDate.jm - 1];
+    const monthName = this.isFarsi ? this.jalaliMonthsFarsi[jDate.jm - 1] : this.jalaliMonths[jDate.jm - 1];
+    const year = this.isFarsi ? this.convertNumberToFarsi(jDate.jy.toString()) : jDate.jy.toString();
+    return `${monthName} ${year}`;
   }
-
   generateMonth(baseDate: Date = new Date()): Day[] {
     const month: Day[] = [];
     const currentMonth = baseDate.getMonth();
@@ -55,6 +59,7 @@ export class DateService {
 
     for (let day = firstDay; day <= lastDay; day.setDate(day.getDate() + 1)) {
       const jalaliDate = this.convertToJalali(day);
+      const dateLabel = this.isFarsi ? this.convertNumberToFarsi(day.getDate().toString()) : day.getDate().toString();
       month.push({
         label: this.getDayLabel(day),
         date: new Date(day),
@@ -86,11 +91,29 @@ export class DateService {
 
   private convertToJalali(date: Date): string {
     const jDate = jalaali.toJalaali(date.getFullYear(), date.getMonth() + 1, date.getDate());
-    return `${jDate.jd}`;
+    return this.isFarsi ? this.convertNumberToFarsi(`${jDate.jd}`) : `${jDate.jd}`;
   }
+
 
   private getDayLabel(date: Date): string {
     const dayIndex = date.getDay();
     return this.isFarsi ? this.daysFarsi[dayIndex] : this.days[dayIndex];
+  }
+
+  private convertNumberToFarsi(input: string): string {
+    const englishToFarsiMap: { [key: string]: string } = {
+      '0': '۰',
+      '1': '۱',
+      '2': '۲',
+      '3': '۳',
+      '4': '۴',
+      '5': '۵',
+      '6': '۶',
+      '7': '۷',
+      '8': '۸',
+      '9': '۹'
+    };
+
+    return input.replace(/\d/g, (digit) => englishToFarsiMap[digit as keyof typeof englishToFarsiMap]);
   }
 }
