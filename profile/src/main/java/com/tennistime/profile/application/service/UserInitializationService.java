@@ -35,7 +35,7 @@ public class UserInitializationService {
     public UserInitializationResponseDTO initializeUserEntities(UserInitializationRequestDTO request) {
         UUID userId = request.getUserProfileDTO().getUserId();
         String email = request.getUserProfileDTO().getEmail();
-        String phoneNumber = request.getUserProfileDTO().getPhoneNumber();
+        String phoneNumber = request.getUserProfileDTO().getPhone();
 
         // Check if user profile is already initiated
         Optional<UserProfile> existingUserProfileOpt = userProfileRepository.findByUserId(userId);

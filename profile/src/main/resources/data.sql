@@ -8,7 +8,8 @@ INSERT INTO user_profile (
 ('2fa85f64-5717-4562-b3fc-2c963f66afa7', 'jane.smith@example.com', 'Jane', 'Smith', '0987654321', '890 Main St', '1992-10-02', '/images/profile2.jpg', 'sms', 'Female', 'US', 'English', 'EST', 'active', TRUE, 'public', TRUE, FALSE, 'admin', 'admin'),
 ('1fa85f64-5717-4562-b3fc-2c963f66afa8', 'david.jackson@example.com', 'David', 'Jackson', '0987654321', '678 Main St', '1990-09-22', '/images/profile3.jpg', 'email', 'Male', 'US', 'English', 'EST', 'active', TRUE, 'public', TRUE, FALSE, 'admin', 'admin'),
 ('0fa85f64-5717-4562-b3fc-2c963f66afa9', 'emma.jones@example.com', 'Emma', 'Jones', '0987654321', '4543 Main St', '1982-03-11', '/images/profile4.jpg', 'sms', 'Female', 'US', 'English', 'EST', 'active', TRUE, 'public', TRUE, FALSE, 'admin', 'admin'),
-('4fa85f64-5717-4562-b3fc-2c963f66afaa', 'admin@example.com', 'Admin', 'Admin', '0987654321', '453456 Main St', '1972-08-30', '/images/profile5.jpg', 'sms', 'Male', 'US', 'English', 'EST', 'active', TRUE, 'public', TRUE, FALSE, 'admin', 'admin');
+('4fa85f64-5717-4562-b3fc-2c963f66afaa', 'admin@example.com', 'Admin', 'Admin', '0987654321', '453456 Main St', '1972-08-30', '/images/profile5.jpg', 'sms', 'Male', 'US', 'English', 'EST', 'active', TRUE, 'public', TRUE, FALSE, 'admin', 'admin'),
+('f05e550c-5e34-4af2-b1db-e64889c697dd', 'john_doe@example.com', 'John', 'Doe', '09876454565', '451116 Main St', '1972-08-30', '/images/profile5.jpg', 'sms', 'Male', 'US', 'English', 'EST', 'active', TRUE, 'public', TRUE, FALSE, 'admin', 'admin');
 
 -- Insert data into user_subscription table
 INSERT INTO user_subscription (

@@ -28,7 +28,7 @@ public class UserProfileDTO {
     private String lastName = "Does not filled by User";
 
     @Schema(description = "Phone number", example = "1234567890")
-    private String phoneNumber = "Does not filled by User";
+    private String phone = "Does not filled by User";
 
     @Schema(description = "Address", example = "123 Main St")
     private String address = "Does not filled by User";
