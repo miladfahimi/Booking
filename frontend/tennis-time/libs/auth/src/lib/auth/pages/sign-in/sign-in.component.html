@@ -4,68 +4,56 @@
       <form [formGroup]="signInForm" (ngSubmit)="onSubmit()" class="login100-form">
         <span class="login100-form-title">ورود</span>
 
-        <!-- Show Spinner when loading -->
-        <app-spinner *ngIf="(loadingStatus$ | async)?.loading"></app-spinner>
+        @if ((loadingStatus$ | async)?.loading) {
+          <app-spinner></app-spinner>
+        }
 
         <!-- Email Input Field -->
-        <div class="wrap-input100"
-          [ngClass]="{ 'invalid': signInForm.get('email')?.invalid && signInForm.get('email')?.touched }">
+        <div class="wrap-input100" [ngClass]="{ 'invalid': signInForm.get('email')?.invalid && signInForm.get('email')?.touched }">
           <input formControlName="email" class="input100" type="email" placeholder="ایمیل">
           <!-- Email Validation Error Message -->
           @if (signInForm.get('email')?.invalid && signInForm.get('email')?.touched) {
-          <div class="error-message">
-            @if (signInForm.get('email')?.errors?.['required']) {
-            <small>ایمیل الزامی است</small>
-            }
-            @if (signInForm.get('email')?.errors?.['email']) {
-            <small>ایمیل معتبر نیست</small>
-            }
-          </div>
+            <div class="error-message">
+              @if (signInForm.get('email')?.errors?.['required']) {
+                <small>ایمیل الزامی است</small>
+              }
+              @if (signInForm.get('email')?.errors?.['email']) {
+                <small>ایمیل معتبر نیست</small>
+              }
+            </div>
           }
         </div>
 
         <!-- Password Input Field -->
-        <div class="wrap-input100 password-container"
-          [ngClass]="{ 'invalid': signInForm.get('password')?.invalid && signInForm.get('password')?.touched }">
-          <input formControlName="password" class="input100" [type]="showPassword ? 'text' : 'password'"
-            placeholder="رمز عبور">
+        <div class="wrap-input100 password-container" [ngClass]="{ 'invalid': signInForm.get('password')?.invalid && signInForm.get('password')?.touched }">
+          <input formControlName="password" class="input100" [type]="showPassword ? 'text' : 'password'" placeholder="رمز عبور">
           <span class="show-password" (click)="togglePasswordVisibility()">نمایش</span>
           <!-- Password Validation Error Message -->
           @if (signInForm.get('password')?.invalid && signInForm.get('password')?.touched) {
-          <div class="error-message">
-            @if (signInForm.get('password')?.errors?.['required']) {
-            <small>رمز عبور الزامی است</small>
-            }
-            @if (signInForm.get('password')?.errors?.['minlength']) {
-            <small>رمز عبور باید حداقل ۳ کاراکتر باشد</small>
-            }
-          </div>
+            <div class="error-message">
+              @if (signInForm.get('password')?.errors?.['required']) {
+                <small>رمز عبور الزامی است</small>
+              }
+              @if (signInForm.get('password')?.errors?.['minlength']) {
+                <small>رمز عبور باید حداقل ۳ کاراکتر باشد</small>
+              }
+            </div>
           }
         </div>
 
         <!-- Submit Button -->
         <div class="container-login100-form-btn">
-          <button type="submit" class="login100-form-btn"
-            [disabled]="signInForm.invalid || (loadingStatus$ | async)?.loading">
+          <button type="submit" class="login100-form-btn" [disabled]="signInForm.invalid || (loadingStatus$ | async)?.loading">
             ورود
           </button>
         </div>
 
-        <!-- Loading Indicator -->
-        @if ((loadingStatus$ | async)?.loading) {
-        <div class="text-center p-t-20">
-          <small>در حال ورود...</small>
-        </div>
-        }
-
         <!-- Error Message Display -->
-        <ng-container *ngIf="errorMessage$ | async as errorMessage">
-          @if (errorMessage) {
+        @if (errorMessage$ | async) {
           <div class="text-center p-t-20">
-            <small class="error-message">{{ errorMessage }}</small>
+            <small class="error-message">{{ (errorMessage$ | async) }}</small>
           </div>
-          }
-        </ng-container>
+        }
 
         <!-- Forgot Password Link -->
         <div class="text-center p-t-20">

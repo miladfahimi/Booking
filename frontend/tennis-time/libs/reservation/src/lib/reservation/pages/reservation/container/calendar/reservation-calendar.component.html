@@ -1,21 +1,31 @@
+@if (isMobile) {
+  <div class="calendar-week">
+    <button class="nav-button prev" (click)="onGoToPrevious()">
+      <img src="/right.png" alt="Previous" class="nav-icon">
+    </button>
 
+    <!-- Use @for for looping over week days -->
+    @for (day of week; track day.date) {
+      <div class="calendar-day" [class.selected]="day.selected" (click)="onSelectDay(day)">
+        <div class="day-of-week">{{ day.label }}</div>
+        <div class="date">{{ day.date | date: 'dd' }}</div>
+      </div>
+    }
 
-<div *ngIf="isMobile" class="calendar-week">
-  <button class="nav-button prev" (click)="onGoToPrevious()">
-    <img src="/right.png" alt="Previous" class="nav-icon">
-  </button>
-  <div *ngFor="let day of week" class="calendar-day" [class.selected]="day.selected" (click)="onSelectDay(day)">
-    <div class="day-of-week">{{ day.label }}</div>
-    <div class="date">{{ day.date | date: 'dd' }}</div>
+    <button class="nav-button next" (click)="onGoToNext()">
+      <img src="/left.png" alt="Next" class="nav-icon">
+    </button>
   </div>
-  <button class="nav-button next" (click)="onGoToNext()">
-    <img src="/left.png" alt="Next" class="nav-icon">
-  </button>
-</div>
+}
 
-<div *ngIf="!isMobile" class="calendar-month">
-  <div *ngFor="let day of month" class="calendar-day" [class.selected]="day.selected" (click)="onSelectDay(day)">
-    <div class="day-of-week">{{ day.label }}</div>
-    <div class="date">{{ day.date | date: 'dd' }}</div>
+@if (!isMobile) {
+  <div class="calendar-month">
+    <!-- Use @for for looping over month days -->
+    @for (day of month; track day.date) {
+      <div class="calendar-day" [class.selected]="day.selected" (click)="onSelectDay(day)">
+        <div class="day-of-week">{{ day.label }}</div>
+        <div class="date">{{ day.date | date: 'dd' }}</div>
+      </div>
+    }
   </div>
-</div>
+}

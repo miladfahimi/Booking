@@ -4,7 +4,7 @@ export interface UserProfileDTO {
   email: string;
   firstName: string;
   lastName: string;
-  phoneNumber: string;
+  phone: string;
   address: string;
   dateOfBirth: string; // Format: YYYY-MM-DD
   profilePicture: string;

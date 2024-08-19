@@ -1,4 +1,5 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import {of} from "rxjs";
 
 @Component({
   selector: 'app-reservation-calendar',
@@ -73,4 +74,6 @@ export class ReservationCalendarComponent implements OnInit {
   onGoToNext() {
     console.log('%cGo to Next:', 'color: orange');
   }
+
+  protected readonly of = of;
 }

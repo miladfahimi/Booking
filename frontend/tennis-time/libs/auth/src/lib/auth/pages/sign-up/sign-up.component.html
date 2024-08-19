@@ -5,73 +5,61 @@
         <span class="login100-form-title">ثبت نام</span>
 
         <!-- Show Spinner when loading -->
-        <app-spinner *ngIf="(loadingStatus$ | async)?.loading"></app-spinner>
+        @if ((loadingStatus$ | async)?.loading) {
+          <app-spinner></app-spinner>
+        }
 
         <!-- Username Input Field -->
-        <div class="wrap-input100"
-          [ngClass]="{ 'has-error': signUpForm.get('username')?.invalid && signUpForm.get('username')?.touched }">
+        <div class="wrap-input100" [ngClass]="{ 'has-error': signUpForm.get('username')?.invalid && signUpForm.get('username')?.touched }">
           <input class="input100" type="text" formControlName="username" placeholder="نام کاربری">
           @if (signUpForm.get('username')?.invalid && signUpForm.get('username')?.touched) {
-          <div class="error-message">
-            <small>نام کاربری الزامی است</small>
-          </div>
+            <div class="error-message">
+              <small>نام کاربری الزامی است</small>
+            </div>
           }
         </div>
 
         <!-- Email Input Field -->
-        <div class="wrap-input100"
-          [ngClass]="{ 'has-error': signUpForm.get('email')?.invalid && signUpForm.get('email')?.touched }">
+        <div class="wrap-input100" [ngClass]="{ 'has-error': signUpForm.get('email')?.invalid && signUpForm.get('email')?.touched }">
           <input class="input100" type="email" formControlName="email" placeholder="ایمیل">
           @if (signUpForm.get('email')?.invalid && signUpForm.get('email')?.touched) {
-          <div class="error-message">
-            <small>ایمیل معتبر نیست</small>
-          </div>
+            <div class="error-message">
+              <small>ایمیل معتبر نیست</small>
+            </div>
           }
         </div>
 
         <!-- Password Input Field -->
-        <div class="wrap-input100"
-          [ngClass]="{ 'has-error': signUpForm.get('password')?.invalid && signUpForm.get('password')?.touched }">
+        <div class="wrap-input100" [ngClass]="{ 'has-error': signUpForm.get('password')?.invalid && signUpForm.get('password')?.touched }">
           <input class="input100" type="password" formControlName="password" placeholder="رمز عبور">
           @if (signUpForm.get('password')?.invalid && signUpForm.get('password')?.touched) {
-          <div class="error-message">
-            <small>رمز عبور الزامی است (حداقل ۳ کاراکتر)</small>
-          </div>
+            <div class="error-message">
+              <small>رمز عبور الزامی است (حداقل ۳ کاراکتر)</small>
+            </div>
           }
         </div>
 
         <!-- Phone Input Field -->
-        <div class="wrap-input100"
-          [ngClass]="{ 'has-error': signUpForm.get('phone')?.invalid && signUpForm.get('phone')?.touched }">
+        <div class="wrap-input100" [ngClass]="{ 'has-error': signUpForm.get('phone')?.invalid && signUpForm.get('phone')?.touched }">
           <input class="input100" type="text" formControlName="phone" placeholder="تلفن همراه">
           @if (signUpForm.get('phone')?.invalid && signUpForm.get('phone')?.touched) {
-          <div class="error-message">
-            <small>تلفن همراه الزامی است</small>
-          </div>
+            <div class="error-message">
+              <small>تلفن همراه الزامی است</small>
+            </div>
           }
         </div>
 
         <!-- Submit Button -->
         <div class="container-login100-form-btn">
-          <button class="login100-form-btn" type="submit"
-            [disabled]="signUpForm.invalid || (loadingStatus$ | async)?.loading">
+          <button class="login100-form-btn" type="submit" [disabled]="signUpForm.invalid || (loadingStatus$ | async)?.loading">
             ثبت نام
           </button>
         </div>
 
-        <!-- Loading Indicator -->
-        @if ((loadingStatus$ | async)?.loading) {
-        <div class="text-center p-t-20">
-          <small>در حال ثبت نام...</small>
-        </div>
-        }
-
         <!-- Error Message -->
-        <ng-container *ngIf="errorMessage$ | async as errorMessage">
-          @if (errorMessage) {
-          <div class="alert alert-danger">{{ errorMessage }}</div>
-          }
-        </ng-container>
+        @if (errorMessage$ | async) {
+            <div class="alert alert-danger">{{ errorMessage$ | async  }}</div>
+        }
 
         <!-- Sign In Link -->
         <div class="flex-col-c p-t-155">
