@@ -1,6 +1,5 @@
 package com.tennistime.bff.infrastructure.feign;
 
-import com.tennistime.bff.application.dto.ServiceDTO;
 import com.tennistime.bff.application.dto.UserProfileDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

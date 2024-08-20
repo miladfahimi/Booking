@@ -51,8 +51,7 @@ public class DevSecurityConfig {
                                 "/swagger-ui.html",
                                 "/cache/invalidate",
                                 "/logout",
-                                "/user/history/update",
-                                "/user/profiles/**"
+                                "/user/**"
                         ).permitAll()
                         // Allowing easy testing for authenticated endpoints
                         // Ensure that only authorized roles can access specific endpoints

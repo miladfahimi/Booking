@@ -50,7 +50,7 @@ public class DevSecurityConfig {
                                 "/logout",
                                 "/providers/**",
                                 "/services/**",
-                                "/feedbacks"
+                                "/feedbacks/**"
                         ).permitAll()
                         // Allowing easy testing for authenticated endpoints
                         // Ensure that only authorized roles can access specific endpoints

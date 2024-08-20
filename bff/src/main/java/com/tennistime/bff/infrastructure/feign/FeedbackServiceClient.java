@@ -16,4 +16,10 @@ public interface FeedbackServiceClient {
 
     @GetMapping("/feedbacks/service/{serviceId}")
     List<FeedbackDTO> getFeedbacksByServiceId(@PathVariable("serviceId") UUID serviceId);
+
+    @GetMapping("/feedbacks/service/{serviceId}/top-rated")
+    List<FeedbackDTO> getTopRatedFeedbacksByService(@PathVariable("serviceId") UUID serviceId);
+
+    @GetMapping("/feedbacks/provider/{providerId}/top-rated")
+    List<FeedbackDTO> getTopRatedFeedbacksByProvider(@PathVariable("providerId") UUID providerId);
 }
