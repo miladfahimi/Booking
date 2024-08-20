@@ -30,6 +30,10 @@ CREATE TABLE IF NOT EXISTS service (
     duration INT,  -- Duration of the service in minutes
     image_url VARCHAR(255),  -- URL to an image representing the service
     rating DECIMAL(2, 1),  -- Overall rating for the service (e.g., 4.5)
+    start_time TIME,  -- Start time of the service availability
+    end_time TIME,  -- End time of the service availability
+    slot_duration INT,  -- Duration of each time slot in minutes
+    description TEXT,  -- Description of the service
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),  -- Timestamp when the service was created
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),  -- Timestamp when the service details were last updated
     status VARCHAR(50) DEFAULT 'available',  -- Current availability status of the service

@@ -1,7 +1,6 @@
 package com.tennistime.backend.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,13 +22,8 @@ public class Service {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private UUID id;
 
-    @Schema(example = "Service 1")
     private String name;
-
-    @Schema(example = "Clay")
     private String type;
-
-    @Schema(example = "true")
     private boolean availability;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -43,6 +38,10 @@ public class Service {
     private String currency;
     private Integer duration;
     private String imageUrl;
+    private LocalTime startTime;
+    private LocalTime endTime;
+    private Integer slotDuration;
+    private String description;
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();
     private String status = "available";

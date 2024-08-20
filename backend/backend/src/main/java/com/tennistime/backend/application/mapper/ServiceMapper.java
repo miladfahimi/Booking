@@ -9,8 +9,10 @@ import org.mapstruct.Mapping;
 public interface ServiceMapper {
 
     @Mapping(source = "provider.id", target = "providerId")
+    @Mapping(target = "tags", ignore = true)
     ServiceDTO toDTO(Service service);
 
     @Mapping(source = "providerId", target = "provider.id")
+    @Mapping(target = "tags", ignore = true)
     Service toEntity(ServiceDTO serviceDTO);
 }
