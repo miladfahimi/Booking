@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { ServiceDTO } from '../types';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +11,7 @@ export class ReservationService {
 
   constructor(private http: HttpClient) {}
 
-  getSlotsByServiceAndDate(serviceId: string, date: string): Observable<string[]> {
-    return this.http.get<string[]>(`${this.baseUrl}/portal/user/services/${serviceId}/slots/${date}`);
+  getSlotsByServiceAndDate(serviceId: string, date: string): Observable<ServiceDTO> {
+    return this.http.get<ServiceDTO>(`${this.baseUrl}/portal/user/services/${serviceId}/slots/${date}`);
   }
 }

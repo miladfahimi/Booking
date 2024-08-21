@@ -31,3 +31,30 @@ export interface Day {
   isToday: boolean;
   areOtherMonths: boolean;
 }
+
+export interface SlotDTO {
+  slotId: string;
+  time: string;
+  status: string;
+  price: number;
+  capacity: number;
+  reservedBy?: string | null;
+  selected?: boolean;
+}
+
+export interface ServiceDTO {
+  id: string;
+  name: string;
+  type: string;
+  availability: boolean;
+  providerId: string;
+  startTime: string; // e.g., "09:00:00"
+  endTime: string;   // e.g., "20:00:00"
+  slotDuration: number;
+  tags: string[];
+  price: number;
+  maxCapacity: number;
+  slots: SlotDTO[];  // Array of SlotDTO objects
+  slotCount: number; // Length of the slots array
+}
+

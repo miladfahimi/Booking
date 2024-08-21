@@ -1,12 +1,14 @@
 <div class="time-slots">
   <label>انتخاب زمان</label>
   <div class="slot-options">
-    <button *ngFor="let slot of timeSlots"
-            (click)="onSelectSlot(slot)"
-            [class.available]="slot.status === 'a'"
-            [class.booked]="slot.status === 'b'"
-            [class.selected]="slot.selected">
-      {{ slot.time }}
-    </button>
+    @for (slot of timeSlots; track slot) {
+      <button
+        (click)="onSelectSlot(slot)"
+        [class.selected]="isSelected(slot)"
+        [class.booked]="slot.status === 'booked'"
+        [disabled]="slot.status === 'booked'">
+        {{ slot.time }}
+      </button>
+    }
   </div>
 </div>

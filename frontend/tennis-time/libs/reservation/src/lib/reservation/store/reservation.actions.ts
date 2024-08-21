@@ -1,4 +1,5 @@
 import { createAction, props } from '@ngrx/store';
+import { ServiceDTO } from '../types';
 
 export const loadSlots = createAction(
   '[Reservation] Load Slots',
@@ -7,7 +8,7 @@ export const loadSlots = createAction(
 
 export const loadSlotsSuccess = createAction(
   '[Reservation] Load Slots Success',
-  props<{ slots: string[] }>()
+  props<{ service: ServiceDTO }>() // Updated to expect ServiceDTO
 );
 
 export const loadSlotsFailure = createAction(

@@ -1,11 +1,25 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { ReservationState } from './reservation.reducer';
+import { ServiceDTO } from '../types';
 
 export const selectReservationState = createFeatureSelector<ReservationState>('reservation');
 
-export const selectSlots = createSelector(
+// Selector to get the entire ServiceDTO
+export const selectService = createSelector(
   selectReservationState,
-  (state: ReservationState) => state.slots
+  (state: ReservationState) => state.service
+);
+
+// Selector to get the slots array from the ServiceDTO
+export const selectSlots = createSelector(
+  selectService,
+  (service: ServiceDTO | null) => service ? service.slots : null
+);
+
+// Selector to get the slot count from the ServiceDTO
+export const selectSlotCount = createSelector(
+  selectService,
+  (service: ServiceDTO | null) => service ? service.slots.length : 0
 );
 
 export const selectSlotsLoading = createSelector(

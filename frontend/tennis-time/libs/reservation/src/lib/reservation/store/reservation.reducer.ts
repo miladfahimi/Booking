@@ -1,15 +1,15 @@
 import { createReducer, on } from '@ngrx/store';
 import * as ReservationActions from './reservation.actions';
-import { LoadingStatus } from '../types';
+import { LoadingStatus, ServiceDTO } from '../types';  // Import the ServiceDTO interface
 
 export interface ReservationState {
-  slots: string[] | null;
+  service: ServiceDTO | null;  // Store the full ServiceDTO object
   loadingStatus: LoadingStatus;
   error: any;
 }
 
 export const initialState: ReservationState = {
-  slots: null,
+  service: null,  // Initially, no service data is loaded
   loadingStatus: { loading: false, loaded: false },
   error: null,
 };
@@ -21,9 +21,9 @@ export const reservationReducer = createReducer(
     loadingStatus: { loading: true, loaded: false },
     error: null,
   })),
-  on(ReservationActions.loadSlotsSuccess, (state, { slots }) => ({
+  on(ReservationActions.loadSlotsSuccess, (state, { service }) => ({
     ...state,
-    slots,
+    service,  // Store the entire ServiceDTO object
     loadingStatus: { loading: false, loaded: true },
     error: null,
   })),
