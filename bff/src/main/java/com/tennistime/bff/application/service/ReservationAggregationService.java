@@ -3,6 +3,7 @@ package com.tennistime.bff.application.service;
 import com.tennistime.bff.application.dto.*;
 import com.tennistime.bff.exceptions.ExternalServiceException;
 import com.tennistime.bff.exceptions.ReservationNotFoundException;
+import com.tennistime.bff.exceptions.ServiceNotFoundException;
 import com.tennistime.bff.infrastructure.feign.*;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -10,12 +11,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import feign.FeignException;
 
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * Service to aggregate reservation details with associated entities such as providers, services, user profiles, and feedbacks.
+ * Service responsible for aggregating reservation details along with associated entities
+ * such as providers, services, user profiles, and feedbacks.
  */
 @Service
 @RequiredArgsConstructor
@@ -40,17 +44,14 @@ public class ReservationAggregationService {
     public AggregatedReservationDTO getAggregatedReservation(UUID reservationId) {
         logger.info("Aggregating details for reservation ID: {}", reservationId);
 
-        // Fetch the core entities for the aggregation
         ReservationDTO reservation = fetchReservation(reservationId);
         ProviderDTO provider = fetchProvider(reservation.getProviderId());
         ServiceDTO service = fetchService(reservation.getServiceId());
         UserProfileDTO userProfile = fetchUserProfile(reservation.getUserId());
 
-        // Fetch related feedbacks
         List<FeedbackDTO> providerFeedbacks = fetchProviderFeedbacks(reservation.getProviderId());
         List<FeedbackDTO> serviceFeedbacks = fetchServiceFeedbacks(reservation.getServiceId());
 
-        // Aggregate the fetched data into a DTO
         return new AggregatedReservationDTO(
                 reservation.getId(),
                 reservation.getReservationDate(),
@@ -67,7 +68,7 @@ public class ReservationAggregationService {
     }
 
     /**
-     * Retrieves all reservations and aggregates their details.
+     * Retrieves and aggregates the details of all reservations.
      *
      * @return a list of AggregatedReservationDTO objects with full details for each reservation
      * @throws ExternalServiceException if there is an error communicating with external services
@@ -75,10 +76,7 @@ public class ReservationAggregationService {
     public List<AggregatedReservationDTO> getAllAggregatedReservations() {
         logger.info("Fetching and aggregating all reservations");
 
-        // Fetch all reservations
         List<ReservationDTO> reservations = getAllReservations();
-
-        // Aggregate each reservation's details
         return reservations.stream()
                 .map(reservation -> getAggregatedReservation(reservation.getId()))
                 .collect(Collectors.toList());
@@ -94,7 +92,6 @@ public class ReservationAggregationService {
         logger.info("Fetching providers and their associated services");
 
         try {
-            // Fetch all providers and associate their services
             return providerServiceClient.getAllProviders().stream()
                     .map(provider -> {
                         ProviderDTO providerDTO = new ProviderDTO();
@@ -159,7 +156,7 @@ public class ReservationAggregationService {
      * Fetches a provider by its ID.
      *
      * @param providerId the UUID of the provider to fetch
-     * @return the fetched ProviderDTO
+     * @return the fetched ProviderDTO or null if not found
      * @throws ExternalServiceException if there is an error communicating with external services
      */
     private ProviderDTO fetchProvider(UUID providerId) {
@@ -176,7 +173,7 @@ public class ReservationAggregationService {
      * Fetches a service by its ID.
      *
      * @param serviceId the UUID of the service to fetch
-     * @return the fetched ServiceDTO
+     * @return the fetched ServiceDTO or null if not found
      * @throws ExternalServiceException if there is an error communicating with external services
      */
     private ServiceDTO fetchService(UUID serviceId) {
@@ -193,7 +190,7 @@ public class ReservationAggregationService {
      * Fetches a user profile by its ID.
      *
      * @param userId the UUID of the user to fetch
-     * @return the fetched UserProfileDTO
+     * @return the fetched UserProfileDTO or null if not found
      * @throws ExternalServiceException if there is an error communicating with external services
      */
     private UserProfileDTO fetchUserProfile(UUID userId) {
@@ -210,7 +207,7 @@ public class ReservationAggregationService {
      * Fetches feedbacks for a provider by its ID.
      *
      * @param providerId the UUID of the provider to fetch feedbacks for
-     * @return a list of FeedbackDTO objects
+     * @return a list of FeedbackDTO objects or an empty list if none found
      * @throws ExternalServiceException if there is an error communicating with external services
      */
     private List<FeedbackDTO> fetchProviderFeedbacks(UUID providerId) {
@@ -227,7 +224,7 @@ public class ReservationAggregationService {
      * Fetches feedbacks for a service by its ID.
      *
      * @param serviceId the UUID of the service to fetch feedbacks for
-     * @return a list of FeedbackDTO objects
+     * @return a list of FeedbackDTO objects or an empty list if none found
      * @throws ExternalServiceException if there is an error communicating with external services
      */
     private List<FeedbackDTO> fetchServiceFeedbacks(UUID serviceId) {
@@ -241,7 +238,7 @@ public class ReservationAggregationService {
     }
 
     /**
-     * Method to test Feign client connectivity with the Reservation Service.
+     * Tests Feign client connectivity with the Reservation Service.
      *
      * @return A string indicating the status of the Feign client connection.
      * @throws ExternalServiceException if there is an error communicating with external services
@@ -254,5 +251,35 @@ public class ReservationAggregationService {
             logger.error("Error occurred while testing Feign client connectivity: {}", e.getMessage());
             throw new ExternalServiceException("An error occurred while testing Feign client connectivity.", e);
         }
+    }
+
+    /**
+     * Calculates available slots for a service based on its start time, end time, and slot duration.
+     *
+     * @param serviceId the UUID of the service
+     * @return a list of slot statuses represented as strings (e.g., "a" for available)
+     * @throws ServiceNotFoundException if the service is not found
+     */
+    public List<String> calculateSlots(UUID serviceId) {
+        logger.info("Calculating slots for service ID: {}", serviceId);
+
+        ServiceDTO serviceDTO = serviceServiceClient.getServiceById(serviceId);
+        if (serviceDTO == null) {
+            throw new ServiceNotFoundException("Service not found for ID: " + serviceId);
+        }
+
+        LocalTime startTime = serviceDTO.getStartTime();
+        LocalTime endTime = serviceDTO.getEndTime();
+        int slotDuration = serviceDTO.getSlotDuration();
+
+        List<String> slots = new ArrayList<>();
+        LocalTime currentTime = startTime;
+
+        while (currentTime.isBefore(endTime)) {
+            slots.add("a"); // 'a' indicates available
+            currentTime = currentTime.plusMinutes(slotDuration);
+        }
+
+        return slots;
     }
 }
