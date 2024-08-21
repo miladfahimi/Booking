@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import feign.FeignException;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +19,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * Service responsible for aggregating reservation details along with associated entities
- * such as providers, services, user profiles, and feedbacks.
+ * Service responsible for aggregating reservation details and managing related entities.
+ * This includes providers, services, user profiles, and feedbacks.
  */
 @Service
 @RequiredArgsConstructor
@@ -38,8 +39,6 @@ public class ReservationAggregationService {
      *
      * @param reservationId the UUID of the reservation to aggregate
      * @return an AggregatedReservationDTO containing all relevant information
-     * @throws ReservationNotFoundException if the reservation is not found
-     * @throws ExternalServiceException     if there is an error communicating with external services
      */
     public AggregatedReservationDTO getAggregatedReservation(UUID reservationId) {
         logger.info("Aggregating details for reservation ID: {}", reservationId);
@@ -71,7 +70,6 @@ public class ReservationAggregationService {
      * Retrieves and aggregates the details of all reservations.
      *
      * @return a list of AggregatedReservationDTO objects with full details for each reservation
-     * @throws ExternalServiceException if there is an error communicating with external services
      */
     public List<AggregatedReservationDTO> getAllAggregatedReservations() {
         logger.info("Fetching and aggregating all reservations");
@@ -86,7 +84,6 @@ public class ReservationAggregationService {
      * Fetches a list of all providers along with their associated services.
      *
      * @return a list of ProviderDTO objects containing provider details and associated services
-     * @throws ExternalServiceException if there is an error communicating with external services
      */
     public List<ProviderDTO> getProvidersWithServices() {
         logger.info("Fetching providers and their associated services");
@@ -119,7 +116,6 @@ public class ReservationAggregationService {
      * Fetches all reservations.
      *
      * @return a list of ReservationDTO objects
-     * @throws ExternalServiceException if there is an error communicating with external services
      */
     public List<ReservationDTO> getAllReservations() {
         try {
@@ -137,7 +133,6 @@ public class ReservationAggregationService {
      * @param reservationId the UUID of the reservation to fetch
      * @return the fetched ReservationDTO
      * @throws ReservationNotFoundException if the reservation is not found
-     * @throws ExternalServiceException     if there is an error communicating with external services
      */
     private ReservationDTO fetchReservation(UUID reservationId) {
         try {
@@ -157,7 +152,6 @@ public class ReservationAggregationService {
      *
      * @param providerId the UUID of the provider to fetch
      * @return the fetched ProviderDTO or null if not found
-     * @throws ExternalServiceException if there is an error communicating with external services
      */
     private ProviderDTO fetchProvider(UUID providerId) {
         try {
@@ -174,7 +168,6 @@ public class ReservationAggregationService {
      *
      * @param serviceId the UUID of the service to fetch
      * @return the fetched ServiceDTO or null if not found
-     * @throws ExternalServiceException if there is an error communicating with external services
      */
     private ServiceDTO fetchService(UUID serviceId) {
         try {
@@ -191,7 +184,6 @@ public class ReservationAggregationService {
      *
      * @param userId the UUID of the user to fetch
      * @return the fetched UserProfileDTO or null if not found
-     * @throws ExternalServiceException if there is an error communicating with external services
      */
     private UserProfileDTO fetchUserProfile(UUID userId) {
         try {
@@ -208,7 +200,6 @@ public class ReservationAggregationService {
      *
      * @param providerId the UUID of the provider to fetch feedbacks for
      * @return a list of FeedbackDTO objects or an empty list if none found
-     * @throws ExternalServiceException if there is an error communicating with external services
      */
     private List<FeedbackDTO> fetchProviderFeedbacks(UUID providerId) {
         try {
@@ -225,7 +216,6 @@ public class ReservationAggregationService {
      *
      * @param serviceId the UUID of the service to fetch feedbacks for
      * @return a list of FeedbackDTO objects or an empty list if none found
-     * @throws ExternalServiceException if there is an error communicating with external services
      */
     private List<FeedbackDTO> fetchServiceFeedbacks(UUID serviceId) {
         try {
@@ -241,7 +231,6 @@ public class ReservationAggregationService {
      * Tests Feign client connectivity with the Reservation Service.
      *
      * @return A string indicating the status of the Feign client connection.
-     * @throws ExternalServiceException if there is an error communicating with external services
      */
     public String testReservationServiceFeignConnectivity() {
         try {
@@ -268,6 +257,40 @@ public class ReservationAggregationService {
             throw new ServiceNotFoundException("Service not found for ID: " + serviceId);
         }
 
+        return generateSlots(serviceDTO);
+    }
+
+    /**
+     * Calculates and updates the availability slots for a service based on existing reservations.
+     *
+     * @param serviceId the UUID of the service
+     * @param date      the date for which the slots should be checked
+     * @return a list of slot statuses represented as strings (e.g., "a" for available, "b" for booked)
+     * @throws ServiceNotFoundException if the service is not found
+     */
+    public List<String> calculateAndUpdateSlots(UUID serviceId, LocalDate date) {
+        logger.info("Calculating and updating slots for service ID: {} on date: {}", serviceId, date);
+
+        ServiceDTO serviceDTO = serviceServiceClient.getServiceById(serviceId);
+        if (serviceDTO == null) {
+            throw new ServiceNotFoundException("Service not found for ID: " + serviceId);
+        }
+
+        List<String> slots = generateSlots(serviceDTO);
+        List<ReservationDTO> reservations = fetchReservationsByServiceAndDate(serviceId, date);
+
+        updateSlotsWithReservations(slots, serviceDTO, reservations);
+
+        return slots;
+    }
+
+    /**
+     * Generates a list of slots for a service based on its start time, end time, and slot duration.
+     *
+     * @param serviceDTO the service details
+     * @return a list of slot statuses represented as strings (e.g., "a" for available)
+     */
+    private List<String> generateSlots(ServiceDTO serviceDTO) {
         LocalTime startTime = serviceDTO.getStartTime();
         LocalTime endTime = serviceDTO.getEndTime();
         int slotDuration = serviceDTO.getSlotDuration();
@@ -281,5 +304,43 @@ public class ReservationAggregationService {
         }
 
         return slots;
+    }
+
+    /**
+     * Fetches reservations for a given service and date using the updated filtering endpoint.
+     *
+     * @param serviceId the UUID of the service
+     * @param date      the date for which reservations should be fetched
+     * @return a list of ReservationDTO objects
+     */
+    private List<ReservationDTO> fetchReservationsByServiceAndDate(UUID serviceId, LocalDate date) {
+        try {
+            logger.info("Fetching reservations for service ID: {} on date: {}", serviceId, date);
+            return reservationServiceClient.getReservationsByFilters(null, serviceId, null, null, date, null, null, null);
+        } catch (FeignException e) {
+            logger.error("Error occurred while fetching reservations for service ID {} on date {}: {}", serviceId, date, e.getMessage());
+            throw new ExternalServiceException("An error occurred while fetching reservations.", e);
+        }
+    }
+
+    /**
+     * Updates the availability slots based on existing reservations.
+     *
+     * @param slots       the list of slots to be updated
+     * @param serviceDTO  the service details
+     * @param reservations the list of reservations to be used for updating slots
+     */
+    private void updateSlotsWithReservations(List<String> slots, ServiceDTO serviceDTO, List<ReservationDTO> reservations) {
+        LocalTime startTime = serviceDTO.getStartTime();
+        int slotDuration = serviceDTO.getSlotDuration();
+
+        for (ReservationDTO reservation : reservations) {
+            LocalTime reservationTime = reservation.getStartTime();
+            int slotIndex = (int) (java.time.Duration.between(startTime, reservationTime).toMinutes() / slotDuration);
+
+            if (slotIndex >= 0 && slotIndex < slots.size()) {
+                slots.set(slotIndex, "b"); // 'b' indicates booked
+            }
+        }
     }
 }

@@ -9,9 +9,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * REST controller for handling user portal-related requests.
+ * This includes operations like fetching reservations, providers with services, and calculating service slots.
+ */
 @RestController
 @RequestMapping("/portal/user")
 @RequiredArgsConstructor
@@ -57,6 +62,19 @@ public class UserPortalController {
     @GetMapping("/services/{serviceId}/slots")
     public ResponseEntity<List<String>> getServiceSlots(@PathVariable UUID serviceId) {
         List<String> slots = reservationAggregationService.calculateSlots(serviceId);
+        return ResponseEntity.ok(slots);
+    }
+
+    /**
+     * Gets the updated availability slots for a service on a specific date.
+     *
+     * @param serviceId the UUID of the service
+     * @param date      the date for which the slots should be checked
+     * @return a ResponseEntity containing the list of updated slot statuses
+     */
+    @GetMapping("/services/{serviceId}/slots/{date}")
+    public ResponseEntity<List<String>> getServiceSlotsWithReservations(@PathVariable UUID serviceId, @PathVariable LocalDate date) {
+        List<String> slots = reservationAggregationService.calculateAndUpdateSlots(serviceId, date);
         return ResponseEntity.ok(slots);
     }
 }
