@@ -3,8 +3,9 @@ package com.tennistime.bff.application.controller;
 import com.tennistime.bff.application.dto.AggregatedReservationDTO;
 import com.tennistime.bff.application.dto.ProviderDTO;
 import com.tennistime.bff.application.dto.ReservationDTO;
+import com.tennistime.bff.application.dto.SlotDTO;
+import com.tennistime.bff.application.dto.ServiceDTO;
 import com.tennistime.bff.application.service.ReservationAggregationService;
-import com.tennistime.bff.exceptions.ServiceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,17 +25,33 @@ public class UserPortalController {
 
     private final ReservationAggregationService reservationAggregationService;
 
+    /**
+     * Retrieves all reservations.
+     *
+     * @return a list of ReservationDTO objects
+     */
     @GetMapping("/reservations")
     public List<ReservationDTO> getAllReservations() {
         return reservationAggregationService.getAllReservations();
     }
 
+    /**
+     * Retrieves aggregated details for a specific reservation.
+     *
+     * @param reservationId the UUID of the reservation
+     * @return a ResponseEntity containing the aggregated reservation details
+     */
     @GetMapping("/reservations/{reservationId}/details")
     public ResponseEntity<AggregatedReservationDTO> getAggregatedReservationDetails(@PathVariable UUID reservationId) {
         AggregatedReservationDTO aggregatedReservation = reservationAggregationService.getAggregatedReservation(reservationId);
         return ResponseEntity.ok(aggregatedReservation);
     }
 
+    /**
+     * Retrieves aggregated details for all reservations.
+     *
+     * @return a ResponseEntity containing a list of aggregated reservation details
+     */
     @GetMapping("/reservations/details")
     public ResponseEntity<List<AggregatedReservationDTO>> getAllAggregatedReservations() {
         List<AggregatedReservationDTO> aggregatedReservations = reservationAggregationService.getAllAggregatedReservations();
@@ -44,7 +61,7 @@ public class UserPortalController {
     /**
      * Fetches providers with their associated services.
      *
-     * @return a list of ProviderDTO objects
+     * @return a ResponseEntity containing a list of ProviderDTO objects
      */
     @GetMapping("/providers-with-services")
     public ResponseEntity<List<ProviderDTO>> getProvidersWithServices() {
@@ -55,14 +72,13 @@ public class UserPortalController {
     /**
      * Calculates available slots for a service.
      *
-     * @param serviceId the ID of the service
-     * @return a list of slot statuses as strings
-     * @throws ServiceNotFoundException if the service is not found
+     * @param serviceId the UUID of the service
+     * @return a ResponseEntity containing a list of SlotDTO objects
      */
     @GetMapping("/services/{serviceId}/slots")
-    public ResponseEntity<List<String>> getServiceSlots(@PathVariable UUID serviceId) {
-        List<String> slots = reservationAggregationService.calculateSlots(serviceId);
-        return ResponseEntity.ok(slots);
+    public ResponseEntity<List<SlotDTO>> getServiceSlots(@PathVariable UUID serviceId) {
+        ServiceDTO serviceWithSlots = reservationAggregationService.calculateAndUpdateSlots(serviceId, LocalDate.now());
+        return ResponseEntity.ok(serviceWithSlots.getSlots());
     }
 
     /**
@@ -70,11 +86,12 @@ public class UserPortalController {
      *
      * @param serviceId the UUID of the service
      * @param date      the date for which the slots should be checked
-     * @return a ResponseEntity containing the list of updated slot statuses
+     * @return a ResponseEntity containing the updated ServiceDTO with slots information
      */
     @GetMapping("/services/{serviceId}/slots/{date}")
-    public ResponseEntity<List<String>> getServiceSlotsWithReservations(@PathVariable UUID serviceId, @PathVariable LocalDate date) {
-        List<String> slots = reservationAggregationService.calculateAndUpdateSlots(serviceId, date);
-        return ResponseEntity.ok(slots);
+    public ResponseEntity<ServiceDTO> getServiceSlotsWithReservations(@PathVariable UUID serviceId, @PathVariable LocalDate date) {
+        ServiceDTO serviceWithSlots = reservationAggregationService.calculateAndUpdateSlots(serviceId, date);
+        return ResponseEntity.ok(serviceWithSlots);
     }
+
 }

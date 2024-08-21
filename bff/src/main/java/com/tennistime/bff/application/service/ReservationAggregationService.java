@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import feign.FeignException;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -246,10 +247,10 @@ public class ReservationAggregationService {
      * Calculates available slots for a service based on its start time, end time, and slot duration.
      *
      * @param serviceId the UUID of the service
-     * @return a list of slot statuses represented as strings (e.g., "a" for available)
+     * @return a list of SlotDTO objects representing the available slots
      * @throws ServiceNotFoundException if the service is not found
      */
-    public List<String> calculateSlots(UUID serviceId) {
+    public List<SlotDTO> calculateSlots(UUID serviceId) {
         logger.info("Calculating slots for service ID: {}", serviceId);
 
         ServiceDTO serviceDTO = serviceServiceClient.getServiceById(serviceId);
@@ -265,10 +266,10 @@ public class ReservationAggregationService {
      *
      * @param serviceId the UUID of the service
      * @param date      the date for which the slots should be checked
-     * @return a list of slot statuses represented as strings (e.g., "a" for available, "b" for booked)
+     * @return a ServiceDTO populated with slots information and slot count
      * @throws ServiceNotFoundException if the service is not found
      */
-    public List<String> calculateAndUpdateSlots(UUID serviceId, LocalDate date) {
+    public ServiceDTO calculateAndUpdateSlots(UUID serviceId, LocalDate date) {
         logger.info("Calculating and updating slots for service ID: {} on date: {}", serviceId, date);
 
         ServiceDTO serviceDTO = serviceServiceClient.getServiceById(serviceId);
@@ -276,33 +277,45 @@ public class ReservationAggregationService {
             throw new ServiceNotFoundException("Service not found for ID: " + serviceId);
         }
 
-        List<String> slots = generateSlots(serviceDTO);
+        List<SlotDTO> slots = generateSlots(serviceDTO);
         List<ReservationDTO> reservations = fetchReservationsByServiceAndDate(serviceId, date);
 
         updateSlotsWithReservations(slots, serviceDTO, reservations);
+        serviceDTO.setSlots(slots);
+        serviceDTO.setSlotCount(slots.size());  // Set the slot count
 
-        return slots;
+        return serviceDTO;
     }
 
     /**
-     * Generates a list of slots for a service based on its start time, end time, and slot duration.
+     * Generates a list of slots with detailed information for a service based on its start time, end time, and slot duration.
      *
      * @param serviceDTO the service details
-     * @return a list of slot statuses represented as strings (e.g., "a" for available)
+     * @return a list of SlotDTO objects
      */
-    private List<String> generateSlots(ServiceDTO serviceDTO) {
+    private List<SlotDTO> generateSlots(ServiceDTO serviceDTO) {
         LocalTime startTime = serviceDTO.getStartTime();
         LocalTime endTime = serviceDTO.getEndTime();
         int slotDuration = serviceDTO.getSlotDuration();
+        BigDecimal price = serviceDTO.getPrice();
 
-        List<String> slots = new ArrayList<>();
+        List<SlotDTO> slots = new ArrayList<>();
         LocalTime currentTime = startTime;
+        int slotIndex = 1;
 
         while (currentTime.isBefore(endTime)) {
-            slots.add("a"); // 'a' indicates available
-            currentTime = currentTime.plusMinutes(slotDuration);
-        }
+            SlotDTO slot = new SlotDTO();
+            slot.setSlotId("slot-" + slotIndex);
+            slot.setTime(currentTime.toString());
+            slot.setStatus("available");
+            slot.setPrice(price);
+            slot.setCapacity(serviceDTO.getMaxCapacity());
+            slot.setReservedBy(null);
 
+            slots.add(slot);
+            currentTime = currentTime.plusMinutes(slotDuration);
+            slotIndex++;
+        }
         return slots;
     }
 
@@ -326,11 +339,11 @@ public class ReservationAggregationService {
     /**
      * Updates the availability slots based on existing reservations.
      *
-     * @param slots       the list of slots to be updated
+     * @param slots       the list of SlotDTO objects to be updated
      * @param serviceDTO  the service details
      * @param reservations the list of reservations to be used for updating slots
      */
-    private void updateSlotsWithReservations(List<String> slots, ServiceDTO serviceDTO, List<ReservationDTO> reservations) {
+    private void updateSlotsWithReservations(List<SlotDTO> slots, ServiceDTO serviceDTO, List<ReservationDTO> reservations) {
         LocalTime startTime = serviceDTO.getStartTime();
         int slotDuration = serviceDTO.getSlotDuration();
 
@@ -339,7 +352,10 @@ public class ReservationAggregationService {
             int slotIndex = (int) (java.time.Duration.between(startTime, reservationTime).toMinutes() / slotDuration);
 
             if (slotIndex >= 0 && slotIndex < slots.size()) {
-                slots.set(slotIndex, "b"); // 'b' indicates booked
+                SlotDTO slot = slots.get(slotIndex);
+                slot.setStatus("booked");
+                slot.setReservedBy(reservation.getUserId().toString());
+                slot.setPrice(slot.getPrice().multiply(new BigDecimal("1.2"))); // Example: Increase price for booked slots (premium pricing)
             }
         }
     }

@@ -14,6 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ServiceDTO {
+
     @Schema(hidden = true)
     private UUID id;
 
@@ -49,4 +50,10 @@ public class ServiceDTO {
 
     @Schema(example = "10", description = "The maximum capacity for the service")
     private int maxCapacity;
+
+    @Schema(description = "List of time slots for the service")
+    private List<SlotDTO> slots;
+
+    @Schema(description = "Total number of slots available for the service")
+    private int slotCount;  // New field to represent the number of slots
 }
