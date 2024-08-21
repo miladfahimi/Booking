@@ -1,35 +1,59 @@
-import { createReducer, on } from '@ngrx/store';
+import {createReducer, on} from '@ngrx/store';
 import * as ReservationActions from './reservation.actions';
-import { LoadingStatus, ServiceDTO } from '../types';  // Import the ServiceDTO interface
+import {LoadingStatus, ServiceDTO, ProviderDTO} from '../types';
 
 export interface ReservationState {
-  service: ServiceDTO | null;  // Store the full ServiceDTO object
+  service: ServiceDTO | null;
+  providers: ProviderDTO[] | null;
   loadingStatus: LoadingStatus;
+  providersLoadingStatus: LoadingStatus;
   error: any;
 }
 
 export const initialState: ReservationState = {
-  service: null,  // Initially, no service data is loaded
-  loadingStatus: { loading: false, loaded: false },
+  service: null,
+  providers: null,
+  loadingStatus: {loading: false, loaded: false},
+  providersLoadingStatus: {loading: false, loaded: false},
   error: null,
 };
 
 export const reservationReducer = createReducer(
   initialState,
+
+  // For loading slots
   on(ReservationActions.loadSlots, (state) => ({
     ...state,
-    loadingStatus: { loading: true, loaded: false },
+    loadingStatus: {loading: true, loaded: false},
     error: null,
   })),
-  on(ReservationActions.loadSlotsSuccess, (state, { service }) => ({
+  on(ReservationActions.loadSlotsSuccess, (state, {service}) => ({
     ...state,
     service,  // Store the entire ServiceDTO object
-    loadingStatus: { loading: false, loaded: true },
+    loadingStatus: {loading: false, loaded: true},
     error: null,
   })),
-  on(ReservationActions.loadSlotsFailure, (state, { error }) => ({
+  on(ReservationActions.loadSlotsFailure, (state, {error}) => ({
     ...state,
     error,
-    loadingStatus: { loading: false, loaded: true },
+    loadingStatus: {loading: false, loaded: true},
+  })),
+
+  // For loading providers with services
+  on(ReservationActions.loadProvidersWithServices, (state) => ({
+    ...state,
+    providersLoadingStatus: {loading: true, loaded: false},
+    error: null,
+  })),
+  on(ReservationActions.loadProvidersWithServicesSuccess, (state, {providers}) => ({
+    ...state,
+    providers,  // Store the list of ProviderDTO objects
+    providersLoadingStatus: {loading: false, loaded: true},
+    error: null,
+  })),
+  on(ReservationActions.loadProvidersWithServicesFailure, (state, {error}) => ({
+    ...state,
+    error,
+    providersLoadingStatus: {loading: false, loaded: true},
   }))
 );

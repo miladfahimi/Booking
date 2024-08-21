@@ -1,9 +1,10 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { loadSlots } from '../../../store/reservation.actions';
-import { selectSlots, selectSlotsLoading } from '../../../store/reservation.selectors';
-import { SlotDTO } from '../../../types';
+import { map } from 'rxjs/operators';
+import { loadProvidersWithServices, loadSlots } from '../../../store/reservation.actions';
+import { selectProviders, selectSlots, selectSlotsLoading } from '../../../store/reservation.selectors';
+import { SlotDTO, ProviderDTO, ServiceDTO } from '../../../types';
 
 @Component({
   selector: 'app-reservation-container',
@@ -14,14 +15,11 @@ export class ReservationContainerComponent implements OnInit {
   isMobileView: boolean = window.innerWidth <= 768;
   timeSlots$: Observable<SlotDTO[] | null>;
   loading$: Observable<boolean>;
+  items: ServiceDTO[] = []; // ServiceDTO[] type
+  selectedService: ServiceDTO | null = null; // Track the selected service
+  selectedDate: Date = new Date(); // Track the selected date
 
-  items: any[] = [
-    { label: 'زمین 1', value: 30, selected: false },
-    { label: 'زمین 2', value: 60, selected: true },
-    { label: 'زمین 3', value: 120, selected: false },
-    { label: 'زمین 4', value: 180, selected: false },
-    { label: 'زمین 5', value: 1440, selected: false },
-  ];
+  private providerId = 'f6ecc0c6-8d98-40cb-8f9e-d80de5bfd4c9'; // Hardcoded provider ID
 
   constructor(private store: Store) {
     this.timeSlots$ = this.store.select(selectSlots);
@@ -29,22 +27,59 @@ export class ReservationContainerComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.store.dispatch(loadSlots({ serviceId: '5c5a83a5-cc76-4b00-aeda-897a3896d453', date: '2024-08-26' }));
+    this.store.dispatch(loadProvidersWithServices()); // Load providers and services
+
+    this.store.select(selectProviders).pipe(
+      map((providers: ProviderDTO[] | null) => {
+        if (!providers) return;
+
+        // Find the provider by ID and generate items from its services
+        const provider = providers.find(p => p.id === this.providerId);
+        if (provider && provider.services) {
+          // Ensure all services have selected initialized to false
+          this.items = provider.services.map(service => ({
+            ...service,
+            selected: service.selected || false,
+          }));
+
+          // Optionally, load slots for the first service by default
+          if (this.items.length > 0) {
+            this.selectDuration(this.items[0]);
+          }
+        }
+      })
+    ).subscribe();
   }
 
   onDaySelected(day: any) {
-    console.log('%cRaw Selected Day:', 'color: red', day.date); // Check the initial format
-    const date = typeof day.date === 'string' ? this.parseDate(day.date) : new Date(day.date);
-    console.log('%cParsed Date:', 'color: green', date); // Check after parsing
-    const formattedDate = this.formatDateToYYYYMMDD(date);
-    console.log('%cFormatted Date:', 'color: blue', formattedDate); // Final formatted date
-    this.store.dispatch(loadSlots({ serviceId: '3337096a-9f28-48f8-a355-03445606bd1b', date: formattedDate }));
+    console.log('%cRaw Selected Day:', 'color: red', day.date);
+    this.selectedDate = typeof day.date === 'string' ? this.parseDate(day.date) : new Date(day.date);
+    console.log('%cParsed Date:', 'color: green', this.selectedDate);
+    const formattedDate = this.formatDateToYYYYMMDD(this.selectedDate);
+    console.log('%cFormatted Date:', 'color: blue', formattedDate);
+
+    if (this.selectedService) {
+      this.store.dispatch(loadSlots({ serviceId: this.selectedService.id, date: formattedDate }));
+    }
   }
+
+  selectDuration(service: ServiceDTO) {
+    // Reset selected property for all items
+    this.items.forEach(d => d.selected = false);
+    // Set selected to true for the clicked service
+    service.selected = true;
+    this.selectedService = service;
+    console.log('%cService Selected:', 'color: purple', service);
+
+    // Load timeslots for the selected service based on the selected date
+    const formattedDate = this.formatDateToYYYYMMDD(this.selectedDate);
+    this.store.dispatch(loadSlots({ serviceId: service.id, date: formattedDate }));
+  }
+
   private parseDate(dateString: string): Date {
     const parts = dateString.split('/');
-    // Assuming the format is dd/MM/yyyy
     const day = parseInt(parts[0], 10);
-    const month = parseInt(parts[1], 10) - 1; // Months are 0-based in JS
+    const month = parseInt(parts[1], 10) - 1;
     const year = parseInt(parts[2], 10);
     return new Date(year, month, day);
   }
@@ -53,18 +88,14 @@ export class ReservationContainerComponent implements OnInit {
     const year = date.getFullYear();
     const month = this.padZero(date.getMonth() + 1);
     const dayOfMonth = this.padZero(date.getDate());
-
     return `${year}-${month}-${dayOfMonth}`;
   }
 
   private padZero(value: number): string {
     return value < 10 ? '0' + value : value.toString();
   }
-  selectDuration(duration: any) {
-    console.log('%cDuration Selected:', 'color: purple', duration);
-  }
 
-  selectSlot(slot: any) {
+  selectSlot(slot: SlotDTO) {
     console.log('%cTime Slot Selected:', 'color: teal', slot);
   }
 

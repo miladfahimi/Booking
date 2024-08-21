@@ -2,6 +2,7 @@ package com.tennistime.bff.infrastructure.feign;
 
 import com.tennistime.bff.application.dto.ReservationDTO;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,7 +37,7 @@ public interface ReservationServiceClient {
             @RequestParam(required = false) UUID serviceId,
             @RequestParam(required = false) UUID providerId,
             @RequestParam(required = false) String status,
-            @RequestParam(required = false) LocalDate reservationDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate reservationDate,
             @RequestParam(required = false) String persianDate,
             @RequestParam(required = false) LocalTime startTime,
             @RequestParam(required = false) LocalTime endTime

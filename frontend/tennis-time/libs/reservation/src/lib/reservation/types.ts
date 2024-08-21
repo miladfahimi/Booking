@@ -48,13 +48,23 @@ export interface ServiceDTO {
   type: string;
   availability: boolean;
   providerId: string;
-  startTime: string; // e.g., "09:00:00"
-  endTime: string;   // e.g., "20:00:00"
+  startTime: string;
+  endTime: string;
   slotDuration: number;
   tags: string[];
   price: number;
   maxCapacity: number;
-  slots: SlotDTO[];  // Array of SlotDTO objects
-  slotCount: number; // Length of the slots array
+  slots: SlotDTO[];
+  slotCount: number;
+  selected: boolean;
 }
 
+export interface ProviderDTO {
+  id: string;
+  name: string;
+  address: string;
+  phone: string;
+  email: string;
+  description: string;
+  services: ServiceDTO[];  // Array of services provided by this provider
+}

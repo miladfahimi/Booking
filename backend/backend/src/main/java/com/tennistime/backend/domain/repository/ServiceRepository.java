@@ -9,7 +9,7 @@ import java.util.UUID;
 public interface ServiceRepository {
     List<Service> findAll();
     Optional<Service> findById(UUID id);
-    Optional<Service> findByProviderId(UUID providerId);
+    List<Service> findByProviderId(UUID providerId);
     Service save(Service service);
     void deleteById(UUID id);
 }
