@@ -1,17 +1,16 @@
 import { createAction, props } from '@ngrx/store';
-import { UserReservationDTO } from '../types';
 
-export const loadReservation = createAction(
-  '[Reservation] Load Reservation',
-  props<{ userId: string }>()
+export const loadSlots = createAction(
+  '[Reservation] Load Slots',
+  props<{ serviceId: string, date: string }>()
 );
 
-export const loadReservationSuccess = createAction(
-  '[Reservation] Load Reservation Success',
-  props<{ reservation: UserReservationDTO }>()
+export const loadSlotsSuccess = createAction(
+  '[Reservation] Load Slots Success',
+  props<{ slots: string[] }>()
 );
 
-export const loadReservationFailure = createAction(
-  '[Reservation] Load Reservation Failure',
+export const loadSlotsFailure = createAction(
+  '[Reservation] Load Slots Failure',
   props<{ error: any }>()
 );

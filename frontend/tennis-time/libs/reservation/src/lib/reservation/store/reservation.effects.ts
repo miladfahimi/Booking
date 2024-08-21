@@ -4,7 +4,6 @@ import { of } from 'rxjs';
 import { catchError, map, mergeMap } from 'rxjs/operators';
 import * as ReservationActions from './reservation.actions';
 import { ReservationService } from '../services/reservation.service';
-import { UserReservationDTO } from '../types';
 
 @Injectable()
 export class ReservationEffects {
@@ -13,17 +12,13 @@ export class ReservationEffects {
     private reservationService: ReservationService
   ) {}
 
-  loadReservation$ = createEffect(() =>
+  loadSlots$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(ReservationActions.loadReservation),
-      mergeMap((action) =>
-        this.reservationService.getReservationById(action.userId).pipe(
-          map((reservation: UserReservationDTO) =>
-            ReservationActions.loadReservationSuccess({ reservation })
-          ),
-          catchError((error) =>
-            of(ReservationActions.loadReservationFailure({ error }))
-          )
+      ofType(ReservationActions.loadSlots),
+      mergeMap(action =>
+        this.reservationService.getSlotsByServiceAndDate(action.serviceId, action.date).pipe(
+          map(slots => ReservationActions.loadSlotsSuccess({ slots })),
+          catchError(error => of(ReservationActions.loadSlotsFailure({ error })))
         )
       )
     )

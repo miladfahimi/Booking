@@ -3,6 +3,8 @@
   <div class="slot-options">
     <button *ngFor="let slot of timeSlots"
             (click)="onSelectSlot(slot)"
+            [class.available]="slot.status === 'a'"
+            [class.booked]="slot.status === 'b'"
             [class.selected]="slot.selected">
       {{ slot.time }}
     </button>

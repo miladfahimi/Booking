@@ -3,17 +3,22 @@ import { ReservationState } from './reservation.reducer';
 
 export const selectReservationState = createFeatureSelector<ReservationState>('reservation');
 
-// Selector to get user reservation data
-export const selectReservation = createSelector(
+export const selectSlots = createSelector(
   selectReservationState,
-  (state: ReservationState) => state.reservation
+  (state: ReservationState) => state.slots
 );
-export const selectReservationLoading = createSelector(
+
+export const selectSlotsLoading = createSelector(
   selectReservationState,
   (state: ReservationState) => state.loadingStatus.loading
 );
 
-export const selectReservationError = createSelector(
+export const selectSlotsLoaded = createSelector(
+  selectReservationState,
+  (state: ReservationState) => state.loadingStatus.loaded
+);
+
+export const selectSlotsError = createSelector(
   selectReservationState,
   (state: ReservationState) => state.error
 );

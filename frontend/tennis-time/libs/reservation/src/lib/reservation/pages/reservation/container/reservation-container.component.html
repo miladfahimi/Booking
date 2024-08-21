@@ -8,10 +8,10 @@
           (selectDay)="onDaySelected($event)">
         </app-reservation-calendar-mobile>
       } @else {
-      <app-reservation-calendar-desktop
-        [isMobile]="isMobileView"
-        (selectDay)="onDaySelected($event)">
-      </app-reservation-calendar-desktop>
+        <app-reservation-calendar-desktop
+          [isMobile]="isMobileView"
+          (selectDay)="onDaySelected($event)">
+        </app-reservation-calendar-desktop>
       }
 
       <!-- Items Component -->
@@ -22,7 +22,7 @@
 
       <!-- Hours Component -->
       <app-reservation-hours
-        [timeSlots]="timeSlots"
+        [timeSlots]="timeSlots$ | async"
         (selectSlot)="selectSlot($event)">
       </app-reservation-hours>
 

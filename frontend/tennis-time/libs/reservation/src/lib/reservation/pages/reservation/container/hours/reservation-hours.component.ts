@@ -6,11 +6,13 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
   styleUrls: ['./reservation-hours.component.scss']
 })
 export class ReservationHoursComponent {
-  @Input() timeSlots: any[] = [];
+  @Input() timeSlots: any[] | null = [];
   @Output() selectSlot = new EventEmitter<any>();
 
   onSelectSlot(slot: any) {
-    this.timeSlots.forEach(s => s.selected = false);
+    if (slot.status === 'b') return; // Don't allow selection of booked slots
+
+    this.timeSlots && this.timeSlots.forEach(s => s.selected = false);
     slot.selected = true;
     console.log('%cTime Slot Selected:', 'color: teal', slot);
     this.selectSlot.emit(slot);

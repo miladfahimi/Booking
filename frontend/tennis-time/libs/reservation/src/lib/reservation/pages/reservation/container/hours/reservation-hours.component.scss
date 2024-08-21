@@ -3,9 +3,9 @@
 
   label {
     display: block;
-    margin-top: 10px; /* Vertical space above the label */
-    margin-bottom: 10px; /* Vertical space below the label */
-    font-weight: bold; /* Optional: makes the label stand out */
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-weight: bold;
   }
 }
 
@@ -18,8 +18,16 @@
     padding: 10px;
     border-radius: 10px;
     border: none;
-    background-color: #e0e0e0;
     cursor: pointer;
+
+    &.available {
+      background-color: #e0e0e0;
+    }
+
+    &.booked {
+      background-color: #ffcccc;
+      cursor: not-allowed;
+    }
 
     &.selected {
       background-color: #64c271;
