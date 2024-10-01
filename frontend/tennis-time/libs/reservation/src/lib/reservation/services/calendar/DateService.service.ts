@@ -1,6 +1,7 @@
+// DateService.ts
 import { Injectable } from '@angular/core';
 import * as jalaali from 'jalaali-js';
-import {Day} from "../../types";
+import { Day } from "../../types";
 
 @Injectable({
   providedIn: 'root',
@@ -52,27 +53,46 @@ export class DateService {
 
   generateMonth(baseDate: Date = new Date()): Day[] {
     const month: Day[] = [];
-    const currentMonth = baseDate.getMonth();
-    const firstDayOfMonth = new Date(baseDate.getFullYear(), currentMonth, 1);
-    const lastDayOfMonth = new Date(baseDate.getFullYear(), currentMonth + 1, 0);
 
-    // Adjust to ensure the week starts on Saturday
-    let startDayOfWeek = (firstDayOfMonth.getDay() + 1) % 7;
+    // Convert baseDate to Jalaali
+    const jDate = jalaali.toJalaali(baseDate.getFullYear(), baseDate.getMonth() + 1, baseDate.getDate());
+    const jalaliYear = jDate.jy;
+    const jalaliMonth = jDate.jm;
 
-    const daysInPreviousMonth = startDayOfWeek;
+    // Get Gregorian date for the first day of the Jalaali month
+    const gregorianFirstDay = jalaali.toGregorian(jalaliYear, jalaliMonth, 1);
+    const firstDayOfMonth = new Date(gregorianFirstDay.gy, gregorianFirstDay.gm - 1, gregorianFirstDay.gd);
 
-    const firstDayOfCalendar = new Date(firstDayOfMonth);
-    firstDayOfCalendar.setDate(firstDayOfMonth.getDate() - daysInPreviousMonth);
+    // Determine day of week for the first day (Saturday=0, Friday=6)
+    const startDayOfWeek = (firstDayOfMonth.getDay() + 1) % 7; // Adjust so Saturday is 0
 
-    for (let day = new Date(firstDayOfCalendar); day <= lastDayOfMonth || month.length % 7 !== 0; day.setDate(day.getDate() + 1)) {
-      const jalaliDate = this.convertToJalali(day);
+    // Number of days to display from previous month
+    const daysFromPrevMonth = startDayOfWeek;
+
+    // Get Gregorian date for the first day to display in the calendar
+    const firstDayToDisplay = new Date(firstDayOfMonth);
+    firstDayToDisplay.setDate(firstDayOfMonth.getDate() - daysFromPrevMonth);
+
+    // Get total days in the Jalaali month
+    const daysInJalaliMonth = jalaali.jalaaliMonthLength(jalaliYear, jalaliMonth);
+
+    // Total days to display: 6 weeks * 7 days = 42
+    for (let i = 0; i < 42; i++) {
+      const currentDay = new Date(firstDayToDisplay);
+      currentDay.setDate(firstDayToDisplay.getDate() + i);
+      const jDay = jalaali.toJalaali(currentDay.getFullYear(), currentDay.getMonth() + 1, currentDay.getDate());
+
+      const jalaliDate = this.isFarsi ? this.convertNumberToFarsi(`${jDay.jd}`) : `${jDay.jd}`;
+
+      const isCurrentJalaliMonth = (jDay.jm === jalaliMonth) && (jDay.jy === jalaliYear);
+
       month.push({
-        label: this.getDayLabel(day),
-        date: new Date(day),
-        jalaliDate,
-        selected: this.isSameDay(day, baseDate),
-        isToday: this.isSameDay(day, new Date()),
-        areOtherMonths: day.getMonth() !== currentMonth
+        label: this.getDayLabel(currentDay),
+        date: new Date(currentDay),
+        jalaliDate: jalaliDate,
+        selected: this.isSameDay(currentDay, baseDate),
+        isToday: this.isSameDay(currentDay, new Date()),
+        areOtherMonths: !isCurrentJalaliMonth
       });
     }
 
@@ -81,22 +101,29 @@ export class DateService {
 
   generateWeek(baseDate: Date = new Date()): Day[] {
     const week: Day[] = [];
-    const firstDayOfWeek = new Date(baseDate);
+    const jDate = jalaali.toJalaali(baseDate.getFullYear(), baseDate.getMonth() + 1, baseDate.getDate());
+    const jalaliYear = jDate.jy;
+    const jalaliMonth = jDate.jm;
 
-    // Adjust to ensure the week starts on Saturday
-    firstDayOfWeek.setDate(baseDate.getDate() - (baseDate.getDay() + 1) % 7);
+    // Get Gregorian date for the first day of the Jalaali week (assuming week starts on Saturday)
+    const firstDayOfWeek = jalaali.toGregorian(jalaliYear, jalaliMonth, jDate.jd);
+    const gregorianFirstDay = new Date(firstDayOfWeek.gy, firstDayOfWeek.gm - 1, firstDayOfWeek.gd);
+    gregorianFirstDay.setDate(gregorianFirstDay.getDate() - ((gregorianFirstDay.getDay() + 1) % 7));
 
     for (let i = 0; i < 7; i++) {
-      const day = new Date(firstDayOfWeek);
-      day.setDate(firstDayOfWeek.getDate() + i);
-      const jalaliDate = this.convertToJalali(day);
+      const currentDay = new Date(gregorianFirstDay);
+      currentDay.setDate(gregorianFirstDay.getDate() + i);
+      const jDay = jalaali.toJalaali(currentDay.getFullYear(), currentDay.getMonth() + 1, currentDay.getDate());
+
+      const jalaliDate = this.isFarsi ? this.convertNumberToFarsi(`${jDay.jd}`) : `${jDay.jd}`;
+
       week.push({
-        label: this.getDayLabel(day),
-        date: new Date(day),
-        jalaliDate,
-        selected: this.isSameDay(day, baseDate),
-        isToday: this.isSameDay(day, new Date()),
-        areOtherMonths: day.getMonth() !== baseDate.getMonth()
+        label: this.getDayLabel(currentDay),
+        date: new Date(currentDay),
+        jalaliDate: jalaliDate,
+        selected: this.isSameDay(currentDay, baseDate),
+        isToday: this.isSameDay(currentDay, new Date()),
+        areOtherMonths: false // Assuming week is within the same Jalaali month
       });
     }
 
@@ -109,7 +136,7 @@ export class DateService {
   }
 
   private getDayLabel(date: Date): string {
-    const dayIndex = (date.getDay() + 1) % 7; // Adjust so Saturday is index 0
+    const dayIndex = (date.getDay() + 1) % 7; // Adjust so Saturday is 0
     return this.isFarsi ? this.daysFarsi[dayIndex] : this.days[dayIndex];
   }
 
