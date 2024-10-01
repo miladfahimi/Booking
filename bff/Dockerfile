@@ -21,7 +21,7 @@ RUN useradd -ms /bin/bash appuser
 USER appuser
 
 # Copy the specific JAR file from the build stage
-COPY --from=build /backend/backend/target/backend-0.0.1-SNAPSHOT-exec.jar app.jar
+COPY --from=build /bff/target/bff-0.0.1-SNAPSHOT-exec.jar app.jar
 
 # Expose the application's port
 EXPOSE 8080
