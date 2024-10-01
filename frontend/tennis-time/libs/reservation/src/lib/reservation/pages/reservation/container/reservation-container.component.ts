@@ -19,7 +19,7 @@ export class ReservationContainerComponent implements OnInit {
   selectedService: ServiceDTO | null = null; // Track the selected service
   selectedDate: Date = new Date(); // Track the selected date
 
-  private providerId = 'f6ecc0c6-8d98-40cb-8f9e-d80de5bfd4c9'; // Hardcoded provider ID
+  private providerId = '11111111-1111-1111-1111-111111111111'; // Hardcoded provider ID
 
   constructor(private store: Store) {
     this.timeSlots$ = this.store.select(selectSlots);
