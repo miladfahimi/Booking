@@ -11,10 +11,13 @@ services:
   - docker:dind
 
 before_script:
-  # Use apk for Alpine-based images
+  # Install OpenSSH client
   - apk update && apk add openssh-client
+  # Start the SSH agent
   - eval $(ssh-agent -s)
+  # Add the SSH private key
   - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+  # Create SSH directory and add known hosts
   - mkdir -p ~/.ssh
   - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
   - chmod 600 ~/.ssh/known_hosts
@@ -25,7 +28,6 @@ build:
   script:
     # Log in to GitLab Container Registry
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-
     # Build and push Docker images for each microservice
     - docker build -t $CI_REGISTRY_IMAGE/authentication:latest ./authentication
     - docker push $CI_REGISTRY_IMAGE/authentication:latest
