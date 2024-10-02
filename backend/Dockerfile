@@ -16,12 +16,16 @@ RUN mvn clean package -DskipTests
 FROM amazoncorretto:17
 WORKDIR /app
 
+# Install necessary packages
+RUN yum update -y && yum install -y shadow-utils
+
 # Create a non-root user for security
-RUN useradd -ms /bin/bash appuser
+RUN adduser -D appuser
+
 USER appuser
 
 # Copy the specific JAR file from the build stage
-COPY --from=build /backend/backend/target/backend-0.0.1-SNAPSHOT-exec.jar app.jar
+COPY --from=build /app/target/backend-0.0.1-SNAPSHOT-exec.jar app.jar
 
 # Expose the application's port
 EXPOSE 8080

@@ -64,6 +64,6 @@ deploy:
     - apk update && apk add openssh
   script:
     # SSH into the server and deploy using docker-compose
-    - ssh -o StrictHostKeyChecking=no root@49.12.109.90 "cd /path/to/deployment_directory && docker-compose pull && docker-compose up -d --remove-orphans"
+    - ssh -o StrictHostKeyChecking=no deployuser@49.12.109.90 "cd /path/to/deployment_directory && docker-compose pull && docker-compose up -d --remove-orphans"
   only:
     - main
