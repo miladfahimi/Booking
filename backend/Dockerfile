@@ -18,7 +18,7 @@ RUN mvn dependency:go-offline
 RUN mvn clean package -DskipTests -pl backend -am
 
 # Stage 2: Run the application using OpenJDK
-FROM amazoncorretto:17
+FROM amazoncorretto:17-al2023
 WORKDIR /app
 
 # Install necessary packages using dnf

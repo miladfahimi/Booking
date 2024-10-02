@@ -37,7 +37,7 @@ build:
     - docker build -t $CI_REGISTRY_IMAGE/authentication:latest -f authentication/Dockerfile ./authentication
     - docker push $CI_REGISTRY_IMAGE/authentication:latest
 
-    # Build Backend Microservice
+    # Build Backend Microservice (with parent POM)
     - docker build -t $CI_REGISTRY_IMAGE/backend:latest -f backend/Dockerfile ./backend
     - docker push $CI_REGISTRY_IMAGE/backend:latest
 

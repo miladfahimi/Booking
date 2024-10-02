@@ -1,5 +1,3 @@
-# profile/Dockerfile
-
 # Stage 1: Build the application using Maven
 FROM maven:3.9.8-amazoncorretto-17-al2023 AS build
 WORKDIR /app
@@ -15,7 +13,7 @@ RUN mvn dependency:go-offline
 RUN mvn clean package -DskipTests
 
 # Stage 2: Run the application using OpenJDK
-FROM amazoncorretto:17
+FROM amazoncorretto:17-al2023
 WORKDIR /app
 
 # Install necessary packages using dnf
@@ -26,7 +24,7 @@ RUN adduser -D appuser
 
 USER appuser
 
-# Copy the profile JAR file from the build stage
+# Copy the specific JAR file from the build stage
 COPY --from=build /app/target/profile-0.0.1-SNAPSHOT-exec.jar app.jar
 
 # Expose the application's port
