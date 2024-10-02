@@ -11,22 +11,12 @@ services:
   - docker:dind
 
 before_script:
-  # Install SSH client
-  - apt-get update -y && apt-get install -y openssh-client
-
-  # Start SSH agent
+  # Use apk for Alpine-based images
+  - apk update && apk add openssh-client
   - eval $(ssh-agent -s)
-
-  # Add the SSH private key
   - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-
-  # Create the SSH directory
   - mkdir -p ~/.ssh
-
-  # Add the known hosts to prevent MITM attacks
   - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
-
-  # Set appropriate permissions
   - chmod 600 ~/.ssh/known_hosts
 
 build:
@@ -69,11 +59,9 @@ deploy:
   stage: deploy
   image: alpine:latest
   before_script:
-    - apk add --no-cache openssh
-
+    - apk update && apk add openssh
   script:
     # SSH into the server and deploy using docker-compose
-    - ssh root@49.12.109.90 "cd /path/to/deployment_directory && docker-compose pull && docker-compose up -d --remove-orphans"
-
+    - ssh -o StrictHostKeyChecking=no root@49.12.109.90 "cd /path/to/deployment_directory && docker-compose pull && docker-compose up -d --remove-orphans"
   only:
     - main
