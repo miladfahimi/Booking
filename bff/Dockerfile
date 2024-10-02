@@ -1,19 +1,18 @@
+# bff/Dockerfile
+
 # Stage 1: Build the application using Maven
 FROM maven:3.9.8-amazoncorretto-17-al2023 AS build
 WORKDIR /app
 
-# Copy the parent POM first to leverage Docker cache
+# Copy the pom.xml and source code
 COPY pom.xml .
-
-# Copy the bff microservice's POM and source code
-COPY bff/pom.xml bff/pom.xml
-COPY bff/src bff/src
+COPY src ./src
 
 # Download dependencies (leverages Docker cache)
 RUN mvn dependency:go-offline
 
-# Package the bff microservice (skip tests for faster builds)
-RUN mvn clean package -DskipTests -pl bff -am
+# Package the application (skip tests for faster builds)
+RUN mvn clean package -DskipTests
 
 # Stage 2: Run the application using OpenJDK
 FROM amazoncorretto:17
@@ -28,7 +27,7 @@ RUN adduser -D appuser
 USER appuser
 
 # Copy the bff JAR file from the build stage
-COPY --from=build /app/bff/target/bff-0.0.1-SNAPSHOT-exec.jar app.jar
+COPY --from=build /app/target/bff-0.0.1-SNAPSHOT-exec.jar app.jar
 
 # Expose the application's port
 EXPOSE 8080

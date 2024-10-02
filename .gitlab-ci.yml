@@ -1,3 +1,5 @@
+# .gitlab-ci.yml
+
 stages:
   - build
   - test
@@ -26,32 +28,36 @@ build:
   stage: build
   image: docker:latest
   script:
-    # Log in to GitLab Container Registry
+    # Log in to GitLab Container Registry securely
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
 
     # Build and push Docker images for each microservice
-    - docker build -t $CI_REGISTRY_IMAGE/authentication:latest -f authentication/Dockerfile .
+
+    # Build Authentication Microservice
+    - docker build -t $CI_REGISTRY_IMAGE/authentication:latest -f authentication/Dockerfile ./authentication
     - docker push $CI_REGISTRY_IMAGE/authentication:latest
 
-    - docker build -t $CI_REGISTRY_IMAGE/backend:latest -f backend/Dockerfile .
+    # Build Backend Microservice
+    - docker build -t $CI_REGISTRY_IMAGE/backend:latest -f backend/Dockerfile ./backend
     - docker push $CI_REGISTRY_IMAGE/backend:latest
 
-    - docker build -t $CI_REGISTRY_IMAGE/bff:latest -f bff/Dockerfile .
+    # Build BFF Microservice
+    - docker build -t $CI_REGISTRY_IMAGE/bff:latest -f bff/Dockerfile ./bff
     - docker push $CI_REGISTRY_IMAGE/bff:latest
 
-    - docker build -t $CI_REGISTRY_IMAGE/frontend:latest -f frontend/Dockerfile .
-    - docker push $CI_REGISTRY_IMAGE/frontend:latest
-
-    - docker build -t $CI_REGISTRY_IMAGE/profile:latest -f profile/Dockerfile .
+    # Build Profile Microservice
+    - docker build -t $CI_REGISTRY_IMAGE/profile:latest -f profile/Dockerfile ./profile
     - docker push $CI_REGISTRY_IMAGE/profile:latest
 
-    - docker build -t $CI_REGISTRY_IMAGE/reservation:latest -f reservation/Dockerfile .
+    # Build Reservation Microservice
+    - docker build -t $CI_REGISTRY_IMAGE/reservation:latest -f reservation/Dockerfile ./reservation
     - docker push $CI_REGISTRY_IMAGE/reservation:latest
 
 test:
   stage: test
   image: maven:3.9.8-amazoncorretto-17-al2023
   script:
+    # Run tests for each microservice
     - mvn clean test -f authentication/pom.xml
     - mvn clean test -f backend/pom.xml
     - mvn clean test -f bff/pom.xml

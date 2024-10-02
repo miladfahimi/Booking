@@ -10,12 +10,6 @@
     <name>com.tennistime.profile</name>
     <description>profile service for TennisTime application</description>
 
-    <parent>
-        <groupId>com.tennistime</groupId>
-        <artifactId>tennistime</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
-    </parent>
-
     <properties>
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>

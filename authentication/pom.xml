@@ -9,12 +9,6 @@
     <name>com.tennistime.authentication</name>
     <description>Authentication service for TennisTime application</description>
 
-    <parent>
-        <groupId>com.tennistime</groupId>
-        <artifactId>tennistime</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
-    </parent>
-
     <properties>
         <java.version>17</java.version>
     </properties>

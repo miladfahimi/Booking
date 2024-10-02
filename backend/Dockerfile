@@ -1,13 +1,15 @@
+# backend/Dockerfile
+
 # Stage 1: Build the application using Maven
 FROM maven:3.9.8-amazoncorretto-17-al2023 AS build
 WORKDIR /app
 
-# Copy the parent POM first to leverage Docker cache
+# Copy the parent POM
 COPY pom.xml .
 
 # Copy the backend microservice's POM and source code
-COPY backend/backend/pom.xml backend/pom.xml
-COPY backend/backend/src backend/src
+COPY backend/pom.xml backend/pom.xml
+COPY backend/src backend/src
 
 # Download dependencies (leverages Docker cache)
 RUN mvn dependency:go-offline
