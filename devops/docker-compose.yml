@@ -1,18 +1,52 @@
+version: "3.8" # Ensure you're using version 3.8 or later
+
 services:
-  authentication:
-    build:
-      context: ../authentication
-      dockerfile: Dockerfile
-    image: tennistime/authentication:latest
+  postgres:
+    image: postgres:15 # Use a specific PostgreSQL version
+    container_name: tennistime_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: tennistime_test
     ports:
-      - "8080:8080"
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    container_name: tennistime_redis
+    ports:
+      - "6379:6379"
+      - "6380:6380" # If you need two Redis instances
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  smtp:
+    image: mailhog/mailhog
+    container_name: tennistime_smtp
+    ports:
+      - "2525:2525" # SMTP port
+      - "8025:8025" # Web UI for MailHog
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8025"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
     build:
@@ -20,13 +54,44 @@ services:
       dockerfile: Dockerfile
     image: tennistime/backend:latest
     ports:
-      - "8081:8080"
+      - "8090:8090"
     networks:
       - app-network
     depends_on:
-      - authentication
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      # smtp:
+      #   condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev,docker
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8090/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  authentication:
+    build:
+      context: ../authentication
+      dockerfile: Dockerfile
+    image: tennistime/authentication:latest
+    ports:
+      - "8095:8095"
+    networks:
+      - app-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      # smtp:
+      #   condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev,docker
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8095/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -37,13 +102,18 @@ services:
       dockerfile: Dockerfile
     image: tennistime/bff:latest
     ports:
-      - "8082:8080"
+      - "8089:8089"
     networks:
       - app-network
     depends_on:
-      - backend
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev,docker
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8089/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -54,13 +124,18 @@ services:
       dockerfile: Dockerfile
     image: tennistime/profile:latest
     ports:
-      - "8083:8080"
+      - "8099:8099"
     networks:
       - app-network
     depends_on:
-      - backend
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev,docker
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8099/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -71,13 +146,18 @@ services:
       dockerfile: Dockerfile
     image: tennistime/reservation:latest
     ports:
-      - "8084:8080"
+      - "8085:8085"
     networks:
       - app-network
     depends_on:
-      - backend
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev,docker
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8085/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -85,3 +165,6 @@ services:
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  postgres_data:

@@ -25,7 +25,7 @@ WORKDIR /app
 RUN dnf update -y && dnf install -y shadow-utils
 
 # Create a non-root user for security
-RUN adduser -D appuser
+RUN adduser -m appuser
 
 USER appuser
 
