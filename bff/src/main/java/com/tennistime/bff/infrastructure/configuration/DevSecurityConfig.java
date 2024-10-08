@@ -17,7 +17,7 @@ import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
-@Profile("dev")
+@Profile({"dev", "docker"})
 public class DevSecurityConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(DevSecurityConfig.class);
@@ -70,14 +70,17 @@ public class DevSecurityConfig {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.addAllowedOrigin("http://localhost:4200"); // Allow frontend origin
-        corsConfiguration.addAllowedOrigin("http://192.168.0.16:4200"); // Add your frontend origin
-        corsConfiguration.addAllowedMethod("*"); // Allow all HTTP methods
-        corsConfiguration.addAllowedHeader("*"); // Allow all headers
-        corsConfiguration.setAllowCredentials(true); // Allow credentials (cookies, authorization headers)
+        
+        corsConfiguration.addAllowedOrigin("http://localhost:4200");
+        corsConfiguration.addAllowedOrigin("http://192.168.0.16:4200");
+        corsConfiguration.addAllowedOriginPattern("*");
+        
+        corsConfiguration.addAllowedMethod("*");
+        corsConfiguration.addAllowedHeader("*");
+        corsConfiguration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration); // Apply CORS to all paths
+        source.registerCorsConfiguration("/**", corsConfiguration);
 
         return new CorsFilter(source);
     }

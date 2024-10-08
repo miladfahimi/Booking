@@ -9,7 +9,7 @@ import { UserProfileDTO } from '../types';
 export class ProfileService {
   private baseUrl = 'http://192.168.0.16:8099/api/v1'; // Update with your API base URL
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getProfileById(userId: string): Observable<UserProfileDTO> {
     return this.http.get<UserProfileDTO>(`${this.baseUrl}/user/profiles/${userId}`);

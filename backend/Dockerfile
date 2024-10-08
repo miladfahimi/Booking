@@ -15,7 +15,7 @@ COPY backend/src backend/src
 RUN mvn dependency:go-offline
 
 # Package the backend microservice (skip tests for faster builds)
-RUN mvn clean package -DskipTests -pl backend -am
+RUN mvn clean package -DskipTests -Pdocker -pl backend -am
 
 # Stage 2: Run the application using OpenJDK
 FROM amazoncorretto:17-al2023
@@ -36,7 +36,7 @@ COPY --from=build /app/backend/target/backend-0.0.1-SNAPSHOT-exec.jar app.jar
 EXPOSE 8080
 
 # Define the entry point to run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar", "--spring.profiles.active=docker"]
 
 # Optional: Health check to monitor application health
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
