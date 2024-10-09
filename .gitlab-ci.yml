@@ -1,10 +1,10 @@
-# Define the stages of the pipeline
+# Define stages of the pipeline
 stages:
   - build
   - test
   - deploy
 
-# Define variables to configure Docker services
+# Define variables for Docker services
 variables:
   DOCKER_DRIVER: overlay2
   DOCKER_HOST: tcp://docker:2375/
@@ -15,18 +15,18 @@ services:
 
 # Before running any job, perform these tasks
 before_script:
-  # Install OpenSSH client
-  - apt-get update && apt-get install -y openssh-client
+  # Install OpenSSH client using the appropriate package manager
+  - dnf update -y && dnf install -y openssh-clients
   # Start the SSH agent
   - eval $(ssh-agent -s)
-  # Add the SSH private key (stored as a CI/CD variable)
+  # Add the SSH private key
   - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
   # Prepare SSH directory for known hosts
   - mkdir -p ~/.ssh
   - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
   - chmod 600 ~/.ssh/known_hosts
 
-# Build stage: building Docker images for all microservices
+# Build stage: Build Docker images for all microservices
 build:
   stage: build
   image: docker:20.10.16
@@ -71,19 +71,19 @@ test:
     - mvn clean test -f profile/pom.xml
     - mvn clean test -f reservation/pom.xml
 
-# Deployment stage: deploying to server using SSH and Docker Compose
+# Deployment stage: Deploy to server using SSH and Docker Compose
 deploy:
   stage: deploy
-  image: docker:20.10.16
+  image: alpine:latest
   before_script:
-    # Install OpenSSH client
-    - apt-get update && apt-get install -y openssh-client
+    # Install OpenSSH client on Alpine
+    - apk update && apk add openssh
   script:
     # SSH into the server and deploy using docker-compose
     - ssh -o StrictHostKeyChecking=no root@49.12.109.90 "cd /path/to/deployment_directory && docker-compose pull && docker-compose up -d --remove-orphans"
   only:
     - main
 
-# Clean up after job execution to remove unused Docker images and containers
+# Clean up after the job execution to remove unused Docker images and containers
 after_script:
   - docker system prune -af
