@@ -76,10 +76,13 @@ deploy:
   stage: deploy
   image: alpine:latest
   before_script:
-    # Install OpenSSH client on Alpine
     - apk update && apk add openssh
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+    - chmod 600 ~/.ssh/known_hosts
   script:
-    # SSH into the server and deploy using docker-compose
     - ssh -o StrictHostKeyChecking=no root@49.12.109.90 "cd /path/to/deployment_directory && docker-compose pull && docker-compose up -d --remove-orphans"
   only:
     - main

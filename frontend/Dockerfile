@@ -1,32 +1,30 @@
-# Frontend application
 # Stage 1: Build the application
 FROM node:18-alpine AS build
 
-# Set the working directory
 WORKDIR /app
 
-# Copy the package.json and package-lock.json files to install dependencies
+# Copy the package.json and package-lock.json files
 COPY tennis-time/package*.json ./
 
-# Install dependencies using npm
+# Install dependencies
 RUN npm install
 
 # Copy the entire project
 COPY tennis-time/ ./
 
-# Build the application using Nx (with npx)
+# Build the application using Nx
 RUN npx nx build frontend --prod
 
 # Stage 2: Serve the application using Nginx
 FROM nginx:alpine
 
-# Copy the custom nginx configuration file
+# Copy the custom Nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy the built application from the previous stage to the Nginx web server directory
+# Copy the built frontend files from the previous stage
 COPY --from=build /app/dist/apps/frontend /usr/share/nginx/html
 
-# Expose the port Nginx will serve on
+# Expose the port
 EXPOSE 80
 
 # Start Nginx server
