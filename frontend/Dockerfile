@@ -1,3 +1,4 @@
+# Frontend application
 # Stage 1: Build the application
 FROM node:18-alpine AS build
 

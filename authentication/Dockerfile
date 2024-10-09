@@ -2,6 +2,10 @@
 FROM maven:3.9.8-amazoncorretto-17-al2023 AS build
 WORKDIR /app
 
+# Install openssh-client for GitLab CI SSH authentication
+RUN dnf update -y && \
+    dnf install -y shadow-utils openssh-clients
+
 # Copy the pom.xml and source code
 COPY pom.xml .
 COPY src ./src
@@ -17,7 +21,8 @@ FROM amazoncorretto:17-al2023
 WORKDIR /app
 
 # Install necessary packages using dnf
-RUN dnf update -y && dnf install -y shadow-utils
+RUN dnf update -y && \
+    dnf install -y shadow-utils
 
 # Create a non-root user for security
 RUN adduser -m appuser
