@@ -83,7 +83,7 @@ deploy:
     - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
     - chmod 600 ~/.ssh/known_hosts
   script:
-    - ssh -o StrictHostKeyChecking=no root@49.12.109.90 "cd /path/to/deployment_directory && docker-compose pull && docker-compose up -d --remove-orphans"
+    - ssh -o StrictHostKeyChecking=no root@49.12.109.90 "cd /usr/share/nginx/html && docker-compose pull && docker-compose up -d --remove-orphans"
   only:
     - main
 
