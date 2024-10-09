@@ -1,33 +1,37 @@
+# Define the stages of the pipeline
 stages:
   - build
   - test
   - deploy
 
+# Define variables to configure Docker services
 variables:
-  DOCKER_HOST: tcp://docker:2375/
   DOCKER_DRIVER: overlay2
+  DOCKER_HOST: tcp://docker:2375/
 
+# Enable Docker-in-Docker service
 services:
   - docker:dind
 
+# Before running any job, perform these tasks
 before_script:
-  # Install OpenSSH client using dnf (Amazon Linux-based image)
-  - dnf update -y
-  - dnf install -y openssh-clients
+  # Install OpenSSH client
+  - apt-get update && apt-get install -y openssh-client
   # Start the SSH agent
   - eval $(ssh-agent -s)
-  # Add the SSH private key
+  # Add the SSH private key (stored as a CI/CD variable)
   - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-  # Create SSH directory and add known hosts
+  # Prepare SSH directory for known hosts
   - mkdir -p ~/.ssh
   - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
   - chmod 600 ~/.ssh/known_hosts
 
+# Build stage: building Docker images for all microservices
 build:
   stage: build
-  image: docker:latest
+  image: docker:20.10.16
   script:
-    # Log in to GitLab Container Registry securely
+    # Log in to GitLab Container Registry
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
 
     # Build and push Docker images for each microservice
@@ -36,7 +40,7 @@ build:
     - docker build -t $CI_REGISTRY_IMAGE/authentication:latest -f authentication/Dockerfile ./authentication
     - docker push $CI_REGISTRY_IMAGE/authentication:latest
 
-    # Build Backend Microservice (with parent POM)
+    # Build Backend Microservice
     - docker build -t $CI_REGISTRY_IMAGE/backend:latest -f backend/Dockerfile ./backend
     - docker push $CI_REGISTRY_IMAGE/backend:latest
 
@@ -52,9 +56,13 @@ build:
     - docker build -t $CI_REGISTRY_IMAGE/reservation:latest -f reservation/Dockerfile ./reservation
     - docker push $CI_REGISTRY_IMAGE/reservation:latest
 
+# Test stage: Running tests on each microservice
 test:
   stage: test
   image: maven:3.9.8-amazoncorretto-17-al2023
+  cache:
+    paths:
+      - ~/.m2/repository
   script:
     # Run tests for each microservice
     - mvn clean test -f authentication/pom.xml
@@ -63,15 +71,19 @@ test:
     - mvn clean test -f profile/pom.xml
     - mvn clean test -f reservation/pom.xml
 
+# Deployment stage: deploying to server using SSH and Docker Compose
 deploy:
   stage: deploy
-  image: amazonlinux:latest
+  image: docker:20.10.16
   before_script:
-    # Use dnf for installing openssh in Amazon Linux-based image
-    - dnf update -y
-    - dnf install -y openssh-clients
+    # Install OpenSSH client
+    - apt-get update && apt-get install -y openssh-client
   script:
     # SSH into the server and deploy using docker-compose
     - ssh -o StrictHostKeyChecking=no root@49.12.109.90 "cd /path/to/deployment_directory && docker-compose pull && docker-compose up -d --remove-orphans"
   only:
     - main
+
+# Clean up after job execution to remove unused Docker images and containers
+after_script:
+  - docker system prune -af
