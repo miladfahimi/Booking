@@ -59,10 +59,9 @@ deploy:
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
-    - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+    - ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
     - chmod 600 ~/.ssh/known_hosts
   script:
-    # SSH into the server to either pull the latest changes or clone the project for the first time
     - ssh -o StrictHostKeyChecking=no root@49.12.109.90 "
       if [ -d /home/TennisTime ]; then
       cd /home/TennisTime && git pull origin main;
