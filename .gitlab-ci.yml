@@ -51,11 +51,11 @@ test:
 
 deploy:
   stage: deploy
-  image: alpine:latest
+  image: ubuntu:latest
   services:
     - docker:dind
   before_script:
-    - apk update && apk add openssh git docker-compose
+    - apt-get update && apt-get install -y openssh-client git docker-compose
     - eval $(ssh-agent -s)
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/gitlab_ci_deploy_key
