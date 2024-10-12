@@ -52,8 +52,6 @@ test:
 deploy:
   stage: deploy
   image: alpine:latest
-  services:
-    - docker:dind
   before_script:
     - apk update && apk add openssh docker-compose git
     - eval $(ssh-agent -s)
@@ -62,7 +60,7 @@ deploy:
     - ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
     - chmod 600 ~/.ssh/known_hosts
   script:
-    - ssh -o StrictHostKeyChecking=no root@49.12.109.90 "
+    - ssh -i ~/.ssh/gitlab_ci_deploy_key -o StrictHostKeyChecking=no root@49.12.109.90 "
       if [ -d /home/TennisTime ]; then
       cd /home/TennisTime && git pull origin main;
       else
