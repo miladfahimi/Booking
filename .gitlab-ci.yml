@@ -1,62 +1,39 @@
-# Define stages of the pipeline
 stages:
   - build
   - test
   - deploy
 
-# Define variables for Docker services
 variables:
   DOCKER_DRIVER: overlay2
   DOCKER_HOST: tcp://docker:2375/
 
-# Enable Docker-in-Docker service
 services:
   - docker:dind
 
-# Before running any job, perform these tasks
 before_script:
-  # Install OpenSSH client using the appropriate package manager
   - dnf update -y && dnf install -y openssh-clients
-  # Start the SSH agent
   - eval $(ssh-agent -s)
-  # Add the SSH private key
   - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-  # Prepare SSH directory for known hosts
   - mkdir -p ~/.ssh
   - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
   - chmod 600 ~/.ssh/known_hosts
 
-# Build stage: Build Docker images for all microservices
 build:
   stage: build
   image: docker:20.10.16
   script:
-    # Log in to GitLab Container Registry
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
-
-    # Build and push Docker images for each microservice
-
-    # Build Authentication Microservice
     - docker build -t $CI_REGISTRY_IMAGE/authentication:latest -f authentication/Dockerfile ./authentication
     - docker push $CI_REGISTRY_IMAGE/authentication:latest
-
-    # Build Backend Microservice
     - docker build -t $CI_REGISTRY_IMAGE/backend:latest -f backend/Dockerfile ./backend
     - docker push $CI_REGISTRY_IMAGE/backend:latest
-
-    # Build BFF Microservice
     - docker build -t $CI_REGISTRY_IMAGE/bff:latest -f bff/Dockerfile ./bff
     - docker push $CI_REGISTRY_IMAGE/bff:latest
-
-    # Build Profile Microservice
     - docker build -t $CI_REGISTRY_IMAGE/profile:latest -f profile/Dockerfile ./profile
     - docker push $CI_REGISTRY_IMAGE/profile:latest
-
-    # Build Reservation Microservice
     - docker build -t $CI_REGISTRY_IMAGE/reservation:latest -f reservation/Dockerfile ./reservation
     - docker push $CI_REGISTRY_IMAGE/reservation:latest
 
-# Test stage: Running tests on each microservice
 test:
   stage: test
   image: maven:3.9.8-amazoncorretto-17-al2023
@@ -64,19 +41,19 @@ test:
     paths:
       - ~/.m2/repository
   script:
-    # Run tests for each microservice
     - mvn clean test -f authentication/pom.xml
     - mvn clean test -f backend/pom.xml
     - mvn clean test -f bff/pom.xml
     - mvn clean test -f profile/pom.xml
     - mvn clean test -f reservation/pom.xml
 
-# Deployment stage: Deploy to server using SSH and Docker Compose
 deploy:
   stage: deploy
   image: alpine:latest
+  services:
+    - docker:dind
   before_script:
-    - apk update && apk add openssh
+    - apk update && apk add openssh docker-compose
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
@@ -87,6 +64,5 @@ deploy:
   only:
     - main
 
-# Clean up after the job execution to remove unused Docker images and containers
 after_script:
   - docker system prune -af
