@@ -55,21 +55,23 @@ deploy:
   services:
     - docker:dind
   before_script:
-    - apk update && apk add openssh docker-compose
+    - apk update && apk add openssh docker-compose git
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
     - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
     - chmod 600 ~/.ssh/known_hosts
   script:
-    # SSH into the remote server and deploy all services
+    # SSH into the server to either pull the latest changes or clone the project for the first time
     - ssh -o StrictHostKeyChecking=no root@49.12.109.90 "
-      cd /devops &&
+      if [ -d /home/TennisTime ]; then
+      cd /home/TennisTime && git pull origin main;
+      else
+      git clone git@gitlab.com:miladfahimi2012/tennistime.git /home/TennisTime;
+      fi &&
+      cd /home/TennisTime/devops &&
       docker-compose pull &&
       docker-compose up -d --remove-orphans
       "
   only:
     - main
-
-after_script:
-  - docker system prune -af
