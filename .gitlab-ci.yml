@@ -33,6 +33,8 @@ build:
     - docker push $CI_REGISTRY_IMAGE/profile:latest
     - docker build -t $CI_REGISTRY_IMAGE/reservation:latest -f reservation/Dockerfile ./reservation
     - docker push $CI_REGISTRY_IMAGE/reservation:latest
+    - docker build -t $CI_REGISTRY_IMAGE/frontend:latest -f frontend/Dockerfile ./frontend
+    - docker push $CI_REGISTRY_IMAGE/frontend:latest
 
 test:
   stage: test
@@ -60,7 +62,12 @@ deploy:
     - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
     - chmod 600 ~/.ssh/known_hosts
   script:
-    - ssh -o StrictHostKeyChecking=no root@49.12.109.90 "cd /usr/share/nginx/html && docker-compose pull && docker-compose up -d --remove-orphans"
+    # SSH into the remote server and deploy all services
+    - ssh -o StrictHostKeyChecking=no root@49.12.109.90 "
+      cd /devops &&
+      docker-compose pull &&
+      docker-compose up -d --remove-orphans
+      "
   only:
     - main
 
