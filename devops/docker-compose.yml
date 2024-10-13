@@ -162,7 +162,7 @@ services:
 
 networks:
   devops_app-network:
-    external: true
+    name: devops_app-network
 
 volumes:
   postgres_data:
