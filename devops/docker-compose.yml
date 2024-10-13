@@ -49,10 +49,7 @@ services:
       retries: 5
 
   backend:
-    build:
-      context: ../backend
-      dockerfile: Dockerfile
-    image: tennistime/backend:latest
+    image: registry.gitlab.com/miladfahimi2012/tennistime/backend:latest
     ports:
       - "8090:8090"
     networks:
@@ -71,10 +68,7 @@ services:
       retries: 3
 
   authentication:
-    build:
-      context: ../authentication
-      dockerfile: Dockerfile
-    image: tennistime/authentication:latest
+    image: registry.gitlab.com/miladfahimi2012/tennistime/authentication:latest
     ports:
       - "8095:8095"
     networks:
@@ -93,10 +87,7 @@ services:
       retries: 3
 
   bff:
-    build:
-      context: ../bff
-      dockerfile: Dockerfile
-    image: tennistime/bff:latest
+    image: registry.gitlab.com/miladfahimi2012/tennistime/bff:latest
     ports:
       - "8089:8089"
     networks:
@@ -115,10 +106,7 @@ services:
       retries: 3
 
   profile:
-    build:
-      context: ../profile
-      dockerfile: Dockerfile
-    image: tennistime/profile:latest
+    image: registry.gitlab.com/miladfahimi2012/tennistime/profile:latest
     ports:
       - "8099:8099"
     networks:
@@ -137,10 +125,7 @@ services:
       retries: 3
 
   reservation:
-    build:
-      context: ../reservation
-      dockerfile: Dockerfile
-    image: tennistime/reservation:latest
+    image: registry.gitlab.com/miladfahimi2012/tennistime/reservation:latest
     ports:
       - "8085:8085"
     networks:
@@ -159,7 +144,7 @@ services:
       retries: 3
 
   frontend:
-    image: nginx:latest
+    image: registry.gitlab.com/miladfahimi2012/tennistime/frontend:latest
     container_name: tennistime_nginx
     ports:
       - "4200:80" # Expose Nginx on port 4200
