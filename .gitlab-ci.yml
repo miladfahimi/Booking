@@ -25,6 +25,8 @@ build:
   image: docker:20.10.16
   script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin registry.gitlab.com
+    - docker build -t registry.gitlab.com/miladfahimi2012/tennistime/frontend:latest -f frontend/Dockerfile ./frontend
+    - docker push registry.gitlab.com/miladfahimi2012/tennistime/frontend:latest
     - docker build -t registry.gitlab.com/miladfahimi2012/tennistime/authentication:latest -f authentication/Dockerfile ./authentication
     - docker push registry.gitlab.com/miladfahimi2012/tennistime/authentication:latest
     - docker build -t registry.gitlab.com/miladfahimi2012/tennistime/backend:latest -f backend/Dockerfile ./backend
@@ -35,8 +37,6 @@ build:
     - docker push registry.gitlab.com/miladfahimi2012/tennistime/profile:latest
     - docker build -t registry.gitlab.com/miladfahimi2012/tennistime/reservation:latest -f reservation/Dockerfile ./reservation
     - docker push registry.gitlab.com/miladfahimi2012/tennistime/reservation:latest
-    - docker build -t registry.gitlab.com/miladfahimi2012/tennistime/frontend:latest -f frontend/Dockerfile ./frontend
-    - docker push registry.gitlab.com/miladfahimi2012/tennistime/frontend:latest
 
 test:
   stage: test
