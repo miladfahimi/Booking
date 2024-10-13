@@ -74,6 +74,7 @@ deploy:
       git clone git@gitlab.com:miladfahimi2012/tennistime.git /home/TennisTime;
       fi &&
       cd /home/TennisTime/devops &&
+      docker login -u '$CI_REGISTRY_USER' -p '$CI_REGISTRY_PASSWORD' registry.gitlab.com &&
       docker-compose pull &&
       docker-compose up -d --remove-orphans
       "
