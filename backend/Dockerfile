@@ -19,16 +19,16 @@ RUN mvn dependency:go-offline
 # Package the backend microservice (skip tests for faster builds)
 RUN mvn clean package -DskipTests -Pdocker -pl backend -am
 
-# Stage 2: Run the application using OpenJDK
-FROM amazoncorretto:17-al2023
+# Stage 2: Run the application using ARM-compatible OpenJDK
+FROM arm64v8/amazoncorretto:17-alpine
 WORKDIR /app
 
-# Install necessary packages using dnf
-RUN dnf update -y && \
-    dnf install -y shadow-utils
+# Install necessary packages using apk
+RUN apk update && \
+    apk add shadow
 
 # Create a non-root user for security
-RUN adduser -m appuser
+RUN adduser -D -s /bin/sh appuser
 
 USER appuser
 
