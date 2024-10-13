@@ -37,8 +37,7 @@ services:
     image: mailhog/mailhog
     container_name: tennistime_smtp
     ports:
-      - "2525:2525" # SMTP port
-      - "8025:8025" # Web UI for MailHog
+      - "2525:2525"
     networks:
       - devops_app-network
     healthcheck:
@@ -49,6 +48,7 @@ services:
 
   backend:
     image: registry.gitlab.com/miladfahimi2012/tennistime/backend:latest
+    container_name: tennistime_backend
     ports:
       - "8090:8090"
     networks:
@@ -68,6 +68,7 @@ services:
 
   authentication:
     image: registry.gitlab.com/miladfahimi2012/tennistime/authentication:latest
+    container_name: tennistime_authentication
     ports:
       - "8095:8095"
     networks:
@@ -87,6 +88,7 @@ services:
 
   bff:
     image: registry.gitlab.com/miladfahimi2012/tennistime/bff:latest
+    container_name: tennistime_bff
     ports:
       - "8089:8089"
     networks:
@@ -106,6 +108,7 @@ services:
 
   profile:
     image: registry.gitlab.com/miladfahimi2012/tennistime/profile:latest
+    container_name: tennistime_profile
     ports:
       - "8099:8099"
     networks:
@@ -125,6 +128,7 @@ services:
 
   reservation:
     image: registry.gitlab.com/miladfahimi2012/tennistime/reservation:latest
+    container_name: tennistime_reservation
     ports:
       - "8085:8085"
     networks:
@@ -146,10 +150,10 @@ services:
     image: registry.gitlab.com/miladfahimi2012/tennistime/frontend:latest
     container_name: tennistime_nginx
     ports:
-      - "4200:80" # Expose Nginx on port 4200
+      - "4200:80"
     volumes:
-      - ./frontend/www:/usr/share/nginx/html # Serve frontend dynamically from this volume
-      - ./frontend/nginx.conf:/etc/nginx/nginx.conf # Update this path
+      - ./frontend/www:/usr/share/nginx/html
+      - ./frontend/nginx.conf:/etc/nginx/nginx.conf
     networks:
       - devops_app-network
     depends_on:
