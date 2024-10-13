@@ -62,7 +62,7 @@ deploy:
     - chmod 600 ~/.ssh/gitlab_ci_deploy_key
     - ssh-add ~/.ssh/gitlab_ci_deploy_key
     - ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
-    - chmod 600 ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
   script:
     - ssh -i ~/.ssh/gitlab_ci_deploy_key -o StrictHostKeyChecking=no root@49.12.109.90 "
       if [ -d /home/TennisTime ]; then
