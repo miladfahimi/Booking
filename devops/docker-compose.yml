@@ -149,7 +149,7 @@ services:
       - "4200:80" # Expose Nginx on port 4200
     volumes:
       - ./frontend/www:/usr/share/nginx/html # Serve frontend dynamically from this volume
-      - ./frontend/nginx.conf:/etc/nginx/nginx.conf:type=bind
+      - ./frontend/nginx.conf:/etc/nginx/nginx.conf
     networks:
       - devops_app-network
     depends_on:
