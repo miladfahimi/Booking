@@ -11,12 +11,7 @@ services:
   - docker:dind
 
 before_script:
-  - apk update && apk add openssh-client
-  - eval $(ssh-agent -s)
-  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-  - mkdir -p ~/.ssh
-  - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
-  - chmod 600 ~/.ssh/known_hosts
+  - apt-get update && apt-get install -y openssh-client curl
 
 build:
   stage: build
@@ -39,6 +34,8 @@ build:
 test:
   stage: test
   image: maven:3.9.8-amazoncorretto-17-al2023
+  before_script:
+    - apt-get update && apt-get install -y openssh-client curl
   cache:
     paths:
       - ~/.m2/repository
@@ -55,7 +52,7 @@ deploy:
   services:
     - docker:dind
   before_script:
-    - apt-get update && apt-get install -y openssh-client git docker-compose
+    - apt-get update && apt-get install -y openssh-client git docker-compose curl
     - eval $(ssh-agent -s)
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/gitlab_ci_deploy_key
