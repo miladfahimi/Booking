@@ -6,18 +6,25 @@ stages:
 variables:
   DOCKER_DRIVER: overlay2
   DOCKER_HOST: tcp://docker:2375/
+  CI_REGISTRY_USER: "$CI_REGISTRY_USER"
+  CI_REGISTRY_PASSWORD: "$CI_REGISTRY_PASSWORD"
 
 services:
   - docker:dind
 
 before_script:
-  - apt-get update && apt-get install -y openssh-client curl
+  - dnf update -y && dnf install -y openssh-clients
+  - eval $(ssh-agent -s)
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+  - mkdir -p ~/.ssh
+  - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+  - chmod 600 ~/.ssh/known_hosts
 
 build:
   stage: build
   image: docker:20.10.16
   script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin registry.gitlab.com
     - docker build -t registry.gitlab.com/miladfahimi2012/tennistime/authentication:latest -f authentication/Dockerfile ./authentication
     - docker push registry.gitlab.com/miladfahimi2012/tennistime/authentication:latest
     - docker build -t registry.gitlab.com/miladfahimi2012/tennistime/backend:latest -f backend/Dockerfile ./backend
@@ -34,8 +41,6 @@ build:
 test:
   stage: test
   image: maven:3.9.8-amazoncorretto-17-al2023
-  before_script:
-    - apt-get update && apt-get install -y openssh-client curl
   cache:
     paths:
       - ~/.m2/repository
@@ -52,7 +57,7 @@ deploy:
   services:
     - docker:dind
   before_script:
-    - apt-get update && apt-get install -y openssh-client git docker-compose curl
+    - apt-get update && apt-get install -y openssh-client git docker-compose
     - eval $(ssh-agent -s)
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/gitlab_ci_deploy_key
