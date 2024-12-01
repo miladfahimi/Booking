@@ -74,6 +74,7 @@ public class DevSecurityConfig {
         
         corsConfiguration.addAllowedOrigin("http://localhost:4200");
         corsConfiguration.addAllowedOrigin("http://192.168.0.16:4200");
+        corsConfiguration.addAllowedOrigin("http://49.12.109.90:4200");
         corsConfiguration.addAllowedOriginPattern("*");
         
         corsConfiguration.addAllowedMethod("*");
