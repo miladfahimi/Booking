@@ -25,7 +25,7 @@ build:
   image: docker:20.10.16
   script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin registry.gitlab.com
-    - docker build --platform linux/arm64 -t registry.gitlab.com/miladfahimi2012/tennistime/frontend:latest -f frontend/Dockerfile ./frontend
+    - docker build --no-cache --platform linux/arm64 -t registry.gitlab.com/miladfahimi2012/tennistime/frontend:latest -f frontend/Dockerfile ./frontend
     - docker push registry.gitlab.com/miladfahimi2012/tennistime/frontend:latest
     - docker build --platform linux/arm64 -t registry.gitlab.com/miladfahimi2012/tennistime/authentication:latest -f authentication/Dockerfile ./authentication
     - docker push registry.gitlab.com/miladfahimi2012/tennistime/authentication:latest
