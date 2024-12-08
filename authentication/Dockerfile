@@ -9,6 +9,8 @@ RUN dnf update -y && \
 # Copy the pom.xml and source code
 COPY pom.xml .
 COPY src ./src
+RUN ls -l /app && ls -l /app/src
+
 
 # Download dependencies (leverages Docker cache)
 RUN mvn dependency:go-offline
@@ -17,7 +19,7 @@ RUN mvn dependency:go-offline
 RUN mvn clean package -DskipTests -Pdocker
 
 # Stage 2: Run the application using ARM-compatible OpenJDK
-FROM arm64v8/amazoncorretto:17-alpine
+FROM amazoncorretto:17-alpine
 WORKDIR /app
 
 # Install necessary packages using apk

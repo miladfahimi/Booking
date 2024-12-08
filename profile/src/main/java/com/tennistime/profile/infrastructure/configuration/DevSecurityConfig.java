@@ -71,10 +71,14 @@ public class DevSecurityConfig {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        
+
         corsConfiguration.addAllowedOrigin("http://localhost:4200");
-        corsConfiguration.addAllowedOrigin("http://192.168.0.16:4200");
-        corsConfiguration.addAllowedOrigin("http://49.12.109.90:4200");
+        corsConfiguration.addAllowedOrigin("http://192.168.0.16:80");
+        corsConfiguration.addAllowedOrigin("http://192.168.0.16");
+        corsConfiguration.addAllowedOrigin("http://frontend:80");
+        corsConfiguration.addAllowedOrigin("http://frontend");
+        corsConfiguration.addAllowedOrigin("http://49.12.109.90");
+        corsConfiguration.addAllowedOrigin("http://49.12.109.90:80");
         corsConfiguration.addAllowedOriginPattern("*");
         
         corsConfiguration.addAllowedMethod("*");

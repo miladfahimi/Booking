@@ -20,7 +20,7 @@ RUN mvn dependency:go-offline
 RUN mvn clean package -DskipTests -Pdocker -pl backend -am
 
 # Stage 2: Run the application using ARM-compatible OpenJDK
-FROM arm64v8/amazoncorretto:17-alpine
+FROM amazoncorretto:17-alpine
 WORKDIR /app
 
 # Install necessary packages using apk

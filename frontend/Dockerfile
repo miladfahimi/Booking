@@ -1,19 +1,20 @@
 # Stage 1: Build the application
 FROM node:18-alpine AS build
 
+# Set working directory to /app for initial setup
 WORKDIR /app
 
-# Copy the package.json and package-lock.json files
+# Copy package.json and package-lock.json from the tennis-time folder
 COPY tennis-time/package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy the entire project
+# Copy the entire tennis-time project
 COPY tennis-time/ ./
 
 # Build the application using Nx
-RUN npx nx build frontend --prod
+RUN npx nx reset && npx nx build frontend --prod
 
 # Stage 2: Serve the application using Nginx
 FROM nginx:alpine

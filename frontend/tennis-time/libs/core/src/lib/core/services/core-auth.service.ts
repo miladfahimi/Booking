@@ -9,7 +9,7 @@ import { SignUpReq } from '@tennis-time/auth';
   providedIn: 'root'
 })
 export class CoreAuthService {
-  private baseUrl = 'http://authentication:8095/api/v1/auth';
+  private baseUrl = 'http://192.168.0.16:8082/api/v1/auth';
   private tokenKey = 'authToken';  // Key to store the JWT token in local storage
   private userIdKey = 'userId';    // Key to store the userId in local storage
 

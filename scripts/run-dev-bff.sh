@@ -33,7 +33,7 @@ while [[ "$1" != "" ]]; do
 done
 
 # Navigate to the project directory on the C drive
-cd /c/ws/TennisTime/tennistime/bff
+cd /home/TennisTime/tennistime/bff
 
 # Run mvn clean install if build flag is set
 if [ "$BUILD" = true ]; then

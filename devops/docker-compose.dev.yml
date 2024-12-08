@@ -1,0 +1,216 @@
+version: "3.8" # Ensure you're using version 3.8 or later
+
+services:
+  postgres:
+    image: postgres:15 # Use a specific PostgreSQL version
+    container_name: tennistime_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: tennistime_test
+    volumes:
+      - /home/TennisTime/tennistime/postgres_data:/var/lib/postgresql/data
+    networks:
+      - devops_app-network
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    container_name: tennistime_redis
+    networks:
+      - devops_app-network
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  smtp:
+    image: mailhog/mailhog
+    container_name: tennistime_smtp
+    networks:
+      - devops_app-network
+    ports:
+      - "8025:8025"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:8025"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: /home/TennisTime/tennistime/backend
+      dockerfile: Dockerfile
+    container_name: tennistime_backend
+    volumes:
+      - /home/TennisTime/tennistime/backend:/app_1
+    networks:
+      - devops_app-network
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_HOST: postgres
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:8081/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  authentication:
+    build:
+      context: /home/TennisTime/tennistime/authentication
+      dockerfile: Dockerfile
+    container_name: tennistime_authentication
+    volumes:
+      - /home/TennisTime/tennistime/authentication/src:/app/src
+      - /home/TennisTime/tennistime/authentication/target:/app/target
+      - /home/TennisTime/tennistime/authentication/pom.xml:/app/pom.xml
+    networks:
+      - devops_app-network
+    ports:
+      - "8082:8082"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_HOST: postgres
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:8082/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  bff:
+    build:
+      context: /home/TennisTime/tennistime/bff
+      dockerfile: Dockerfile
+    container_name: tennistime_bff
+    volumes:
+      - /home/TennisTime/tennistime/bff:/app_1
+    networks:
+      - devops_app-network
+    ports:
+      - "8083:8083"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_HOST: postgres
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:8083/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  profile:
+    build:
+      context: /home/TennisTime/tennistime/profile
+      dockerfile: Dockerfile
+    container_name: tennistime_profile
+    volumes:
+      - /home/TennisTime/tennistime/profile:/app_1
+    networks:
+      - devops_app-network
+    ports:
+      - "8084:8084"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_HOST: postgres
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:8084/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  reservation:
+    build:
+      context: /home/TennisTime/tennistime/reservation
+      dockerfile: Dockerfile
+    container_name: tennistime_reservation
+    volumes:
+      - /home/TennisTime/tennistime/reservation:/app_1
+    networks:
+      - devops_app-network
+    ports:
+      - "8085:8085"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_HOST: postgres
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:8085/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: /home/TennisTime/tennistime/frontend
+      dockerfile: Dockerfile
+    container_name: tennistime_nginx
+    volumes:
+      - /home/TennisTime/tennistime/frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - devops_app-network
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+      - authentication
+      - bff
+      - profile
+      - reservation
+    environment:
+      - NODE_ENV=production
+
+networks:
+  devops_app-network:
+    name: devops_app-network
+
+volumes:
+  postgres_data:
