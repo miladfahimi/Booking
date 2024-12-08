@@ -12,7 +12,10 @@ public class RedisConfig {
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-        return new LettuceConnectionFactory();
+        // Explicitly set the Redis host and port
+        LettuceConnectionFactory factory = new LettuceConnectionFactory("redis", 6379);
+        factory.afterPropertiesSet(); // Ensure the properties are applied
+        return factory;
     }
 
     @Bean

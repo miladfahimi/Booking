@@ -57,6 +57,7 @@ public class DevSecurityConfig {
                         // Ensure that only authorized roles can access specific endpoints
                         .requestMatchers("/test/admin/**").hasRole("ADMIN")
                         .requestMatchers("/user/initialize/**").hasAnyRole("ADMIN","PROVIDER_OWNER","USER")
+                        .requestMatchers("/user/profiles/**").hasAnyRole("ADMIN","PROVIDER_OWNER","USER")
                         .requestMatchers("/test/provider/**").hasRole("PROVIDER_OWNER")
                         .requestMatchers("/test/user/**").hasRole("USER")
                         .anyRequest().authenticated()

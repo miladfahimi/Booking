@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
 import java.util.UUID;
 
-@FeignClient(name = "feedback-service", url = "http://localhost:8090/api/v1")
+@FeignClient(name = "feedback-service", url = "http://backend:8081/api/v1")
 public interface FeedbackServiceClient {
 
     @GetMapping("/feedbacks/provider/{providerId}")

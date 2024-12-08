@@ -110,7 +110,9 @@ services:
       dockerfile: Dockerfile
     container_name: tennistime_bff
     volumes:
-      - /home/TennisTime/tennistime/bff:/app_1
+      - /home/TennisTime/tennistime/bff/src:/app/src
+      - /home/TennisTime/tennistime/bff/target:/app/target
+      - /home/TennisTime/tennistime/bff/pom.xml:/app/pom.xml
     networks:
       - devops_app-network
     ports:
@@ -138,7 +140,9 @@ services:
       dockerfile: Dockerfile
     container_name: tennistime_profile
     volumes:
-      - /home/TennisTime/tennistime/profile:/app_1
+      - /home/TennisTime/tennistime/profile/src:/app/src
+      - /home/TennisTime/tennistime/profile/target:/app/target
+      - /home/TennisTime/tennistime/profile/pom.xml:/app/pom.xml
     networks:
       - devops_app-network
     ports:
@@ -152,8 +156,8 @@ services:
       SPRING_PROFILES_ACTIVE: docker
       DB_HOST: postgres
       DB_PORT: 5432
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
     healthcheck:
       test: ["CMD", "curl", "-f", "http://0.0.0.0:8084/health"]
       interval: 30s
@@ -166,7 +170,9 @@ services:
       dockerfile: Dockerfile
     container_name: tennistime_reservation
     volumes:
-      - /home/TennisTime/tennistime/reservation:/app_1
+      - /home/TennisTime/tennistime/reservation/src:/app/src
+      - /home/TennisTime/tennistime/reservation/target:/app/target
+      - /home/TennisTime/tennistime/reservation/pom.xml:/app/pom.xml
     networks:
       - devops_app-network
     ports:

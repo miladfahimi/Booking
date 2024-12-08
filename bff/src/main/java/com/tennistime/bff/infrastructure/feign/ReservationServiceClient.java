@@ -16,7 +16,7 @@ import java.util.UUID;
  * Feign client for interacting with the Reservation Service.
  * It includes endpoints for fetching reservations by various criteria.
  */
-@FeignClient(name = "reservation-service", url = "http://localhost:8085/api/v1")
+@FeignClient(name = "reservation-service", url = "http://reservation:8085/api/v1")
 public interface ReservationServiceClient {
 
     @GetMapping("/reservations/{id}")

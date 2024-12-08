@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Map;
 
-@FeignClient(name = "authentication-service", url = "http://localhost:8095/api/v1")
+@FeignClient(name = "authentication-service", url = "http://authentication:8082/api/v1")
 public interface AuthServiceClient {
 
     @GetMapping("/test/feign")
