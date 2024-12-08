@@ -12,8 +12,11 @@ public class RedisConfig {
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-        return new LettuceConnectionFactory();
+        LettuceConnectionFactory factory = new LettuceConnectionFactory("redis", 6379);
+        factory.afterPropertiesSet();
+        return factory;
     }
+
 
     @Bean
     public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
