@@ -13,17 +13,17 @@ import java.util.Properties;
 @Configuration
 public class MailConfig {
 
-//    @Value("${smtp.server.ip}")
-//    private String smtpIp;
-//
-//    @Value("${smtp.server.port}")
-//    private String smtpPort;
+    @Value("${smtp.server.ip}")
+    private String smtpHost;
+
+    @Value("${smtp.server.port}")
+    private int smtpPort;
 
     @Bean
     public JavaMailSender javaMailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost("localhost"); // Set to localhost for FakeSMTP
-        mailSender.setPort(2525); // Set to the FakeSMTP port
+        mailSender.setHost(smtpHost); // Dynamically set the host
+        mailSender.setPort(smtpPort); // Dynamically set the port
 
         // No need for username and password for FakeSMTP
         // mailSender.setUsername("");

@@ -78,6 +78,7 @@ public class DevSecurityConfig {
                         .requestMatchers("/test/admin").hasRole("ADMIN")
                         .requestMatchers("/test/provider").hasRole("PROVIDER_OWNER")
                         .requestMatchers("/test/user").hasRole("USER")
+                        .requestMatchers("/test/user").hasRole("ALL")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

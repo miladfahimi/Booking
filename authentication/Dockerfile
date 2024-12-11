@@ -20,11 +20,12 @@ RUN mvn clean package -DskipTests -Pdocker
 
 # Stage 2: Run the application using ARM-compatible OpenJDK
 FROM amazoncorretto:17-alpine
-WORKDIR /app
 
 # Install necessary packages using apk
 RUN apk update && \
-    apk add shadow
+    apk add --no-cache shadow
+
+WORKDIR /app
 
 # Create a non-root user for security
 RUN adduser -D -s /bin/sh appuser
@@ -38,7 +39,7 @@ COPY --from=build /app/target/authentication-0.0.1-SNAPSHOT-exec.jar app.jar
 EXPOSE 8080
 
 # Define the entry point to run the application
-ENTRYPOINT ["java", "-jar", "app.jar", "--spring.profiles.active=docker"]
+ENTRYPOINT ["java", "-jar", "app.jar", "--spring.profiles.active=dev"]
 
 # Optional: Health check to monitor application health
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
