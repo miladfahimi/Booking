@@ -11,7 +11,7 @@ services:
     volumes:
       - /home/TennisTime/tennistime/postgres_data:/var/lib/postgresql/data
     networks:
-      - devops_app-network
+      - app_network
     ports:
       - "5432:5432"
     healthcheck:
@@ -24,7 +24,7 @@ services:
     image: redis:7
     container_name: redis_dev
     networks:
-      - devops_app-network
+      - app_network
     ports:
       - "6379:6379"
     healthcheck:
@@ -41,7 +41,7 @@ services:
     ports:
       - "8025:8025"
     networks:
-      - devops_app-network
+      - app_network
     volumes:
       - /home/TennisTime/tennistime/FakeSMTP/target:/app/target
 
@@ -55,7 +55,7 @@ services:
       - /home/TennisTime/tennistime/authentication/target:/app/target:delegated
       - /home/TennisTime/tennistime/authentication/pom.xml:/app/pom.xml
     networks:
-      - devops_app-network
+      - app_network
     ports:
       - "8082:8082"
     environment:
@@ -74,9 +74,67 @@ services:
       - /home/TennisTime/tennistime/profile/target:/app/target:delegated
       - /home/TennisTime/tennistime/profile/pom.xml:/app/pom.xml
     networks:
-      - devops_app-network
+      - app_network
     ports:
       - "8084:8084"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_HOST: postgres
+      DB_PORT: 5432
+      jwt.secret: Dy64nBQfRKEQtLTRDV42R8/H3XsxVFFk+zrXb2l+PQz8j+p5vR+RYAkfLK+jXdhmRrx3gU8yU9TcvKjL43FUYw==
+
+  backend:
+    build:
+      context: /home/TennisTime/tennistime/backend
+      dockerfile: Dockerfile.dev
+    container_name: backend_dev
+    volumes:
+      - /home/TennisTime/tennistime/backend:/app
+      - /home/TennisTime/tennistime/backend/src:/app/src:delegated
+      - /home/TennisTime/tennistime/backend/target:/app/target:delegated
+      - /home/TennisTime/tennistime/backend/pom.xml:/app/pom.xml
+    networks:
+      - app_network
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_HOST: postgres
+      DB_PORT: 5432
+      jwt.secret: Dy64nBQfRKEQtLTRDV42R8/H3XsxVFFk+zrXb2l+PQz8j+p5vR+RYAkfLK+jXdhmRrx3gU8yU9TcvKjL43FUYw==
+
+  bff:
+    build:
+      context: /home/TennisTime/tennistime/bff
+      dockerfile: Dockerfile.dev
+    container_name: bff_dev
+    volumes:
+      - /home/TennisTime/tennistime/bff/src:/app/src:delegated
+      - /home/TennisTime/tennistime/bff/target:/app/target:delegated
+      - /home/TennisTime/tennistime/bff/pom.xml:/app/pom.xml
+    networks:
+      - app_network
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_HOST: postgres
+      DB_PORT: 5432
+      jwt.secret: Dy64nBQfRKEQtLTRDV42R8/H3XsxVFFk+zrXb2l+PQz8j+p5vR+RYAkfLK+jXdhmRrx3gU8yU9TcvKjL43FUYw==
+
+  reservation:
+    build:
+      context: /home/TennisTime/tennistime/reservation
+      dockerfile: Dockerfile.dev
+    container_name: reservation_dev
+    volumes:
+      - /home/TennisTime/tennistime/reservation/src:/app/src:delegated
+      - /home/TennisTime/tennistime/reservation/target:/app/target:delegated
+      - /home/TennisTime/tennistime/reservation/pom.xml:/app/pom.xml
+    networks:
+      - app_network
+    ports:
+      - "8085:8085"
     environment:
       SPRING_PROFILES_ACTIVE: dev
       DB_HOST: postgres
@@ -91,7 +149,7 @@ services:
     volumes:
       - /home/TennisTime/tennistime/frontend:/app
     networks:
-      - devops_app-network
+      - app_network
     ports:
       - "4200:4200"
     depends_on:
@@ -104,5 +162,5 @@ services:
 
 
 networks:
-  devops_app-network:
-    name: devops_app-network
+  app_network:
+    name: app_network
