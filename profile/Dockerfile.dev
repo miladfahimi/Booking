@@ -1,0 +1,39 @@
+# Base image with Maven and Amazon Corretto JDK 17
+FROM maven:3.9.8-amazoncorretto-17-al2023
+
+# Install necessary tools for creating users
+RUN yum -y update && \
+    yum -y install shadow-utils && \
+    yum clean all
+
+# Set the working directory
+WORKDIR /app
+
+# Create a non-root user for security
+RUN useradd -ms /bin/bash appuser
+
+# Ensure Maven cache directory is accessible
+RUN mkdir -p /root/.m2 && chown -R appuser:appuser /root/.m2
+
+# Copy the pom.xml to leverage Docker caching for dependencies
+COPY pom.xml .
+
+# Run Maven dependency resolution as a non-root user
+USER appuser
+RUN mvn dependency:go-offline
+
+# Switch back to root to set permissions for application files
+USER root
+RUN mkdir -p /app/src /app/target && chown -R appuser:appuser /app
+
+# Switch to the non-root user
+USER appuser
+
+# Expose the application port
+EXPOSE 8080
+
+# Volume for Maven caching (optional but useful for development)
+VOLUME /root/.m2
+
+# Command to run the application with live changes
+CMD ["mvn", "spring-boot:run"]

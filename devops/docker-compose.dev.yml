@@ -3,7 +3,7 @@ version: "3.8"
 services:
   postgres:
     image: postgres:15 # Use a specific PostgreSQL version
-    container_name: tennistime_postgres
+    container_name: postgres_dev
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123
@@ -22,7 +22,7 @@ services:
 
   redis:
     image: redis:7
-    container_name: tennistime_redis
+    container_name: redis_dev
     networks:
       - devops_app-network
     ports:
@@ -37,7 +37,7 @@ services:
     build:
       context: /home/TennisTime/tennistime/FakeSMTP
       dockerfile: Dockerfile
-    container_name: smtp_fake
+    container_name: fakesmtp_dev
     ports:
       - "8025:8025"
     networks:
@@ -63,6 +63,44 @@ services:
       DB_HOST: postgres
       DB_PORT: 5432
       jwt.secret: Dy64nBQfRKEQtLTRDV42R8/H3XsxVFFk+zrXb2l+PQz8j+p5vR+RYAkfLK+jXdhmRrx3gU8yU9TcvKjL43FUYw==
+
+  profile:
+    build:
+      context: /home/TennisTime/tennistime/profile
+      dockerfile: Dockerfile.dev
+    container_name: profile_dev
+    volumes:
+      - /home/TennisTime/tennistime/profile/src:/app/src:delegated
+      - /home/TennisTime/tennistime/profile/target:/app/target:delegated
+      - /home/TennisTime/tennistime/profile/pom.xml:/app/pom.xml
+    networks:
+      - devops_app-network
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_HOST: postgres
+      DB_PORT: 5432
+      jwt.secret: Dy64nBQfRKEQtLTRDV42R8/H3XsxVFFk+zrXb2l+PQz8j+p5vR+RYAkfLK+jXdhmRrx3gU8yU9TcvKjL43FUYw==
+
+  frontend:
+    build:
+      context: /home/TennisTime/tennistime/frontend
+      dockerfile: Dockerfile.dev
+    container_name: frontend_dev
+    volumes:
+      - /home/TennisTime/tennistime/frontend:/app
+    networks:
+      - devops_app-network
+    ports:
+      - "4200:4200"
+    depends_on:
+      - authentication
+      - profile
+    environment:
+      - NODE_ENV=development
+
+
 
 
 networks:
