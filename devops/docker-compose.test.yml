@@ -3,7 +3,7 @@ version: "3.8" # Ensure you're using version 3.8 or later
 services:
   postgres:
     image: postgres:15 # Use a specific PostgreSQL version
-    container_name: tennistime_postgres
+    container_name: postgres_test
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123
@@ -22,7 +22,7 @@ services:
 
   redis:
     image: redis:7
-    container_name: tennistime_redis
+    container_name: redis_test
     networks:
       - app_network_test
     ports:
@@ -35,7 +35,7 @@ services:
 
   smtp:
     image: mailhog/mailhog
-    container_name: tennistime_smtp
+    container_name: smtp_test
     networks:
       - app_network_test
     ports:
