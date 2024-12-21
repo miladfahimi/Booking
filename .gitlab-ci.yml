@@ -22,6 +22,8 @@ before_script:
 
 build:
   stage: build
+  tags:
+    - booking  # Use your self-hosted runner
   image: docker:20.10.16
   script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin registry.gitlab.com
@@ -40,6 +42,8 @@ build:
 
 test:
   stage: test
+  tags:
+    - booking  # Use your self-hosted runner
   image: maven:3.9.8-amazoncorretto-17-al2023
   cache:
     paths:
@@ -53,6 +57,8 @@ test:
 
 deploy:
   stage: deploy
+  tags:
+    - booking  # Use your self-hosted runner
   image: ubuntu:latest
   services:
     - docker:dind
