@@ -83,20 +83,19 @@ services:
       DB_PORT: 5432
       jwt.secret: Dy64nBQfRKEQtLTRDV42R8/H3XsxVFFk+zrXb2l+PQz8j+p5vR+RYAkfLK+jXdhmRrx3gU8yU9TcvKjL43FUYw==
 
-  backend:
+  provider:
     build:
-      context: /home/TennisTime/tennistime/backend
+      context: /home/TennisTime/tennistime/provider
       dockerfile: Dockerfile.dev
-    container_name: backend_dev
+    container_name: provider_dev
     volumes:
-      - /home/TennisTime/tennistime/backend:/app
-      - /home/TennisTime/tennistime/backend/src:/app/src:delegated
-      - /home/TennisTime/tennistime/backend/target:/app/target:delegated
-      - /home/TennisTime/tennistime/backend/pom.xml:/app/pom.xml
+      - /home/TennisTime/tennistime/provider/src:/app/src:delegated
+      - /home/TennisTime/tennistime/provider/target:/app/target:delegated
+      - /home/TennisTime/tennistime/provider/pom.xml:/app/pom.xml
     networks:
       - app_network
     ports:
-      - "8081:8081"
+      - "8086:8086"
     environment:
       SPRING_PROFILES_ACTIVE: dev
       DB_HOST: postgres
