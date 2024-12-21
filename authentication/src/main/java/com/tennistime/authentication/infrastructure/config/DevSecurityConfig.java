@@ -19,7 +19,7 @@ import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
-@Profile({"dev", "docker"})
+@Profile({"dev", "test"})
 public class DevSecurityConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(DevSecurityConfig.class);

@@ -6,38 +6,33 @@ WORKDIR /app
 RUN dnf update -y && \
     dnf install -y shadow-utils openssh-clients
 
-# Copy the pom.xml and source code
+# Copy only the pom.xml for dependency resolution
 COPY pom.xml .
-COPY src ./src
-
-# Download dependencies (leverages Docker cache)
 RUN mvn dependency:go-offline
 
-# Package the application (skip tests for faster builds)
+# Copy source code and build the application
+COPY src ./src
 RUN mvn clean package -DskipTests -Pdocker
 
-# Stage 2: Run the application using ARM-compatible OpenJDK
+# Stage 2: Run the application using Amazon Corretto JDK
 FROM amazoncorretto:17-alpine
 WORKDIR /app
-
-# Install necessary packages using apk
-RUN apk update && \
-    apk add shadow
 
 # Create a non-root user for security
 RUN adduser -D -s /bin/sh appuser
 
+# Switch to the non-root user
 USER appuser
 
-# Copy the specific JAR file from the build stage
-COPY --from=build /app/target/reservation-0.0.1-SNAPSHOT-exec.jar app.jar
+# Copy the packaged JAR from the build stage
+COPY --from=build /app/target/authentication-0.0.1-SNAPSHOT-exec.jar app.jar
 
 # Expose the application's port
 EXPOSE 8080
 
 # Define the entry point to run the application
-ENTRYPOINT ["java", "-jar", "app.jar", "--spring.profiles.active=docker"]
+ENTRYPOINT ["java", "-XX:+UseContainerSupport", "-XX:MaxRAMPercentage=75.0", "-jar", "app.jar"]
 
 # Optional: Health check to monitor application health
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:8080/health || exit 1
+  CMD curl -f http://localhost:8080/ || exit 1

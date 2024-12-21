@@ -14,7 +14,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@Profile({"dev", "docker"})
+@Profile({"dev", "test"})
 public class DevSecurityConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(DevSecurityConfig.class);
