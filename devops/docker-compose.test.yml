@@ -205,7 +205,7 @@ services:
     networks:
       - app_network_test
     ports:
-      - "80:80"
+      - "8080:80"
     depends_on:
       - provider
       - authentication
