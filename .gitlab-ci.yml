@@ -17,7 +17,7 @@ services:
     command: ["--host=tcp://0.0.0.0:2375", "--host=unix:///var/run/docker.sock"]
 
 before_script:
-  - apk add --no-cache curl bash
+  - apt-get update && apt-get install -y curl bash
   - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
 
 build:
