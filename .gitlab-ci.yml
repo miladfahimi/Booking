@@ -48,8 +48,6 @@ test:
   cache:
     paths:
       - ~/.m2/repository
-  before_script:
-    - apt-get update && apt-get install -y curl bash
   script:
     # Run Maven tests for each backend service
     - mvn clean test -f authentication/pom.xml
