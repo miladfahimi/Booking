@@ -77,10 +77,10 @@ deploy:
       git clone git@gitlab.com:miladfahimi2012/tennistime.git /home/TennisTime/tennistime;
       fi;
       
-      cd /home/TennisTime/tennistime/devops &&
-      docker-compose down &&
-      docker-compose pull &&
-      docker-compose up -d --remove-orphans
+      cd /home/TennisTime/tennistime/devops
+      docker-compose -f docker-compose.test.yml down
+      docker-compose -f docker-compose.test.yml pull
+      docker-compose -f docker-compose.test.yml up -d --remove-orphans
       "
   only:
     - main
