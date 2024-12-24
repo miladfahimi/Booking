@@ -73,7 +73,7 @@ deploy:
       echo 'Cleaning up and re-cloning the repository...';
       rm -rf /home/TennisTime/tennistime;
       mkdir -p /home/TennisTime;
-      git clone git@gitlab.com:miladfahimi2012/tennistime.git /home/TennisTime/tennistime;
+      git clone git@gitlab.com:miladfahimi2012/tennistime.git /home/TennisTime;
       fi;
 
       cd /home/TennisTime/tennistime/devops &&
