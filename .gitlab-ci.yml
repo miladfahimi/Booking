@@ -19,7 +19,7 @@ before_script:
 build:
   stage: build
   tags:
-    - booking_app  # Ensure your runner is tagged appropriately
+    - booking_app
   image: docker:20.10.16
   script:
     # Build and push Docker images for all services
@@ -39,7 +39,7 @@ build:
 test:
   stage: test
   tags:
-    - booking_app  # Ensure your runner is tagged appropriately
+    - booking_app
   script:
     # Run Maven tests using Docker
     - docker run --rm -v "$PWD:/workspace" -w /workspace maven:3.9.8-amazoncorretto-17-al2023 mvn clean test -f authentication/pom.xml
@@ -48,11 +48,10 @@ test:
     - docker run --rm -v "$PWD:/workspace" -w /workspace maven:3.9.8-amazoncorretto-17-al2023 mvn clean test -f profile/pom.xml
     - docker run --rm -v "$PWD:/workspace" -w /workspace maven:3.9.8-amazoncorretto-17-al2023 mvn clean test -f reservation/pom.xml
 
-
 deploy:
   stage: deploy
   tags:
-    - booking_app  # Ensure your runner is tagged appropriately
+    - booking_app
   image: ubuntu:latest
   before_script:
     # Install required tools
@@ -76,11 +75,11 @@ deploy:
       mkdir -p /home/TennisTime;
       git clone git@gitlab.com:miladfahimi2012/tennistime.git /home/TennisTime/tennistime;
       fi;
-      
+
       cd /home/TennisTime/tennistime/devops &&
-      docker-compose down &&
-      docker-compose pull &&
-      docker-compose up -d --remove-orphans
+      docker-compose -f docker-compose.production.yml pull &&
+      docker-compose -f docker-compose.production.yml down &&
+      docker-compose -f docker-compose.production.yml up -d --remove-orphans
       "
   only:
     - main
