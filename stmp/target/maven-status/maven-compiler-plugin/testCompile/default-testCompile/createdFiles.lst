@@ -1,0 +1,8 @@
+com\nilhcem\fakesmtp\core\test\TestConfig.class
+com\nilhcem\fakesmtp\core\server\MailServerTest$1.class
+com\nilhcem\fakesmtp\model\UIModelTest.class
+com\nilhcem\fakesmtp\core\I18nTest.class
+com\nilhcem\fakesmtp\core\ConfigurationTest.class
+com\nilhcem\fakesmtp\integration\SendEmailsIT.class
+com\nilhcem\fakesmtp\core\server\MailServerTest.class
+com\nilhcem\fakesmtp\core\server\SMTPServerHandlerTest.class

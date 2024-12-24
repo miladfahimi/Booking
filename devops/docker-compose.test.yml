@@ -35,7 +35,7 @@ services:
 
   smtp:
     build:
-      context: /home/TennisTime/tennistime/FakeSMTP
+      context: /home/TennisTime/tennistime/stmp
       dockerfile: Dockerfile
     container_name: smtp_test
     ports:
@@ -43,7 +43,7 @@ services:
     networks:
       - app_network_test
     volumes:
-      - /home/TennisTime/tennistime/FakeSMTP/target:/app/target
+      - /home/TennisTime/tennistime/stmp/target:/app/target
 
   provider:
     build:
