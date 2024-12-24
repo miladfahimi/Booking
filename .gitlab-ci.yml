@@ -22,7 +22,6 @@ build:
     - booking_app  # Ensure your runner is tagged appropriately
   image: docker:20.10.16
   script:
-    # Build and push Docker images for all services
     - docker build --platform linux/arm64 -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/frontend:latest -f frontend/Dockerfile.test ./frontend
     - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/frontend:latest
     - docker build --platform linux/arm64 -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/authentication:latest -f authentication/Dockerfile.test ./authentication
@@ -41,13 +40,11 @@ test:
   tags:
     - booking_app  # Ensure your runner is tagged appropriately
   script:
-    # Run Maven tests using Docker
     - docker run --rm -v "$PWD:/workspace" -w /workspace maven:3.9.8-amazoncorretto-17-al2023 mvn clean test -f authentication/pom.xml
     - docker run --rm -v "$PWD:/workspace" -w /workspace maven:3.9.8-amazoncorretto-17-al2023 mvn clean test -f provider/pom.xml
     - docker run --rm -v "$PWD:/workspace" -w /workspace maven:3.9.8-amazoncorretto-17-al2023 mvn clean test -f bff/pom.xml
     - docker run --rm -v "$PWD:/workspace" -w /workspace maven:3.9.8-amazoncorretto-17-al2023 mvn clean test -f profile/pom.xml
     - docker run --rm -v "$PWD:/workspace" -w /workspace maven:3.9.8-amazoncorretto-17-al2023 mvn clean test -f reservation/pom.xml
-
 
 deploy:
   stage: deploy
@@ -55,14 +52,13 @@ deploy:
     - booking_app  # Ensure your runner is tagged appropriately
   image: ubuntu:latest
   before_script:
-    # Install required tools
     - apt-get update && apt-get install -y openssh-client git docker-compose
     - eval $(ssh-agent -s)
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/gitlab_ci_deploy_key
     - chmod 600 ~/.ssh/gitlab_ci_deploy_key
     - ssh-add ~/.ssh/gitlab_ci_deploy_key
-    - ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
+    - ssh-keyscan -H gitlab.com >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
   script:
@@ -74,7 +70,7 @@ deploy:
       echo 'Cleaning up and re-cloning the repository...';
       rm -rf /home/TennisTime/tennistime;
       mkdir -p /home/TennisTime;
-      git clone git@gitlab.com:miladfahimi2012/tennistime.git /home/TennisTime;
+      git clone git@gitlab.com:miladfahimi2012/tennistime.git /home/TennisTime/tennistime;
       fi;
       
       cd /home/TennisTime/tennistime/devops &&
@@ -82,6 +78,5 @@ deploy:
       docker-compose pull &&
       docker-compose up -d --remove-orphans
     "
-
   only:
     - main
