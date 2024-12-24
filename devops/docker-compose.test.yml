@@ -34,17 +34,16 @@ services:
       retries: 5
 
   smtp:
-    image: mailhog/mailhog
+    build:
+      context: /home/TennisTime/tennistime/FakeSMTP
+      dockerfile: Dockerfile
     container_name: smtp_test
-    networks:
-      - app_network_test
     ports:
       - "8025:8025"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://0.0.0.0:8025"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    networks:
+      - app_network_test
+    volumes:
+      - /home/TennisTime/tennistime/FakeSMTP/target:/app/target
 
   provider:
     build:
