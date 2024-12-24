@@ -3,6 +3,8 @@ stages:
 
 test-job:
   stage: test
+  tags:
+    - booking_app
   script:
     - echo "Runner is working"
     - uname -a
