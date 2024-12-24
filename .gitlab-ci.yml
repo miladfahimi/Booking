@@ -67,15 +67,21 @@ deploy:
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
   script:
     - ssh -i ~/.ssh/gitlab_ci_deploy_key -o StrictHostKeyChecking=no root@49.12.109.90 "
-      if [ -d /home/TennisTime ]; then
-      cd /home/TennisTime && git pull origin main;
+      if [ -d /home/TennisTime/tennistime/.git ]; then
+      echo 'Valid Git repository found. Pulling latest changes...';
+      cd /home/TennisTime/tennistime && git reset --hard && git clean -fd && git pull origin main;
       else
+      echo 'Cleaning up and re-cloning the repository...';
+      rm -rf /home/TennisTime/tennistime;
+      mkdir -p /home/TennisTime;
       git clone git@gitlab.com:miladfahimi2012/tennistime.git /home/TennisTime;
-      fi &&
-      cd /home/TennisTime/devops &&
+      fi;
+      
+      cd /home/TennisTime/tennistime/devops &&
       docker-compose down &&
       docker-compose pull &&
       docker-compose up -d --remove-orphans
-      "
+    "
+
   only:
     - main
