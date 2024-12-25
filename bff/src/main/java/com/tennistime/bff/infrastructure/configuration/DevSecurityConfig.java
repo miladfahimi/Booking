@@ -79,6 +79,7 @@ public class DevSecurityConfig {
         corsConfiguration.addAllowedOrigin("http://frontend");
         corsConfiguration.addAllowedOrigin("http://49.12.109.90");
         corsConfiguration.addAllowedOrigin("http://49.12.109.90:80");
+        corsConfiguration.addAllowedOrigin("http://49.12.109.90:8083");
         corsConfiguration.addAllowedOriginPattern("*");
         
         corsConfiguration.addAllowedMethod("*");
