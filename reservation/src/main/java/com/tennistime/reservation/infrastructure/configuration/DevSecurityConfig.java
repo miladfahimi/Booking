@@ -11,6 +11,10 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+
 
 @Configuration
 @EnableWebSecurity
@@ -64,5 +68,31 @@ public class DevSecurityConfig {
                 .headers(headers -> headers.frameOptions().sameOrigin());
 
         return http.build();
+    }
+
+    @Bean
+    public CorsFilter corsFilter() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+
+        corsConfiguration.addAllowedOrigin("http://localhost:4200");
+        corsConfiguration.addAllowedOrigin("http://192.168.0.16:80");
+        corsConfiguration.addAllowedOrigin("http://192.168.0.16:8083");
+        corsConfiguration.addAllowedOrigin("http://bff:8083");
+        corsConfiguration.addAllowedOrigin("http://bff");
+        corsConfiguration.addAllowedOrigin("http://192.168.0.16");
+        corsConfiguration.addAllowedOrigin("http://frontend:80");
+        corsConfiguration.addAllowedOrigin("http://frontend");
+        corsConfiguration.addAllowedOrigin("http://49.12.109.90");
+        corsConfiguration.addAllowedOrigin("http://49.12.109.90:80");
+        corsConfiguration.addAllowedOriginPattern("*");
+
+        corsConfiguration.addAllowedMethod("*");
+        corsConfiguration.addAllowedHeader("*");
+        corsConfiguration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfiguration);
+
+        return new CorsFilter(source);
     }
 }

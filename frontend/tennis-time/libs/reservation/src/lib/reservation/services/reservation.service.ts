@@ -7,7 +7,7 @@ import { ProviderDTO, ServiceDTO, SlotDTO } from '../types'; // Adjust the path 
   providedIn: 'root',
 })
 export class ReservationService {
-  private baseUrl = 'http://49.12.109.90:8083/api/v1'; // Update with your API base URL
+  private baseUrl = 'http://192.168.0.16:8083/api/v1'; // Update with your API base URL
 
   constructor(private http: HttpClient) { }
 

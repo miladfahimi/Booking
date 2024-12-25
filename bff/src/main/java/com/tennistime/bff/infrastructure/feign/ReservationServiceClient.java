@@ -22,7 +22,7 @@ public interface ReservationServiceClient {
     @GetMapping("/reservations/{id}")
     ReservationDTO getReservationById(@PathVariable("id") UUID reservationId);
 
-    @GetMapping("/reservations")
+    @GetMapping("/reservations/all")
     List<ReservationDTO> getAllReservations();
 
     @GetMapping("/reservations/service/{serviceId}")
