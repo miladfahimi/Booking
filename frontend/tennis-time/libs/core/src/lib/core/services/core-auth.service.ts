@@ -9,14 +9,14 @@ import { SignUpReq } from '@tennis-time/auth';
   providedIn: 'root'
 })
 export class CoreAuthService {
-  private baseUrl = 'http://192.168.0.16:8082/api/v1/auth';
+  private host = window.location.hostname;
+  private baseUrl = `http://${this.host}:8082/api/v1/auth`;
   private tokenKey = 'authToken';  // Key to store the JWT token in local storage
   private userIdKey = 'userId';    // Key to store the userId in local storage
 
   constructor(private http: HttpClient, private router: Router) { }
 
   signIn(email: string, password: string, deviceModel: string, os: string, browser: string): Observable<any> {
-    // Include deviceModel, os, and browser in the sign-in request
     return this.http.post(`${this.baseUrl}/signin`, { email, password, deviceModel, os, browser }).pipe(
       tap((response: any) => {
         console.log('Sign-in successful, redirecting to book page...', response);  // Debugging

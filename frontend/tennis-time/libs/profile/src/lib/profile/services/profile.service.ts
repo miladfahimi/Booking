@@ -7,7 +7,8 @@ import { UserProfileDTO } from '../types';
   providedIn: 'root',
 })
 export class ProfileService {
-  private baseUrl = 'http://192.168.0.16:8084/api/v1'; // Update with your API base URL
+  private host = window.location.hostname;
+  private baseUrl = `http://${this.host}:8084/api/v1`;
 
   constructor(private http: HttpClient) { }
 
