@@ -35,15 +35,15 @@ services:
 
   smtp:
     build:
-      context: /home/TennisTime/tennistime/FakeSMTP
+      context: /home/TennisTime/tennistime/stmp
       dockerfile: Dockerfile
-    container_name: fakesmtp_dev
+    container_name: smtp_dev
     ports:
       - "8025:8025"
     networks:
       - app_network
     volumes:
-      - /home/TennisTime/tennistime/FakeSMTP/target:/app/target
+      - /home/TennisTime/tennistime/stmp/target:/app/target
 
   authentication:
     build:
