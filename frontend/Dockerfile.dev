@@ -14,7 +14,7 @@ RUN cd tennis-time && npm install
 WORKDIR /app/tennis-time
 
 # Expose the port used by the Nx development server
-EXPOSE 4200
+EXPOSE 80
 
 # Default command to serve the frontend workspace with live reloading
-CMD ["npx", "nx", "serve", "frontend", "--host", "0.0.0.0"]
+CMD ["npx", "nx", "serve", "frontend", "--host", "0.0.0.0", "--port", "80"]

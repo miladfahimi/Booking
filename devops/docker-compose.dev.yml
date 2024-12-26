@@ -150,7 +150,7 @@ services:
     networks:
       - app_network
     ports:
-      - "4200:4200"
+      - "4200:80"
     depends_on:
       - authentication
       - profile
