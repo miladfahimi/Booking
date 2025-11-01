@@ -110,6 +110,73 @@ docker-compose -f devops/docker-compose.dev.yml down
 
 ---
 
+## ⚡ Running with Tilt (Alternative Dev Workflow)
+
+[Tilt](https://tilt.dev) provides a **smart development loop** for multi-service applications.  
+It automatically rebuilds and redeploys containers when your source code changes — ideal for rapid iteration across multiple backend and frontend microservices.
+
+### 1️⃣ Install Tilt
+
+For Linux / WSL:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/tilt-dev/tilt/master/scripts/install.sh | bash
+```
+
+Verify the installation:
+
+```sh
+tilt version
+```
+
+### 2️⃣ Start the Development Environment
+
+From the project root, run:
+
+```sh
+tilt up
+```
+
+Tilt will:
+
+- Read the `Tiltfile` in the repository root.
+- Use `devops/docker-compose.dev.yml` to start all defined services.
+- Watch for code changes in backend and frontend directories.
+- Automatically rebuild and synchronize containers without full restarts.
+- Provide a local web dashboard at [http://localhost:10350](http://localhost:10350).
+
+### 3️⃣ Access Running Services
+
+Once Tilt is active:
+
+| Service | Port | URL |
+|----------|------|-----|
+| **Frontend** | 4200 | [http://localhost:4200](http://localhost:4200) |
+| **Authentication** | 8082 | [http://localhost:8082/swagger-ui.html](http://localhost:8082/swagger-ui.html) |
+| **BFF** | 8083 | [http://localhost:8083/swagger-ui.html](http://localhost:8083/swagger-ui.html) |
+| **Profile** | 8084 | [http://localhost:8084/swagger-ui.html](http://localhost:8084/swagger-ui.html) |
+| **Reservation** | 8085 | [http://localhost:8085/swagger-ui.html](http://localhost:8085/swagger-ui.html) |
+| **Provider** | 8086 | [http://localhost:8086/swagger-ui.html](http://localhost:8086/swagger-ui.html) |
+| **SMTP UI** | 8025 | [http://localhost:8025](http://localhost:8025) |
+
+### 4️⃣ Stopping Tilt
+
+To gracefully stop Tilt and all containers:
+
+```sh
+tilt down
+```
+
+Or simply press `Ctrl + C` in the terminal running Tilt.
+
+### 5️⃣ Benefits of Using Tilt
+
+- 🌀 **Auto rebuild & redeploy** — any code change triggers a container refresh.  
+- 🔥 **Live code sync** — Java and Angular code updates are reflected immediately.  
+- 🧠 **Unified dashboard** — view logs, status, and live updates for all services in one place.
+
+---
+
 ## 🚀 Running in Production Mode
 
 ### 1️⃣ Build the Production Image
@@ -148,7 +215,6 @@ tennistime/
     ├── docker-compose.dev.yml
     ├── docker-compose.prod.yml
     ├── .env
-
 ```
 
 ---
