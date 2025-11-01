@@ -39,12 +39,12 @@ export class SignUpComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Navigate to sign-in page if sign-up is successful
+    // Navigate to welcome page as soon as the user is authenticated after sign-up
     this.isAuthenticated$
       .pipe(
         tap((isAuthenticated: boolean) => {
           if (isAuthenticated) {
-            this.router.navigate(['/auth/signin']);
+            this.router.navigate(['/profile/welcome']);
           }
         })
       )

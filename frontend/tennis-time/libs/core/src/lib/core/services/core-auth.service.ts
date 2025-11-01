@@ -30,7 +30,12 @@ export class CoreAuthService {
   }
 
   signUp(signUpReq: SignUpReq): Observable<any> {
-    return this.http.post(`${this.baseUrl}/signup`, signUpReq);
+    return this.http.post(`${this.baseUrl}/signup`, signUpReq).pipe(
+      tap((response: any) => {
+        this.storeToken(response.token);
+        this.storeUserId(response.id);
+      })
+    );
   }
 
   signOut(): Observable<void> {
