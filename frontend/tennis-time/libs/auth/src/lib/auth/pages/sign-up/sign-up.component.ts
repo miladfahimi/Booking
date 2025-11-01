@@ -44,7 +44,7 @@ export class SignUpComponent implements OnInit {
       .pipe(
         tap((isAuthenticated: boolean) => {
           if (isAuthenticated) {
-            this.router.navigate(['/profile/welcome']);
+            this.router.navigate(['/profile/initialize']);
           }
         })
       )

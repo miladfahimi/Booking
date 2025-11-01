@@ -1,0 +1,57 @@
+<div class="limiter">
+  <div class="container-login100">
+    <div class="wrap-login100">
+      <form [formGroup]="form" (ngSubmit)="submit()" class="login100-form">
+        <span class="login100-form-title">تکمیل پروفایل</span>
+
+        <input type="hidden" formControlName="userId" />
+
+        <div class="wrap-input100" [class.has-error]="t('firstName').invalid && t('firstName').touched">
+          <input class="input100" type="text" formControlName="firstName" placeholder="نام" />
+          <div class="error-message" *ngIf="t('firstName').invalid && t('firstName').touched">
+            <small>نام الزامی است</small>
+          </div>
+        </div>
+
+        <div class="wrap-input100" [class.has-error]="t('lastName').invalid && t('lastName').touched">
+          <input class="input100" type="text" formControlName="lastName" placeholder="نام خانوادگی" />
+          <div class="error-message" *ngIf="t('lastName').invalid && t('lastName').touched">
+            <small>نام خانوادگی الزامی است</small>
+          </div>
+        </div>
+
+        <div class="wrap-input100" [class.has-error]="t('phone').invalid && t('phone').touched">
+          <input class="input100" type="text" formControlName="phone" placeholder="تلفن همراه" />
+          <div class="error-message" *ngIf="t('phone').invalid && t('phone').touched">
+            <small>تلفن همراه الزامی است</small>
+          </div>
+        </div>
+
+        <div class="wrap-input100" [class.has-error]="t('email').invalid && t('email').touched">
+          <input class="input100" type="email" formControlName="email" placeholder="ایمیل" />
+          <div class="error-message" *ngIf="t('email').invalid && t('email').touched">
+            <small>ایمیل معتبر نیست</small>
+          </div>
+        </div>
+
+        <div class="wrap-input100">
+          <input class="input100" type="text" formControlName="address" placeholder="آدرس" />
+        </div>
+
+        <div class="container-login100-form-btn">
+          <button class="login100-form-btn btn-save" type="submit" [disabled]="form.invalid || (loading$ | async)">
+            ذخیره
+          </button>
+          <button class="login100-form-btn btn-cancel" type="button" (click)="cancel()">
+            لغو
+          </button>
+        </div>
+
+
+        <div class="alert alert-danger" *ngIf="error$ | async as error">
+          {{ error?.message || 'تکمیل پروفایل با خطا مواجه شد' }}
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

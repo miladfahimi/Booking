@@ -2,32 +2,30 @@
   <div class="container-profile100">
     <div class="wrap-profile100">
 
-      <!-- Profile Header with Navigation -->
       <div class="profile-header">
         <a href="/reservation/book" class="txt1">رزرو</a>
         <h1 class="profile-title">پروفایل</h1>
-        <a href="#" class="header-link">خروج</a>
+        <div>
+          <a class="header-link" (click)="onEdit()">ویرایش</a>
+          <a href="#" class="header-link" (click)="onLogout()"> خروج </a>
+        </div>
       </div>
 
-      <!-- Show Spinner when loading -->
       @if (loadingStatus$ | async) {
-        <app-spinner></app-spinner>
+      <app-spinner></app-spinner>
       }
 
-      <!-- Profile Picture -->
       <div class="profile-picture">
         <img ngSrc="/profile-pic.png" alt="Profile Picture" height="225" width="225">
       </div>
 
-      <!-- User Name and Role -->
       @if (userData$ | async ) {
-        <div class="user-info">
-          <h2 class="user-name">{{ (userData$ | async)?.firstName }} {{ (userData$ | async)?.lastName }}</h2>
-          <p class="user-role">کاربر متخصص</p>
-        </div>
+      <div class="user-info">
+        <h2 class="user-name">{{ (userData$ | async)?.firstName }} {{ (userData$ | async)?.lastName }}</h2>
+        <p class="user-role">کاربر متخصص</p>
+      </div>
       }
 
-      <!-- Profile Details Tabs -->
       <div class="profile-tabs">
         <button class="tab-button active">مشخصات</button>
         <button class="tab-button">عکس‌ها</button>
@@ -35,32 +33,32 @@
 
       <!-- User Details -->
       @if (userData$ | async) {
-        <div class="user-details">
-          <div class="detail-item">
-            <span class="detail-label">نام:</span>
-            <span class="detail-value">{{ (userData$ | async)?.firstName || 'نام وجود ندارد' }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">نام خانوادگی:</span>
-            <span class="detail-value">{{ (userData$ | async)?.lastName || 'نام خانوادگی وجود ندارد' }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">ایمیل:</span>
-            <span class="detail-value">{{ (userData$ | async)?.email || 'ایمیل وجود ندارد' }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">شماره تلفن:</span>
-            <span class="detail-value">{{ (userData$ | async)?.phone || 'شماره تلفن وجود ندارد' }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">آدرس:</span>
-            <span class="detail-value">{{ (userData$ | async)?.address || 'آدرس وجود ندارد' }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">تاریخ تولد:</span>
-            <span class="detail-value">{{ (userData$ | async)?.dateOfBirthPersian || 'تاریخ تولد وجود ندارد' }}</span>
-          </div>
+      <div class="user-details">
+        <div class="detail-item">
+          <span class="detail-label">نام:</span>
+          <span class="detail-value">{{ (userData$ | async)?.firstName || 'نام وجود ندارد' }}</span>
         </div>
+        <div class="detail-item">
+          <span class="detail-label">نام خانوادگی:</span>
+          <span class="detail-value">{{ (userData$ | async)?.lastName || 'نام خانوادگی وجود ندارد' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">ایمیل:</span>
+          <span class="detail-value">{{ (userData$ | async)?.email || 'ایمیل وجود ندارد' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">شماره تلفن:</span>
+          <span class="detail-value">{{ (userData$ | async)?.phone || 'شماره تلفن وجود ندارد' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">آدرس:</span>
+          <span class="detail-value">{{ (userData$ | async)?.address || 'آدرس وجود ندارد' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">تاریخ تولد:</span>
+          <span class="detail-value">{{ (userData$ | async)?.dateOfBirthPersian || 'تاریخ تولد وجود ندارد' }}</span>
+        </div>
+      </div>
       }
 
     </div>
