@@ -5,64 +5,72 @@
         <span class="login100-form-title">ورود</span>
 
         @if ((loadingStatus$ | async)?.loading) {
-          <app-spinner></app-spinner>
+        <app-spinner></app-spinner>
         }
 
         <!-- Email Input Field -->
-        <div class="wrap-input100" [ngClass]="{ 'invalid': signInForm.get('email')?.invalid && signInForm.get('email')?.touched }">
+        <div class="wrap-input100"
+          [ngClass]="{ 'invalid': signInForm.get('email')?.invalid && signInForm.get('email')?.touched }">
           <input formControlName="email" class="input100" type="email" placeholder="ایمیل">
           <!-- Email Validation Error Message -->
           @if (signInForm.get('email')?.invalid && signInForm.get('email')?.touched) {
-            <div class="error-message">
-              @if (signInForm.get('email')?.errors?.['required']) {
-                <small>ایمیل الزامی است</small>
-              }
-              @if (signInForm.get('email')?.errors?.['email']) {
-                <small>ایمیل معتبر نیست</small>
-              }
-            </div>
+          <div class="error-message">
+            @if (signInForm.get('email')?.errors?.['required']) {
+            <small>ایمیل الزامی است</small>
+            }
+            @if (signInForm.get('email')?.errors?.['email']) {
+            <small>ایمیل معتبر نیست</small>
+            }
+          </div>
           }
         </div>
 
         <!-- Password Input Field -->
-        <div class="wrap-input100 password-container" [ngClass]="{ 'invalid': signInForm.get('password')?.invalid && signInForm.get('password')?.touched }">
-          <input formControlName="password" class="input100" [type]="showPassword ? 'text' : 'password'" placeholder="رمز عبور">
+        <div class="wrap-input100 password-container"
+          [ngClass]="{ 'invalid': signInForm.get('password')?.invalid && signInForm.get('password')?.touched }">
+          <input formControlName="password" class="input100" [type]="showPassword ? 'text' : 'password'"
+            placeholder="رمز عبور">
           <span class="show-password" (click)="togglePasswordVisibility()">نمایش</span>
           <!-- Password Validation Error Message -->
           @if (signInForm.get('password')?.invalid && signInForm.get('password')?.touched) {
-            <div class="error-message">
-              @if (signInForm.get('password')?.errors?.['required']) {
-                <small>رمز عبور الزامی است</small>
-              }
-              @if (signInForm.get('password')?.errors?.['minlength']) {
-                <small>رمز عبور باید حداقل ۳ کاراکتر باشد</small>
-              }
-            </div>
+          <div class="error-message">
+            @if (signInForm.get('password')?.errors?.['required']) {
+            <small>رمز عبور الزامی است</small>
+            }
+            @if (signInForm.get('password')?.errors?.['minlength']) {
+            <small>رمز عبور باید حداقل ۳ کاراکتر باشد</small>
+            }
+          </div>
           }
         </div>
 
         <!-- Submit Button -->
         <div class="container-login100-form-btn">
-          <button type="submit" class="login100-form-btn" [disabled]="signInForm.invalid || (loadingStatus$ | async)?.loading">
+          <button type="submit" class="login100-form-btn"
+            [disabled]="signInForm.invalid || (loadingStatus$ | async)?.loading">
             ورود
           </button>
         </div>
 
         <!-- Error Message Display -->
         @if (errorMessage$ | async) {
-          <div class="text-center p-t-20">
-            <small class="error-message">{{ (errorMessage$ | async) }}</small>
-          </div>
+        <div class="text-center p-t-20">
+          <small class="error-message">{{ (errorMessage$ | async) }}</small>
+        </div>
         }
 
         <!-- Forgot Password Link -->
-        <div class="text-center p-t-20">
+        <div class="text-right p-t-20">
           <a href="#" class="txt1">رمز عبورم را فراموش کردم؟</a>
         </div>
 
         <!-- Sign Up Link -->
-        <div class="text-center p-r-20">
+        <div class="text-right p-r-20">
           <a href="/auth/signup" class="txt1">ثبت نام</a>
+        </div>
+
+        <div class="text-right p-r-20">
+          <a routerLink="/auth/otp" class="txt2">ورود با کد پیامکی</a>
         </div>
       </form>
     </div>

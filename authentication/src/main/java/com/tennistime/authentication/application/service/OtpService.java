@@ -122,4 +122,37 @@ public class OtpService {
         }
         return null;
     }
+
+        /**
+     * Generate and send OTP via SMS.
+     * <p>Temporary: delegates to existing email-based flow for minimal changes.</p>
+     * @param user target user
+     */
+    public void generateAndSendOtpSms(User user) {
+        // فعلاً از همان مسیر تولید/ذخیره OTP استفاده می‌کنیم
+        // اگر الان ایمیل هم می‌فرسته اشکال ندارد؛ بعداً با سرویس SMS جایگزین می‌کنی
+        generateAndSendOtp(user);
+    }
+
+    /**
+     * Validate SMS OTP and generate JWT token if valid.
+     * <p>Temporary: delegates to existing validateOtpAndGenerateToken.</p>
+     * @param user user to validate
+     * @param otp  provided otp
+     * @return jwt token if valid; null otherwise
+     */
+    @Transactional
+    public String validateOtpAndGenerateTokenSms(User user, String otp) {
+        return validateOtpAndGenerateToken(user, otp);
+    }
+
+    /**
+     * Invalidate current SMS OTP for the user.
+     * <p>Temporary: delegates to existing invalidateOtp.</p>
+     * @param user target user
+     */
+    @Transactional
+    public void invalidateOtpSms(User user) {
+        invalidateOtp(user);
+    }
 }

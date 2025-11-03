@@ -57,6 +57,23 @@ export class CoreAuthService {
     return of();  // Return an observable of void
   }
 
+  sendOtpSms(phone: string) {
+    const otpBase = `http://${this.host}:8082/api/v1/otp`;
+    return this.http.post(`${otpBase}/send-sms?phone=${encodeURIComponent(phone)}`, {});
+  }
+
+  verifyOtpAndSignIn(phone: string, otp: string, deviceModel: string, os: string, browser: string) {
+    const otpBase = `http://${this.host}:8082/api/v1/otp`;
+    return this.http.post(`${otpBase}/validate-sms?phone=${encodeURIComponent(phone)}&otp=${encodeURIComponent(otp)}`, { deviceModel, os, browser }).pipe(
+      tap((response: any) => {
+        this.storeToken(response.token);
+        this.storeUserId(response.id);
+        this.router.navigate(['/profile/welcome']);
+      })
+    );
+  }
+
+
   private storeToken(token: string): void {
     localStorage.setItem(this.tokenKey, token);
   }

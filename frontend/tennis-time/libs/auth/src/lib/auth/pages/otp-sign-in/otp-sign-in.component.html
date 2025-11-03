@@ -1,0 +1,71 @@
+<div class="limiter">
+  <div class="container-login100">
+    <div class="wrap-login100">
+      <form [formGroup]="otpForm" (ngSubmit)="onSubmit()" class="login100-form">
+        <div class="logo-wrap">
+          <img src="/tennis-ball.png" alt="logo" />
+        </div>
+
+        <h1 class="welcome-title">
+          به <strong>...</strong> خوش آمدید
+        </h1>
+
+        <p class="subtitle">
+          لطفا <strong>شماره همراه</strong> خود را وارد کنید تا <strong>کد احراز هویت</strong> برای شما ارسال شود
+        </p>
+
+        <div class="wrap-input100"
+          [ngClass]="{ 'invalid': otpForm.get('phone')?.invalid && otpForm.get('phone')?.touched }">
+          <input formControlName="phone" class="input100 phone-input" type="tel" placeholder="شماره همراه"
+            style="text-align: right; direction: rtl;">
+        </div>
+
+        @if(!sent){
+        <div class="container-login100-form-btn">
+          <button type="button" class="login100-form-btn primary" (click)="sendCode()"
+            [disabled]="otpForm.get('phone')?.invalid || (loadingStatus$ | async)?.loading || counter>0">
+            ارسال کد فعال سازی
+          </button>
+        </div>
+        }
+
+        @if (sent) {
+        <div class="text-center p-t-10">
+          @if (counter>0) {
+          <small>ارسال مجدد پس از {{counter}} ثانیه</small>
+          } @else {
+          <a class="txt2" (click)="sendCode()">ارسال مجدد کد</a>
+          }
+        </div>
+
+        <div class="wrap-input100"
+          [ngClass]="{ 'invalid': otpForm.get('otp')?.invalid && otpForm.get('otp')?.touched }">
+          <input formControlName="otp" class="input100" type="text" placeholder="کد تایید">
+        </div>
+
+        <div class="container-login100-form-btn">
+          <button type="submit" class="login100-form-btn primary"
+            [disabled]="!otpForm.value.otp || (loadingStatus$ | async)?.loading">
+            تایید و ورود
+          </button>
+        </div>
+        }
+
+        @if (errorMessage$ | async) {
+        <div class="text-center p-t-20">
+          <small class="error-message">{{ (errorMessage$ | async) }}</small>
+        </div>
+        }
+
+        <!-- Sign Up Link -->
+        <div class="text-right p-r-20">
+          <a href="/auth/signup" class="txt1">ثبت نام</a>
+        </div>
+
+        <div class="text-right p-r-20">
+          <a href="/auth/signin" class="txt2">کاربر قبلی هستم</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

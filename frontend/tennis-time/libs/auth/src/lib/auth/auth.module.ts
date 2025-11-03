@@ -10,11 +10,13 @@ import { SignUpComponent } from './pages/sign-up/sign-up.component';
 import { SharedModule } from '@tennis-time/shared';
 import { authReducer } from './store/auth.reducer';
 import { AuthEffects } from './store/auth.effects';
+import { OtpSignInComponent } from './pages/otp-sign-in/otp-sign-in.component';
 
 @NgModule({
   declarations: [
     SignInComponent,
     SignUpComponent,
+    OtpSignInComponent
   ],
   imports: [
     CommonModule,
