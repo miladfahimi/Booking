@@ -6,9 +6,11 @@
           <img src="/tennis-ball.png" alt="logo" />
         </div>
 
-        <h1 class="welcome-title">
-          به <strong>...</strong> خوش آمدید
+        <h1 class=" text-center welcome-title">
+          به <strong>کلاب ما</strong> خوش آمدید
         </h1>
+
+        @if(!sent){
 
         <p class="subtitle">
           لطفا <strong>شماره همراه</strong> خود را وارد کنید تا <strong>کد احراز هویت</strong> برای شما ارسال شود
@@ -20,7 +22,6 @@
             style="text-align: right; direction: rtl;">
         </div>
 
-        @if(!sent){
         <div class="container-login100-form-btn">
           <button type="button" class="login100-form-btn primary" (click)="sendCode()"
             [disabled]="otpForm.get('phone')?.invalid || (loadingStatus$ | async)?.loading || counter>0">
@@ -41,11 +42,15 @@
         <div class="wrap-input100"
           [ngClass]="{ 'invalid': otpForm.get('otp')?.invalid && otpForm.get('otp')?.touched }">
           <input formControlName="otp" class="input100" type="text" placeholder="کد تایید">
+          @if (otpForm.get('otp')?.invalid && otpForm.get('otp')?.touched) {
+          <div class="error-message">
+            <small>کد تایید الزامی است</small>
+          </div>
+          }
         </div>
 
         <div class="container-login100-form-btn">
-          <button type="submit" class="login100-form-btn primary"
-            [disabled]="!otpForm.value.otp || (loadingStatus$ | async)?.loading">
+          <button type="submit" (click)="onSubmit()" class="login100-form-btn primary">
             تایید و ورود
           </button>
         </div>

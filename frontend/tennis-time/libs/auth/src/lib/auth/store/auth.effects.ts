@@ -63,4 +63,34 @@ export class AuthEffects {
       })
     )
   );
+
+  requestOtpSms$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.requestOtpSms),
+      mergeMap((action) =>
+        this.coreAuthService.sendOtpSms(action.phone).pipe(
+          map(() => AuthActions.requestOtpSmsSuccess()),
+          catchError((error) => of(AuthActions.requestOtpSmsFailure({ error })))
+        )
+      )
+    )
+  );
+
+  signInWithOtp$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.signInWithOtp),
+      mergeMap((action) =>
+        this.coreAuthService.verifyOtpAndSignIn(
+          action.phone,
+          action.otp,
+          action.deviceModel,
+          action.os,
+          action.browser
+        ).pipe(
+          map((user) => AuthActions.signInSuccess({ user })),
+          catchError((error) => of(AuthActions.signInFailure({ error })))
+        )
+      )
+    )
+  );
 }

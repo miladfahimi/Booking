@@ -87,10 +87,9 @@ public class OtpController {
     public ResponseEntity<Void> sendOtpSms(
             @RequestParam
             @NotBlank
-            @Pattern(regexp = "^\\+[1-9]\\d{6,14}$", message = "Phone must be in E.164 format, e.g. +46701234567")
             String phone
     ) {
-        User user = userService.findByPhone(phone);
+        User user = userService.findEntityByPhone(phone);
         if (user != null) {
             otpService.generateAndSendOtpSms(user);
             return ResponseEntity.ok().build();
@@ -114,7 +113,6 @@ public class OtpController {
     public ResponseEntity<String> validateOtpSms(
             @RequestParam
             @NotBlank
-            @Pattern(regexp = "^\\+[1-9]\\d{6,14}$", message = "Phone must be in E.164 format, e.g. +46701234567")
             String phone,
             @RequestParam
             @NotBlank
@@ -148,7 +146,6 @@ public class OtpController {
     public ResponseEntity<Void> invalidateOtpSms(
             @RequestParam
             @NotBlank
-            @Pattern(regexp = "^\\+[1-9]\\d{6,14}$", message = "Phone must be in E.164 format, e.g. +46701234567")
             String phone
     ) {
         User user = userService.findByPhone(phone);

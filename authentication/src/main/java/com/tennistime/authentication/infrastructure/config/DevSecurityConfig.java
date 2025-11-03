@@ -72,7 +72,13 @@ public class DevSecurityConfig {
                                 "/profile",
                                 "/token/validate",
                                 "/users/verify",
-                                "/verify/email"
+                                "/verify/email",
+                                "/otp/send",
+                                "/otp/send-sms",
+                                "/otp/validate",
+                                "/otp/validate-sms",
+                                "/otp/invalidate",
+                                "/otp/invalidate-sms"
                         ).permitAll()
                         // Easier testing for different roles
                         .requestMatchers("/test/admin").hasRole("ADMIN")

@@ -43,6 +43,10 @@ export class OtpSignInComponent implements OnInit {
     this.store.dispatch(requestOtpSms({ phone: phoneCtrl.value }));
     this.sent = true;
     this.counter = 60;
+
+    this.otpForm.get('otp')?.setValidators([Validators.required]);
+    this.otpForm.get('otp')?.updateValueAndValidity();
+
     this.timerRef = setInterval(() => {
       this.counter--;
       if (this.counter <= 0 && this.timerRef) {
@@ -50,6 +54,7 @@ export class OtpSignInComponent implements OnInit {
       }
     }, 1000);
   }
+
 
   onSubmit() {
     console.log('OTP Form Values:', this.otpForm.value); // Debugging line

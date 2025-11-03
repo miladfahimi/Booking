@@ -126,6 +126,10 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("User with phone " + phone + " does not exist"));
     }
 
+    public User findEntityByPhone(String phone) {
+        return userRepository.findByPhone(phone).orElse(null);
+    }
+
     private boolean isDevProfileActive() {
         return Arrays.asList(env.getActiveProfiles()).contains("dev");
     }
