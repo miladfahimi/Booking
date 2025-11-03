@@ -5,7 +5,8 @@ docker_compose('devops/docker-compose.dev.yml')
 # Optional labels and dependencies for UI grouping
 dc_resource('postgres', labels=['infrastructure'])
 dc_resource('redis', labels=['infrastructure'])
-dc_resource('smtp', labels=['infrastructure'])
+# dc_resource('smtp', labels=['infrastructure'])
+dc_resource('mailhog', labels=['infrastructure'])
 
 dc_resource('authentication', labels=['backend'], resource_deps=['postgres'])
 dc_resource('profile', labels=['backend'], resource_deps=['postgres', 'authentication'])

@@ -33,17 +33,27 @@ services:
       timeout: 5s
       retries: 5
 
-  smtp:
-    build:
-      context: /home/TennisTime/tennistime/stmp
-      dockerfile: Dockerfile
-    container_name: smtp_dev
-    ports:
-      - "8025:8025"
+#  smtp:
+#    build:
+#      context: /home/TennisTime/tennistime/stmp
+#      dockerfile: Dockerfile
+#    container_name: smtp_dev
+#    ports:
+#      - "8025:8025"
+#    networks:
+#      - app_network
+#    volumes:
+#      - /home/TennisTime/tennistime/stmp/target:/app/target
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: mailhog
     networks:
       - app_network
-    volumes:
-      - /home/TennisTime/tennistime/stmp/target:/app/target
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    restart: unless-stopped
 
   authentication:
     build:
