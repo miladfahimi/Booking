@@ -117,11 +117,16 @@ public class OtpService {
     public String validateOtpAndGenerateToken(User user, String otp) {
         if (validateOtp(user, otp)) {
             invalidateOtp(user);
-            UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+            String identifier = user.getEmail() != null ? user.getEmail() : user.getPhone();
+            if (identifier == null) {
+                return null;
+            }
+            UserDetails userDetails = userDetailsService.loadUserByUsername(identifier);
             return jwtUtil.generateToken(userDetails);
         }
         return null;
     }
+
 
         /**
      * Generate and send OTP via SMS.
@@ -129,8 +134,6 @@ public class OtpService {
      * @param user target user
      */
     public void generateAndSendOtpSms(User user) {
-        // فعلاً از همان مسیر تولید/ذخیره OTP استفاده می‌کنیم
-        // اگر الان ایمیل هم می‌فرسته اشکال ندارد؛ بعداً با سرویس SMS جایگزین می‌کنی
         generateAndSendOtp(user);
     }
 

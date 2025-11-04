@@ -62,6 +62,10 @@ public class DevSecurityConfig {
                                 "/verify/resend-sms",
                                 "/verify/resend-email",
                                 "/otp/validate",
+                                "/otp/login",
+                                "/otp/login/send",
+                                "/otp/login/send-sms",
+                                "/otp/login-sms",
                                 "/otp/send",
                                 "/otp/invalidate",
                                 "/auth/signup",
@@ -76,8 +80,10 @@ public class DevSecurityConfig {
                                 "/otp/send",
                                 "/otp/send-sms",
                                 "/otp/validate",
+                                "/otp/login",
                                 "/otp/validate-sms",
                                 "/otp/invalidate",
+                                "/otp/login-sms",
                                 "/otp/invalidate-sms"
                         ).permitAll()
                         // Easier testing for different roles
