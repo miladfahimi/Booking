@@ -1,5 +1,6 @@
 package com.tennistime.authentication.application.controller;
 
+import com.tennistime.authentication.application.service.OtpLoginService;
 import com.tennistime.authentication.application.service.OtpService;
 import com.tennistime.authentication.application.service.UserService;
 import com.tennistime.authentication.domain.model.User;
@@ -27,6 +28,9 @@ public class OtpController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private OtpLoginService otpLoginService;
 
     @PostMapping("/send")
     @Operation(summary = "Send OTP to user's email")
@@ -75,12 +79,12 @@ public class OtpController {
     /**
      * Send an OTP code to the specified phone number via SMS.
      * <p>
-     * The phone number must be in E.164 format (e.g., +46701234567).
-     * If a user with this phone exists, an OTP will be generated and sent.
-     * Otherwise, the endpoint returns 404.
+     * The phone number must be in E.164 format (e.g., +46701234567).␊
+     * A lightweight user record is provisioned automatically for first-time phone numbers
+     * so the subsequent validation step can succeed.
      *
      * @param phone the user's phone number in E.164 format
-     * @return HTTP 200 if OTP was sent successfully, or 404 if user not found
+     * @return HTTP 200 when the OTP dispatch request has been accepted
      */
     @PostMapping("/send-sms")
     @Operation(summary = "Send OTP via SMS to user's phone")
@@ -89,14 +93,10 @@ public class OtpController {
             @NotBlank
             String phone
     ) {
-        User user = userService.findEntityByPhone(phone);
-        if (user != null) {
-            otpService.generateAndSendOtpSms(user);
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.status(404).build();
-        }
+        otpLoginService.sendLoginOtpSms(phone);
+        return ResponseEntity.ok().build();
     }
+
 
     /**
      * Validate an OTP code sent via SMS and generate a JWT token if valid.

@@ -3,6 +3,8 @@ package com.tennistime.authentication.application.service;
 import com.tennistime.authentication.domain.model.User;
 import com.tennistime.authentication.domain.repository.UserRepository;
 import com.tennistime.authentication.infrastructure.security.JwtUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -16,13 +18,14 @@ import jakarta.mail.internet.MimeMessage;
 
 import java.time.LocalDateTime;
 import java.util.Random;
-import java.util.UUID;
 
 /**
  * Service class for managing OTP (One Time Password) operations.
  */
 @Service
 public class OtpService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(OtpService.class);
 
     @Autowired
     private JavaMailSender javaMailSender;
@@ -35,6 +38,12 @@ public class OtpService {
 
     @Autowired
     private UserDetailsService userDetailsService;
+
+    @Autowired
+    private TwilioService twilioService;
+
+    @Autowired
+    private PhoneOtpHelper phoneOtpHelper;
 
     private static final int OTP_VALID_DURATION = 5; // OTP validity duration in minutes
 
@@ -79,6 +88,13 @@ public class OtpService {
         } catch (MessagingException e) {
             throw new RuntimeException("Failed to send OTP email", e);
         }
+    }
+
+    private void sendOtpSms(String phoneNumber, String otp) {
+        if (phoneNumber == null || phoneNumber.isBlank()) {
+            throw new IllegalArgumentException("Phone number is required to send OTP via SMS");
+        }
+        twilioService.sendOtpSms(phoneNumber, otp);
     }
 
     /**
@@ -128,18 +144,31 @@ public class OtpService {
     }
 
 
-        /**
-     * Generate and send OTP via SMS.
-     * <p>Temporary: delegates to existing email-based flow for minimal changes.</p>
+    /**
+     * Generate and send OTP via SMS using the configured SMS channel.
+     *
      * @param user target user
      */
+    @Transactional
     public void generateAndSendOtpSms(User user) {
-        generateAndSendOtp(user);
+        String otp = generateOtp();
+        user.setOtp(otp);
+        user.setOtpExpirationTime(LocalDateTime.now().plusMinutes(OTP_VALID_DURATION));
+        userRepository.save(user);
+
+        boolean delivered = phoneOtpHelper.sendOtp(user.getPhone(), otp);
+        if (!delivered && user.getEmail() != null && !user.getEmail().isBlank()) {
+            LOGGER.info("SMS delivery unavailable, falling back to email for user {}", user.getId());
+            sendOtpEmail(user.getEmail(), otp);
+        } else if (!delivered) {
+            LOGGER.warn("OTP for phone {} was generated but no delivery channel is configured", user.getPhone());
+        }
     }
 
     /**
      * Validate SMS OTP and generate JWT token if valid.
-     * <p>Temporary: delegates to existing validateOtpAndGenerateToken.</p>
+     * <p>Delegates to the shared OTP validation flow.</p>
+     *
      * @param user user to validate
      * @param otp  provided otp
      * @return jwt token if valid; null otherwise
@@ -151,7 +180,8 @@ public class OtpService {
 
     /**
      * Invalidate current SMS OTP for the user.
-     * <p>Temporary: delegates to existing invalidateOtp.</p>
+     * <p>Delegates to the shared OTP invalidation flow.</p>
+     *
      * @param user target user
      */
     @Transactional

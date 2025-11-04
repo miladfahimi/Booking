@@ -1,5 +1,7 @@
 package com.tennistime.authentication.application.service;
 
+import com.tennistime.authentication.application.dto.UserDTO;
+import com.tennistime.authentication.application.mapper.AppUserMapper;
 import com.tennistime.authentication.domain.model.User;
 import com.tennistime.authentication.domain.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +23,17 @@ public class OtpLoginService {
     private final OtpService otpService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AppUserMapper appUserMapper;
 
     @Autowired
-    public OtpLoginService(OtpService otpService, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public OtpLoginService(OtpService otpService,
+                           UserRepository userRepository,
+                           PasswordEncoder passwordEncoder,
+                           AppUserMapper appUserMapper) {
         this.otpService = otpService;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.appUserMapper = appUserMapper;
     }
 
     /**
@@ -62,8 +69,14 @@ public class OtpLoginService {
      * @param otp  the OTP provided by the client
      * @return a JWT token when the OTP is valid; {@code null} otherwise
      */
-    public String loginWithEmailOtp(User user, String otp) {
-        return otpService.validateOtpAndGenerateToken(user, otp);
+    public UserDTO loginWithEmailOtp(User user, String otp) {
+        String token = otpService.validateOtpAndGenerateToken(user, otp);
+        if (token == null) {
+            return null;
+        }
+        UserDTO userDTO = appUserMapper.toDTO(user);
+        userDTO.setToken(token);
+        return userDTO;
     }
 
     /**
@@ -73,8 +86,14 @@ public class OtpLoginService {
      * @param otp  the OTP supplied by the client application
      * @return a JWT token when the OTP is valid; {@code null} otherwise
      */
-    public String loginWithSmsOtp(User user, String otp) {
-        return otpService.validateOtpAndGenerateTokenSms(user, otp);
+    public UserDTO loginWithSmsOtp(User user, String otp) {
+        String token = otpService.validateOtpAndGenerateTokenSms(user, otp);
+        if (token == null) {
+            return null;
+        }
+        UserDTO userDTO = appUserMapper.toDTO(user);
+        userDTO.setToken(token);
+        return userDTO;
     }
 
     private User createUserSkeleton(String email, String phone) {

@@ -1,5 +1,6 @@
 package com.tennistime.authentication.application.controller;
 
+import com.tennistime.authentication.application.dto.UserDTO;
 import com.tennistime.authentication.application.service.OtpLoginService;
 import com.tennistime.authentication.application.service.UserService;
 import com.tennistime.authentication.domain.model.User;
@@ -54,71 +55,71 @@ public class OtpLoginController {
      * a minimal user record so the follow-up validation step succeeds without a
      * separate registration process.
      *
-     * @param phone the phone number that should receive the login OTP
+             * @param phone the phone number that should receive the login OTP
      * @return HTTP 200 after the OTP has been dispatched
      */
-    @PostMapping("/login/send-sms")
-    @Operation(summary = "Send login OTP to phone via SMS")
-    public ResponseEntity<Void> sendOtpForSmsLogin(
-            @RequestParam
-            @NotBlank
-            String phone
-    ) {
-        otpLoginService.sendLoginOtpSms(phone);
-        return ResponseEntity.ok().build();
-    }
-
-    /**
-     * Perform a lightweight login using email-delivered OTP codes.
-     *
-     * @param email the user's email address
-     * @param otp   the OTP submitted by the user
-     * @return JWT token when the OTP is valid; 401 for invalid OTP; 404 when user is missing
-     */
-    @PostMapping("/login")
-    @Operation(summary = "Login using email OTP")
-    public ResponseEntity<String> loginWithOtp(@RequestParam String email, @RequestParam String otp) {
-        User user = userService.findEntityByEmail(email);
-        if (user != null) {
-            String token = otpLoginService.loginWithEmailOtp(user, otp);
-            if (token != null) {
-                return ResponseEntity.ok(token);
-            } else {
-                return ResponseEntity.status(401).build();
+            @PostMapping("/login/send-sms")
+            @Operation(summary = "Send login OTP to phone via SMS")
+            public ResponseEntity<Void> sendOtpForSmsLogin(
+                    @RequestParam
+                    @NotBlank
+                    String phone
+            ) {
+                otpLoginService.sendLoginOtpSms(phone);
+                return ResponseEntity.ok().build();
             }
-        } else {
-            return ResponseEntity.status(404).build();
-        }
-    }
 
-    /**
-     * Perform an SMS-based OTP login, returning a JWT token when successful.
-     *
-     * @param phone the user's phone number in E.164 format
-     * @param otp   the OTP submitted by the user
-     * @return JWT token when the OTP is valid; 401 for invalid OTP; 404 when user is missing
-     */
-    @PostMapping("/login-sms")
-    @Operation(summary = "Login using SMS OTP")
-    public ResponseEntity<String> loginWithOtpSms(
-            @RequestParam
-            @NotBlank
-            String phone,
-            @RequestParam
-            @NotBlank
-            @Pattern(regexp = "^\\d{4,8}$", message = "OTP must be numeric (4-8 digits).")
-            String otp
-    ) {
-        User user = userService.findEntityByPhone(phone);
-        if (user != null) {
-            String token = otpLoginService.loginWithSmsOtp(user, otp);
-            if (token != null) {
-                return ResponseEntity.ok(token);
-            } else {
-                return ResponseEntity.status(401).build();
+            /**
+             * Perform a lightweight login using email-delivered OTP codes.
+             *
+             * @param email the user's email address
+             * @param otp   the OTP submitted by the user
+             * @return JWT token when the OTP is valid; 401 for invalid OTP; 404 when user is missing
+             */
+            @PostMapping("/login")
+            @Operation(summary = "Login using email OTP")
+            public ResponseEntity<UserDTO> loginWithOtp(@RequestParam String email, @RequestParam String otp) {
+                User user = userService.findEntityByEmail(email); 
+                if (user != null) { 
+                    UserDTO userDTO = otpLoginService.loginWithEmailOtp(user, otp);
+                    if (userDTO != null) {
+                        return ResponseEntity.ok(userDTO);
+                    } else { 
+                        return ResponseEntity.status(401).build(); 
+                    } 
+                } else { 
+                    return ResponseEntity.status(404).build(); 
+                }
             }
-        } else {
-            return ResponseEntity.status(404).build();
+
+            /**
+             * Perform an SMS-based OTP login, returning a JWT token when successful.
+             *
+             * @param phone the user's phone number in E.164 format
+             * @param otp   the OTP submitted by the user
+             * @return JWT token when the OTP is valid; 401 for invalid OTP; 404 when user is missing
+             */
+            @PostMapping("/login-sms")
+            @Operation(summary = "Login using SMS OTP")
+            public ResponseEntity<UserDTO> loginWithOtpSms(
+                    @RequestParam 
+                    @NotBlank 
+                    String phone, 
+                    @RequestParam 
+                            @NotBlank 
+                            @Pattern(regexp = "^\\d{4,8}$", message = "OTP must be numeric (4-8 digits).") 
+            String otp 
+                    ) { 
+                User user = userService.findEntityByPhone(phone); 
+                if (user != null) { 
+                    UserDTO userDTO = otpLoginService.loginWithSmsOtp(user, otp);
+                    if (userDTO != null) {
+                        return ResponseEntity.ok(userDTO);
+                    } else { 
+                        return ResponseEntity.status(401).build(); 
+                    } 
+                } else { 
+                    return ResponseEntity.status(404).build(); 
+                }
+            }
         }
-    }
-}
