@@ -1,9 +1,9 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
 import { loadProvidersWithServices, loadSlots } from '../../../store/reservation.actions';
-import { selectProviders, selectSlots, selectSlotsLoading } from '../../../store/reservation.selectors';
+import { selectProviders, selectService, selectSlots, selectSlotsLoading } from '../../../store/reservation.selectors';
 import { SlotDTO, ProviderDTO, ServiceDTO } from '../../../types';
 
 @Component({
@@ -11,15 +11,17 @@ import { SlotDTO, ProviderDTO, ServiceDTO } from '../../../types';
   templateUrl: './reservation-container.component.html',
   styleUrls: ['./reservation-container.component.scss']
 })
-export class ReservationContainerComponent implements OnInit {
+export class ReservationContainerComponent implements OnInit, OnDestroy {
   isMobileView: boolean = window.innerWidth <= 768;
   timeSlots$: Observable<SlotDTO[] | null>;
   loading$: Observable<boolean>;
   items: ServiceDTO[] = []; // ServiceDTO[] type
   selectedService: ServiceDTO | null = null; // Track the selected service
   selectedDate: Date = new Date(); // Track the selected date
+  slotsByService: Record<string, SlotDTO[]> = {};
 
   private providerId = '11111111-1111-1111-1111-111111111111'; // Hardcoded provider ID
+  private destroy$ = new Subject<void>();
 
   constructor(private store: Store) {
     this.timeSlots$ = this.store.select(selectSlots);
@@ -30,6 +32,7 @@ export class ReservationContainerComponent implements OnInit {
     this.store.dispatch(loadProvidersWithServices()); // Load providers and services
 
     this.store.select(selectProviders).pipe(
+      takeUntil(this.destroy$),
       map((providers: ProviderDTO[] | null) => {
         if (!providers) return;
 
@@ -49,6 +52,19 @@ export class ReservationContainerComponent implements OnInit {
         }
       })
     ).subscribe();
+
+    this.store.select(selectService).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(service => {
+      if (!service) {
+        return;
+      }
+
+      this.slotsByService = {
+        ...this.slotsByService,
+        [service.id]: service.slots ?? []
+      };
+    });
   }
 
   onDaySelected(day: any) {
@@ -74,6 +90,31 @@ export class ReservationContainerComponent implements OnInit {
     // Load timeslots for the selected service based on the selected date
     const formattedDate = this.formatDateToYYYYMMDD(this.selectedDate);
     this.store.dispatch(loadSlots({ serviceId: service.id, date: formattedDate }));
+  }
+
+  onSelectService(service: ServiceDTO) {
+    if (this.selectedService?.id === service.id) {
+      this.items.forEach(d => d.selected = d.id === service.id);
+      this.selectedService = service;
+      return;
+    }
+
+    this.selectDuration(service);
+  }
+
+  onSlotPicked(event: { service: ServiceDTO; slot: SlotDTO }) {
+    if (!event) {
+      return;
+    }
+
+    if (!this.selectedService || this.selectedService.id !== event.service.id) {
+      this.selectDuration(event.service);
+    } else {
+      this.items.forEach(d => d.selected = d.id === event.service.id);
+    }
+
+    this.selectedService = event.service;
+    this.selectSlot(event.slot);
   }
 
   private parseDate(dateString: string): Date {
@@ -110,5 +151,10 @@ export class ReservationContainerComponent implements OnInit {
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
     this.isMobileView = event.target.innerWidth <= 768;
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

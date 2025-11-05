@@ -1,0 +1,175 @@
+:host {
+  @apply block;
+}
+
+.reservation-slots-table {
+  @apply flex flex-col gap-2 rounded-2xl bg-white p-2 shadow-[0_10px_30px_rgba(15,23,42,0.08)] overflow-hidden;
+  margin-top: 10px;
+}
+
+.table-container {
+  @apply overflow-x-auto;
+  max-height: 70vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+table {
+  @apply w-full border-collapse table-fixed;
+}
+
+/* سربرگ‌ها */
+thead th {
+  @apply whitespace-nowrap border-b border-slate-200 bg-slate-50 px-3 py-3 text-center text-sm font-semibold text-slate-900;
+}
+
+th.time-header {
+  @apply w-10 rounded-tl-2xl;
+}
+
+th.service-header {
+  @apply p-0 min-w-0 overflow-hidden;
+}
+
+.service-header__button {
+  @apply flex w-full items-center justify-center rounded-xl px-3 py-3 text-sm font-medium text-slate-900 transition-colors duration-200 ease-in-out hover:bg-sky-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 truncate;
+}
+
+.service-header.is-selected .service-header__button {
+  @apply bg-sky-500 text-white hover:bg-sky-500 focus-visible:ring-sky-500;
+}
+
+tbody th.time-cell {
+  @apply sticky left-0 z-[1] border-r border-slate-200 px-3 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 bg-white;
+}
+
+td {
+  @apply px-2 py-2 text-center align-middle min-w-0;
+}
+
+.slot-cell {
+  @apply flex h-11 w-full items-center justify-center rounded-xl border border-transparent bg-slate-200 text-sm font-medium transition-all duration-150 ease-in-out hover:-translate-y-0.5 hover:shadow-[0_6px_12px_rgba(14,165,233,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 disabled:cursor-not-allowed disabled:opacity-70 md:h-12;
+}
+
+.slot-cell.selected {
+  @apply border-sky-600 shadow-[0_0_0_2px_rgba(14,165,233,0.25)];
+}
+
+.slot-cell.empty {
+  @apply border border-dashed border-indigo-200 bg-transparent text-slate-400 hover:translate-y-0 hover:shadow-none cursor-default;
+}
+
+.status-available { @apply bg-emerald-200 text-emerald-900; }
+.status-booked    { @apply bg-teal-800 text-white; }
+.status-pending   { @apply bg-amber-300 text-amber-900; }
+.status-unknown   { @apply bg-slate-200 text-slate-600; }
+
+.legend {
+  @apply flex items-center justify-end gap-4 text-xs text-slate-500;
+}
+.legend-item { @apply inline-flex items-center gap-2; }
+.legend-item span { @apply inline-block h-3.5 w-3.5 rounded; }
+.legend-item.available span { @apply bg-emerald-200; }
+.legend-item.booked span    { @apply bg-teal-700; }
+.legend-item.pending span   { @apply bg-amber-300; }
+
+/* ============================= */
+/* === Compact line-grid mode === */
+/* بدون تغییر TS/HTML – فقط CSS  */
+/* ============================= */
+
+/* برای خط‌کشی‌های ظریف 1px و حذف فاصله‌ها */
+table {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+}
+
+/* پدینگ سلول‌ها صفر تا به خطوط بچسبند */
+thead th,
+tbody th.time-cell,
+td {
+  padding: 0 !important;
+}
+
+/* خطوط عمودی بین ستون‌ها (از ستون دوم به بعد) */
+thead th + th,
+td + td {
+  border-left: 1px solid #e2e8f0; /* slate-200 */
+}
+
+/* خطوط افقی بین ردیف‌های ساعت (از ردیف دوم به بعد) */
+tbody tr:not(:first-child) td,
+tbody tr:not(:first-child) th.time-cell {
+  border-top: 1px solid #e2e8f0;
+}
+
+/* ستونِ ساعت sticky با خط جداکننده سمت راست */
+tbody th.time-cell {
+  background: #fff;
+  border-right: 1px solid #e2e8f0 !important;
+}
+
+/* دکمه اسلات تمام‌قدِ سلول باشد؛ ظاهر باکس حذف شود */
+.slot-cell {
+  height: 44px !important;            /* h-11 */
+  width: 100% !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important; /* پیش‌فرض شفاف؛ رنگ فقط با status */
+  box-shadow: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+/* هاور/فوکوس ساده و بدون پرش */
+.slot-cell:hover { transform: none !important; box-shadow: none !important; }
+.slot-cell:focus-visible { outline: 2px solid rgba(14,165,233,0.5); outline-offset: -2px; }
+
+/* وقتی خالی است: کاملاً شفاف و بدون کادر */
+.slot-cell.empty {
+  border: 0 !important;
+  background: transparent !important;
+  color: inherit !important;
+  cursor: default !important;
+  box-shadow: none !important;
+}
+
+/* انتخاب‌شده: outline ظریف داخل همان خانه */
+.slot-cell.selected {
+  outline: 2px solid rgba(14,165,233,0.35);
+  outline-offset: -2px;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* رنگ‌های وضعیت، سطح سلول را پر می‌کنند */
+.status-available { background: #a7f3d0 !important; color: #064e3b !important; } /* emerald-200/900 */
+.status-booked    { background: #0f766e !important; color: #ffffff !important; } /* teal-700/white */
+.status-pending   { background: #fcd34d !important; color: #78350f !important; } /* amber-300/900 */
+.status-unknown   { background: #e2e8f0 !important; color: #475569 !important; } /* slate-200/600 */
+
+/* سربرگ سرویس‌ها کمی جمع‌وجورتر برای هماهنگی با خطوط جدید */
+.service-header { min-width: 0; overflow: hidden; }
+.service-header__button { padding: .5rem .5rem !important; border-radius: .375rem !important; }
+
+@media (max-width: 480px) {
+  .table-container {
+    max-height: 50vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .table-container thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #f8fafc;
+    box-shadow: 0 2px 6px rgba(15,23,42,0.06);
+  }
+
+  thead th,
+  tbody th.time-cell,
+  td { padding: 0 !important; } /* موبایل هم بدون فاصله */
+
+  .service-header__button { padding: .5rem .5rem !important; }
+}

@@ -288,6 +288,32 @@ public class ReservationAggregationService {
     }
 
     /**
+     * Retrieves all services filtered by type and populates their slots for the requested date.
+     *
+     * @param type the service type to filter by; if {@code null}, blank, or representing "all", no type filter is applied
+     * @param date the target date for which the slot availability should be calculated
+     * @return a list of {@link ServiceDTO} instances enriched with slot information
+     */
+    public List<ServiceDTO> getServiceSlotsByTypeAndDate(String type, LocalDate date) {
+        logger.info("Fetching slots for services filtered by type: {} on date: {}", type, date);
+
+        String normalizedType = normalizeTypeFilter(type);
+
+        List<ServiceDTO> services;
+        try {
+            services = serviceServiceClient.getAllServices();
+        } catch (FeignException e) {
+            logger.error("Error occurred while fetching services for slot aggregation: {}", e.getMessage());
+            throw new ExternalServiceException("An error occurred while fetching services.", e);
+        }
+
+        return services.stream()
+                .filter(service -> matchesType(normalizedType, service.getType()))
+                .map(service -> enrichServiceWithSlots(service, date))
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Generates a list of slots with detailed information for a service based on its start time, end time, and slot duration.
      *
      * @param serviceDTO the service details
@@ -317,6 +343,88 @@ public class ReservationAggregationService {
             slotIndex++;
         }
         return slots;
+    }
+
+    /**
+     * Determines whether a service matches the provided type filter.
+     *
+     * @param normalizedType the normalized type filter (may be {@code null})
+     * @param serviceType    the type associated with the service
+     * @return {@code true} if the service should be included; {@code false} otherwise
+     */
+    private boolean matchesType(String normalizedType, String serviceType) {
+        if (normalizedType == null) {
+            return true;
+        }
+        return serviceType != null && serviceType.equalsIgnoreCase(normalizedType);
+    }
+
+    /**
+     * Normalizes the provided type filter value.
+     *
+     * @param type the raw type value received from the API
+     * @return a normalized type string or {@code null} if the filter should be ignored
+     */
+    private String normalizeTypeFilter(String type) {
+        if (type == null) {
+            return null;
+        }
+
+        String trimmedType = type.trim();
+        if (trimmedType.isEmpty()) {
+            return null;
+        }
+
+        if ("all".equalsIgnoreCase(trimmedType) || "null".equalsIgnoreCase(trimmedType) || "undefined".equalsIgnoreCase(trimmedType)) {
+            return null;
+        }
+
+        return trimmedType;
+    }
+
+    /**
+     * Populates the slot information for the provided service and date.
+     *
+     * @param serviceDTO the service whose slots should be enriched
+     * @param date       the date used to calculate availability
+     * @return a new {@link ServiceDTO} instance containing slot information
+     */
+    private ServiceDTO enrichServiceWithSlots(ServiceDTO serviceDTO, LocalDate date) {
+        ServiceDTO enrichedService = cloneService(serviceDTO);
+
+        List<SlotDTO> slots = generateSlots(enrichedService);
+        List<ReservationDTO> reservations = fetchReservationsByServiceAndDate(enrichedService.getId(), date);
+
+        updateSlotsWithReservations(slots, enrichedService, reservations);
+        enrichedService.setSlots(slots);
+        enrichedService.setSlotCount(slots.size());
+
+        return enrichedService;
+    }
+
+    /**
+     * Creates a shallow copy of the provided service to avoid mutating shared instances.
+     *
+     * @param serviceDTO the service to copy
+     * @return a new {@link ServiceDTO} instance with duplicated state
+     */
+    private ServiceDTO cloneService(ServiceDTO serviceDTO) {
+        ServiceDTO clone = new ServiceDTO();
+        clone.setId(serviceDTO.getId());
+        clone.setName(serviceDTO.getName());
+        clone.setType(serviceDTO.getType());
+        clone.setAvailability(serviceDTO.isAvailability());
+        clone.setProviderId(serviceDTO.getProviderId());
+        clone.setStartTime(serviceDTO.getStartTime());
+        clone.setEndTime(serviceDTO.getEndTime());
+        clone.setSlotDuration(serviceDTO.getSlotDuration());
+        clone.setDescription(serviceDTO.getDescription());
+        clone.setTags(serviceDTO.getTags() != null ? new ArrayList<>(serviceDTO.getTags()) : null);
+        clone.setPrice(serviceDTO.getPrice());
+        clone.setMaxCapacity(serviceDTO.getMaxCapacity());
+        clone.setSlots(null);
+        clone.setSlotCount(serviceDTO.getSlotCount());
+        return clone;
     }
 
     /**

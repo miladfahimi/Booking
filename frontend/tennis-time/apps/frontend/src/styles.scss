@@ -1,6 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* You can add global styles to this file, and also import other style files */
 /* src/styles.css */
-body, html {
+body,
+html {
   margin: 0;
   padding: 0;
   font-family: 'Vazirmatn', sans-serif;
@@ -9,7 +14,7 @@ body, html {
   direction: rtl;
 }
 * {
-    font-family: 'Vazirmatn', sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
 }
 
 /* Spinner style for index.html */
@@ -19,7 +24,7 @@ body, html {
   height: 64px;
 }
 .lds-dual-ring:after {
-  content: " ";
+  content: ' ';
   display: block;
   width: 46px;
   height: 46px;
@@ -37,4 +42,3 @@ body, html {
     transform: rotate(360deg);
   }
 }
-

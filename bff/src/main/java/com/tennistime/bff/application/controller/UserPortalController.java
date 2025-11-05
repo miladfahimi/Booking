@@ -94,4 +94,19 @@ public class UserPortalController {
         return ResponseEntity.ok(serviceWithSlots);
     }
 
+    /**
+     * Retrieves slots for all services filtered by type and date.
+     *
+     * @param type the service type to filter by; if null, blank, "all", "null", or "undefined", all types are included
+     * @param date the date for which slot availability should be calculated
+     * @return a ResponseEntity containing the list of services with their corresponding slots
+     */
+    @GetMapping({"/services/{type}/slots/{date}", "/services/slots/{date}"})
+    public ResponseEntity<List<ServiceDTO>> getServiceSlotsByTypeAndDate(
+            @PathVariable(value = "type", required = false) String type,
+            @PathVariable LocalDate date) {
+        List<ServiceDTO> servicesWithSlots = reservationAggregationService.getServiceSlotsByTypeAndDate(type, date);
+        return ResponseEntity.ok(servicesWithSlots);
+    }
+
 }

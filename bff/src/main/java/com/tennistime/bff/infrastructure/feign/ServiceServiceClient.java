@@ -11,6 +11,14 @@ import java.util.UUID;
 @FeignClient(name = "service-service", url = "http://provider:8086/api/v1")
 public interface ServiceServiceClient {
 
+    /**
+     * Retrieves all available services from the provider service.
+     *
+     * @return a list of {@link ServiceDTO} instances representing the services
+     */
+    @GetMapping("/services")
+    List<ServiceDTO> getAllServices();
+
     @GetMapping("/services/{id}")
     ServiceDTO getServiceById(@PathVariable("id") UUID serviceId);
 

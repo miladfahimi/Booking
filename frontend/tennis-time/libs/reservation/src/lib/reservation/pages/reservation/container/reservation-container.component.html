@@ -3,28 +3,36 @@
     <div class="wrap-calendar">
       <!-- Load Mobile or Desktop Calendar Component -->
       @if (isMobileView) {
-        <app-reservation-calendar-mobile
-          [isMobile]="isMobileView"
-          (selectDay)="onDaySelected($event)">
-        </app-reservation-calendar-mobile>
+      <app-reservation-calendar-mobile [isMobile]="isMobileView" (selectDay)="onDaySelected($event)">
+      </app-reservation-calendar-mobile>
       } @else {
-        <app-reservation-calendar-desktop
-          [isMobile]="isMobileView"
-          (selectDay)="onDaySelected($event)">
-        </app-reservation-calendar-desktop>
+      <app-reservation-calendar-desktop [isMobile]="isMobileView" (selectDay)="onDaySelected($event)">
+      </app-reservation-calendar-desktop>
       }
 
-      <!-- Items Component -->
+      <!-- Items component kept for potential future use -->
+      <!--
       <app-reservation-items
         [items]="items"
         (selectItem)="selectDuration($event)">
       </app-reservation-items>
+      -->
 
-      <!-- Hours Component -->
+      <!-- Hours component kept for potential future use -->
+      <!--
       <app-reservation-hours
         [timeSlots]="timeSlots$ | async"
         (selectSlot)="selectSlot($event)">
       </app-reservation-hours>
+      -->
+
+      <app-reservation-slots-table
+        [services]="items"
+        [selectedServiceId]="selectedService?.id || null"
+        [slotsByService]="slotsByService"
+        (selectService)="onSelectService($event)"
+        (selectSlot)="onSlotPicked($event)">
+      </app-reservation-slots-table>
 
       <!-- Action Buttons -->
       <div class="calendar-buttons">
