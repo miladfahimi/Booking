@@ -1,14 +1,24 @@
 import { createAction, props } from '@ngrx/store';
-import {ProviderDTO, ServiceDTO} from '../types';
+import { ProviderDTO, ServiceDTO } from '../types';
+
+// export const loadSlots = createAction(
+//   '[Reservation] Load Slots',
+//   props<{ serviceId: string, date: string }>()
+// );
+
+// export const loadSlotsSuccess = createAction(
+//   '[Reservation] Load Slots Success',
+//   props<{ service: ServiceDTO }>() // Updated to expect ServiceDTO
+// );
 
 export const loadSlots = createAction(
   '[Reservation] Load Slots',
-  props<{ serviceId: string, date: string }>()
+  props<{ date: string }>()
 );
 
 export const loadSlotsSuccess = createAction(
   '[Reservation] Load Slots Success',
-  props<{ service: ServiceDTO }>() // Updated to expect ServiceDTO
+  props<{ services: ServiceDTO[] }>()
 );
 
 export const loadSlotsFailure = createAction(

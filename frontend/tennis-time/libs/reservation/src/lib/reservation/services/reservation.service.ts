@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ProviderDTO, ServiceDTO, SlotDTO } from '../types'; // Adjust the path according to your project structure
+import { ProviderDTO, ServiceDTO } from '../types';
 
 @Injectable({
   providedIn: 'root',
@@ -14,6 +14,9 @@ export class ReservationService {
 
   getSlotsByServiceAndDate(serviceId: string, date: string): Observable<ServiceDTO> {
     return this.http.get<ServiceDTO>(`${this.baseUrl}/portal/user/services/${serviceId}/slots/${date}`);
+  }
+  getSlotsByDate(date: string): Observable<ServiceDTO[]> {
+    return this.http.get<ServiceDTO[]>(`${this.baseUrl}/portal/user/services/slots/${date}`);
   }
   getProvidersWithServices(): Observable<ProviderDTO[]> {
     return this.http.get<ProviderDTO[]>(`${this.baseUrl}/portal/user/providers-with-services`);

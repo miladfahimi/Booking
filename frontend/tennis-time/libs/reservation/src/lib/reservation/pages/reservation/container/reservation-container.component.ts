@@ -3,7 +3,7 @@ import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { loadProvidersWithServices, loadSlots } from '../../../store/reservation.actions';
-import { selectProviders, selectService, selectSlots, selectSlotsLoading } from '../../../store/reservation.selectors';
+import { selectProviders, selectSlots, selectSlotsByService, selectSlotsLoading } from '../../../store/reservation.selectors';
 import { SlotDTO, ProviderDTO, ServiceDTO } from '../../../types';
 
 @Component({
@@ -13,7 +13,7 @@ import { SlotDTO, ProviderDTO, ServiceDTO } from '../../../types';
 })
 export class ReservationContainerComponent implements OnInit, OnDestroy {
   isMobileView: boolean = window.innerWidth <= 768;
-  timeSlots$: Observable<SlotDTO[] | null>;
+  timeSlots$: Observable<Record<string, SlotDTO[]>>;
   loading$: Observable<boolean>;
   items: ServiceDTO[] = []; // ServiceDTO[] type
   selectedService: ServiceDTO | null = null; // Track the selected service
@@ -30,6 +30,7 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.store.dispatch(loadProvidersWithServices()); // Load providers and services
+    this.dispatchLoadSlotsForDate(this.selectedDate);
 
     this.store.select(selectProviders).pipe(
       takeUntil(this.destroy$),
@@ -45,25 +46,17 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
             selected: service.selected || false,
           }));
 
-          // Optionally, load slots for the first service by default
-          if (this.items.length > 0) {
+          if (this.items.length > 0 && !this.selectedService) {
             this.selectDuration(this.items[0]);
           }
         }
       })
     ).subscribe();
 
-    this.store.select(selectService).pipe(
+    this.store.select(selectSlotsByService).pipe(
       takeUntil(this.destroy$)
-    ).subscribe(service => {
-      if (!service) {
-        return;
-      }
-
-      this.slotsByService = {
-        ...this.slotsByService,
-        [service.id]: service.slots ?? []
-      };
+    ).subscribe(slotsByService => {
+      this.slotsByService = slotsByService ?? {};
     });
   }
 
@@ -74,9 +67,7 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
     const formattedDate = this.formatDateToYYYYMMDD(this.selectedDate);
     console.log('%cFormatted Date:', 'color: blue', formattedDate);
 
-    if (this.selectedService) {
-      this.store.dispatch(loadSlots({ serviceId: this.selectedService.id, date: formattedDate }));
-    }
+    this.dispatchLoadSlotsForDate(this.selectedDate);
   }
 
   selectDuration(service: ServiceDTO) {
@@ -86,20 +77,6 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
     service.selected = true;
     this.selectedService = service;
     console.log('%cService Selected:', 'color: purple', service);
-
-    // Load timeslots for the selected service based on the selected date
-    const formattedDate = this.formatDateToYYYYMMDD(this.selectedDate);
-    this.store.dispatch(loadSlots({ serviceId: service.id, date: formattedDate }));
-  }
-
-  onSelectService(service: ServiceDTO) {
-    if (this.selectedService?.id === service.id) {
-      this.items.forEach(d => d.selected = d.id === service.id);
-      this.selectedService = service;
-      return;
-    }
-
-    this.selectDuration(service);
   }
 
   onSlotPicked(event: { service: ServiceDTO; slot: SlotDTO }) {
@@ -107,13 +84,7 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (!this.selectedService || this.selectedService.id !== event.service.id) {
-      this.selectDuration(event.service);
-    } else {
-      this.items.forEach(d => d.selected = d.id === event.service.id);
-    }
-
-    this.selectedService = event.service;
+    this.selectDuration(event.service);
     this.selectSlot(event.slot);
   }
 
@@ -123,6 +94,11 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
     const month = parseInt(parts[1], 10) - 1;
     const year = parseInt(parts[2], 10);
     return new Date(year, month, day);
+  }
+
+  private dispatchLoadSlotsForDate(date: Date): void {
+    const formattedDate = this.formatDateToYYYYMMDD(date);
+    this.store.dispatch(loadSlots({ date: formattedDate }));
   }
 
   private formatDateToYYYYMMDD(date: Date): string {

@@ -1,26 +1,45 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { ReservationState } from './reservation.reducer';
-import { ServiceDTO, ProviderDTO } from '../types';
+import { ServiceDTO, ProviderDTO, SlotDTO } from '../types';
 
 // Selector to get the entire ReservationState
 export const selectReservationState = createFeatureSelector<ReservationState>('reservation');
 
-// Selector to get the entire ServiceDTO
-export const selectService = createSelector(
+// // Selector to get the entire ServiceDTO
+// export const selectService = createSelector(
+//   selectReservationState,
+//   (state: ReservationState) => state.service
+// );
+
+// // Selector to get the slots array from the ServiceDTO
+// export const selectSlots = createSelector(
+//   selectService,
+//   (service: ServiceDTO | null) => service ? service.slots : null
+// );
+
+// // Selector to get the slot count from the ServiceDTO
+// export const selectSlotCount = createSelector(
+//   selectService,
+//   (service: ServiceDTO | null) => service ? service.slots.length : 0
+// );
+
+// Selector to get the slots mapped by service ID
+export const selectSlotsByService = createSelector(
   selectReservationState,
-  (state: ReservationState) => state.service
+  (state: ReservationState) => state.slotsByService
 );
 
-// Selector to get the slots array from the ServiceDTO
+// Selector maintained for compatibility when slots map is needed directly
 export const selectSlots = createSelector(
-  selectService,
-  (service: ServiceDTO | null) => service ? service.slots : null
+  selectSlotsByService,
+  (slotsByService: Record<string, SlotDTO[]>) => slotsByService
 );
 
-// Selector to get the slot count from the ServiceDTO
+// Selector to get the total slot count across services
 export const selectSlotCount = createSelector(
-  selectService,
-  (service: ServiceDTO | null) => service ? service.slots.length : 0
+  selectSlotsByService,
+  (slotsByService: Record<string, SlotDTO[]>) =>
+    Object.keys(slotsByService).reduce((total, key) => total + (slotsByService[key]?.length || 0), 0)
 );
 
 // Selector to get the loading status for slots

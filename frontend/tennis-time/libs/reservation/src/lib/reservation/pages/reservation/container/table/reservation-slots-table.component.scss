@@ -31,11 +31,11 @@ th.service-header {
   @apply p-0 min-w-0 overflow-hidden;
 }
 
-.service-header__button {
+.service-header__label {
   @apply flex w-full items-center justify-center rounded-xl px-3 py-3 text-sm font-medium text-slate-900 transition-colors duration-200 ease-in-out hover:bg-sky-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 truncate;
 }
 
-.service-header.is-selected .service-header__button {
+.service-header.is-selected .service-header__label {
   @apply bg-sky-500 text-white hover:bg-sky-500 focus-visible:ring-sky-500;
 }
 
@@ -150,7 +150,7 @@ tbody th.time-cell {
 
 /* سربرگ سرویس‌ها کمی جمع‌وجورتر برای هماهنگی با خطوط جدید */
 .service-header { min-width: 0; overflow: hidden; }
-.service-header__button { padding: .5rem .5rem !important; border-radius: .375rem !important; }
+.service-header__label { padding: .5rem .5rem !important; border-radius: .375rem !important; }
 
 @media (max-width: 480px) {
   .table-container {
@@ -171,5 +171,5 @@ tbody th.time-cell {
   tbody th.time-cell,
   td { padding: 0 !important; } /* موبایل هم بدون فاصله */
 
-  .service-header__button { padding: .5rem .5rem !important; }
+  .service-header__label { padding: .5rem .5rem !important; }
 }

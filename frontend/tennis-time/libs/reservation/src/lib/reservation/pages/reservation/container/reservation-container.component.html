@@ -26,12 +26,8 @@
       </app-reservation-hours>
       -->
 
-      <app-reservation-slots-table
-        [services]="items"
-        [selectedServiceId]="selectedService?.id || null"
-        [slotsByService]="slotsByService"
-        (selectService)="onSelectService($event)"
-        (selectSlot)="onSlotPicked($event)">
+      <app-reservation-slots-table [services]="items" [selectedServiceId]="selectedService?.id || null"
+        [slotsByService]="slotsByService" (selectSlot)="onSlotPicked($event)">
       </app-reservation-slots-table>
 
       <!-- Action Buttons -->

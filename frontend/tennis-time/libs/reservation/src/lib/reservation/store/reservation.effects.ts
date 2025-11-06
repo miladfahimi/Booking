@@ -11,16 +11,33 @@ export class ReservationEffects {
   constructor(
     private actions$: Actions,
     private reservationService: ReservationService
-  ) {}
+  ) { }
+
+  // Effect for loading slots
+  // loadSlots$ = createEffect(() =>
+  //   this.actions$.pipe(
+  //     ofType(ReservationActions.loadSlots),
+  //     mergeMap(action =>
+  //       this.reservationService.getSlotsByServiceAndDate(action.serviceId, action.date).pipe(
+  //         map((service: ServiceDTO) =>
+  //           ReservationActions.loadSlotsSuccess({ service })  // Pass the ServiceDTO object
+  //         ),
+  //         catchError(error =>
+  //           of(ReservationActions.loadSlotsFailure({ error }))
+  //         )
+  //       )
+  //     )
+  //   )
+  // );
 
   // Effect for loading slots
   loadSlots$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ReservationActions.loadSlots),
       mergeMap(action =>
-        this.reservationService.getSlotsByServiceAndDate(action.serviceId, action.date).pipe(
-          map((service: ServiceDTO) =>
-            ReservationActions.loadSlotsSuccess({ service })  // Pass the ServiceDTO object
+        this.reservationService.getSlotsByDate(action.date).pipe(
+          map((services: ServiceDTO[]) =>
+            ReservationActions.loadSlotsSuccess({ services })
           ),
           catchError(error =>
             of(ReservationActions.loadSlotsFailure({ error }))
