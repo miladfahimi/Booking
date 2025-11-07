@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS service (
     start_time TIME,  -- Start time of the service availability
     end_time TIME,  -- End time of the service availability
     slot_duration INT,  -- Duration of each time slot in minutes
+    slot_gap_duration INT,  -- Gap between slots in minutes for maintenance or preparation
     description TEXT,  -- Description of the service
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),  -- Timestamp when the service was created
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),  -- Timestamp when the service details were last updated

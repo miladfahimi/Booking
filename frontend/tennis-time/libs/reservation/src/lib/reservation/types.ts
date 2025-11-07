@@ -35,6 +35,7 @@ export interface Day {
 export interface SlotDTO {
   slotId: string;
   time: string;
+  endTime: string;
   status: string;
   price: number;
   capacity: number;
@@ -51,6 +52,7 @@ export interface ServiceDTO {
   startTime: string;
   endTime: string;
   slotDuration: number;
+  slotGapDuration?: number | null;
   tags: string[];
   price: number;
   maxCapacity: number;

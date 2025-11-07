@@ -39,6 +39,9 @@ public class ServiceDTO {
     @Schema(example = "60", description = "Duration of each time slot in minutes")
     private int slotDuration;
 
+    @Schema(example = "10", description = "Gap in minutes reserved between slots for preparation or maintenance")
+    private Integer slotGapDuration;
+
     @Schema(example = "A high-quality clay tennis court", description = "Detailed description of the service")
     private String description;
 

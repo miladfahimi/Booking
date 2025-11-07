@@ -41,6 +41,7 @@ public class Service {
     private LocalTime startTime;
     private LocalTime endTime;
     private Integer slotDuration;
+    private Integer slotGapDuration;
     private String description;
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();

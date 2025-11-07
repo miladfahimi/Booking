@@ -26,6 +26,11 @@ public class SlotDTO {
     private String time;
 
     /**
+     * The time this slot ends, formatted as HH:mm (e.g., "09:30").
+     */
+    private String endTime;
+
+    /**
      * The status of the slot, indicating availability (e.g., "available", "booked").
      */
     private String status;
