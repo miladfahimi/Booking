@@ -422,6 +422,7 @@ public class ReservationAggregationService {
         clone.setStartTime(serviceDTO.getStartTime());
         clone.setEndTime(serviceDTO.getEndTime());
         clone.setSlotDuration(serviceDTO.getSlotDuration());
+        clone.setSlotGapDuration(serviceDTO.getSlotGapDuration());
         clone.setDescription(serviceDTO.getDescription());
         clone.setTags(serviceDTO.getTags() != null ? new ArrayList<>(serviceDTO.getTags()) : null);
         clone.setPrice(serviceDTO.getPrice());

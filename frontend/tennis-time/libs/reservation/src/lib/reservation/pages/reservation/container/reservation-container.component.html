@@ -2,6 +2,7 @@
   <div class="container-calendar">
     <div class="wrap-calendar">
       <!-- Load Mobile or Desktop Calendar Component -->
+      @let isMobileView = true;
       @if (isMobileView) {
       <app-reservation-calendar-mobile [isMobile]="isMobileView" (selectDay)="onDaySelected($event)">
       </app-reservation-calendar-mobile>
@@ -9,6 +10,8 @@
       <app-reservation-calendar-desktop [isMobile]="isMobileView" (selectDay)="onDaySelected($event)">
       </app-reservation-calendar-desktop>
       }
+
+      <app-timeline></app-timeline>
 
       <!-- Items component kept for potential future use -->
       <!--
