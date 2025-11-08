@@ -1,39 +1,34 @@
-<div
-  class="timeline"
-  role="presentation"
-  [style.--pixels-per-minute.px]="pixelsPerMinute"
->
+<!-- timeline.component.html -->
+<div class="timeline" role="presentation" [style.--pixels-per-minute.px]="pixelsPerMinute">
   <div class="timeline__viewport">
     <div class="timeline__grid" [style.height.px]="timelineHeight">
       <div class="timeline__guides" aria-hidden="true"></div>
+
       <div class="timeline__hours">
-        <div
-          class="timeline__hour"
-          *ngFor="let hour of hourLabels; trackBy: trackHourByValue"
-          [style.height.px]="hourHeight"
-        >
+        <div class="timeline__hour" *ngFor="let hour of hourLabels; trackBy: trackHourByValue"
+          [style.height.px]="hourHeight">
           <span class="timeline__hour-label">{{ hour }}</span>
         </div>
       </div>
+
       <div class="timeline__columns">
         <div class="timeline__column" *ngFor="let column of demoColumns; trackBy: trackColumnById">
           <div class="timeline__column-header">{{ column.label }}</div>
+
           <div class="timeline__column-body" [style.height.px]="timelineHeight">
-            <div
-              class="timeline-slot"
-              *ngFor="let slot of column.slots; trackBy: trackSlotById"
+            <div class="timeline-slot" *ngFor="let slot of column.slots; trackBy: trackSlotById"
               [class.timeline-slot--booked]="slot.status === 'booked'"
               [class.timeline-slot--available]="slot.status === 'available'"
-              [class.timeline-slot--maintenance]="slot.status === 'maintenance'"
-              [style.top.px]="getSlotOffset(slot)"
-              [style.height.px]="getSlotHeight(slot)"
-            >
+              [class.timeline-slot--maintenance]="slot.status === 'maintenance'" [style.top.px]="getSlotOffset(slot)"
+              [style.height.px]="getSlotHeight(slot)">
               <span class="timeline-slot__label">{{ slot.label }}</span>
-              <span class="timeline-slot__time">{{ slot.start }} · {{ slot.durationMinutes }} min</span>
+              <span class="timeline-slot__time">{{ slot.start }} · {{ slot.durationMinutes }} دقیقه</span>
             </div>
           </div>
+
         </div>
       </div>
+
     </div>
   </div>
 </div>

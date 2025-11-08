@@ -1,5 +1,8 @@
+/* timeline.component.scss */
 :host {
   display: block;
+  /* پشتیبانی از فونت فارسی (اگر نصب/لود شده باشد) */
+  font-family: "Vazirmatn", "IRANSans", "Tahoma", Arial, sans-serif;
 }
 
 .timeline {
@@ -55,29 +58,22 @@
 }
 
 .timeline__hours {
-  /* Keep the hours column pinned horizontally; it can still scroll vertically */
   position: sticky;
-  /* Logical property for RTL/LTR safety; keeps it pinned at the inline start edge */
   inset-inline-start: 0;
-  /* Fallback for browsers without logical props */
   left: 0;
-
-  top: var(--header-height); /* start below sticky headers */
-  z-index: 3; /* above columns and guides */
+  top: var(--header-height);
+  z-index: 3;
   display: flex;
   flex-direction: column;
-  backdrop-filter: blur(2px);
-  background: transparent; /* ensure it covers content under it */
-  /* remove subtle drift */
-  /* margin-top: -7px; */
-  box-shadow: 2px 0 0 rgba(15, 23, 42, 0.04); /* slight divider edge */
-    margin-top: 42px;
+  background: transparent;
+  box-shadow: 2px 0 0 rgba(15, 23, 42, 0.04);
+  margin-top: 42px;
 }
 
 .timeline__hour {
   position: relative;
   height: calc(var(--pixels-per-minute, 2px) * 60);
-  display: flex; /* container for label */
+  display: flex;
   align-items: flex-start;
   font-size: 11px;
   font-weight: 600;
@@ -86,19 +82,17 @@
 }
 
 .timeline__hour-label {
-  /* Place the number exactly centered over the hour line (top edge of each hour row) */
   position: absolute;
   top: 0;
   left: 0;
-  transform: translateY(-50%); /* centers label on the guide line */
-  pointer-events: none; /* avoid accidental text selection while scrolling */
-
+  transform: translateY(-50%);
+  pointer-events: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 2px 6px;
   border-radius: 4px;
-  background-color:transparent;
+  background-color: transparent;
 }
 
 .timeline__columns {
@@ -117,25 +111,20 @@
 }
 
 .timeline__column-header {
-  /* Keep the first row (headers) visible when scrolling vertically */
   position: sticky;
   top: 0;
   z-index: 4;
-
-  /* Fix header height to match the --header-height offset precisely */
   height: var(--header-height);
-  padding: 0; /* avoid height drift due to padding */
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
 
-  font-weight: 600;
+  font-weight: 700;
   font-size: 13px;
   text-align: center;
   color: #1f2933;
   background-color: rgba(255, 255, 255, 0.95);
-
-  /* smoother sticky rendering */
   backdrop-filter: blur(2px);
   will-change: transform;
 }
@@ -145,6 +134,7 @@
   width: 100%;
 }
 
+/* === اسلات‌ها: فقط بوردر سمت چپ با ضخامت 3px === */
 .timeline-slot {
   position: absolute;
   left: 2px;
@@ -156,14 +146,17 @@
   flex-direction: column;
   gap: 1px;
   font-size: 12px;
-  background-color: #d1d5db;
+
+  /* پایه: خاکستری روشن */
+  background-color: #f3f4f6; /* gray-100/200 */
   color: #1f2933;
-  border: 1px solid rgba(17, 24, 39, 0.1);
-  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.1);
+  border: none;              /* حذف کادر دور */
+  border-left: 3px solid #9ca3af; /* gray-400 */
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08);
 }
 
 .timeline-slot__label {
-  font-weight: 600;
+  font-weight: 700;
   font-size: 13px;
 }
 
@@ -171,17 +164,20 @@
   color: #4b5563;
 }
 
-.timeline-slot--booked {
-  background-color: #bfdbfe;
-  border-color: #60a5fa;
-}
-
+/* در دسترس: سبز روشن */
 .timeline-slot--available {
-  background-color: #d1fae5;
-  border-color: #6ee7b7;
+  background-color: #dcfce7;   /* green-100 */
+  border-left-color: #22c55e;  /* green-500 */
 }
 
+/* رزرو شده: سبز (تیره‌تر از Available) */
+.timeline-slot--booked {
+  background-color: #bbf7d0;   /* green-200 */
+  border-left-color: #16a34a;  /* green-600 */
+}
+
+/* تعمیرات/نگهداری: خاکستری روشن */
 .timeline-slot--maintenance {
-  background-color: #fee2e2;
-  border-color: #fca5a5;
+  background-color: #e5e7eb;   /* gray-200 */
+  border-left-color: #9ca3af;  /* gray-400 */
 }
