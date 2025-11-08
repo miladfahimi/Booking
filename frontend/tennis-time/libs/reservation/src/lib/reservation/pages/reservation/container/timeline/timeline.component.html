@@ -15,7 +15,7 @@
       <div class="timeline__columns">
         <div class="timeline__guides" aria-hidden="true"></div>
 
-        <div class="timeline__column" *ngFor="let column of demoColumns; trackBy: trackColumnById">
+        <div class="timeline__column" *ngFor="let column of columns; trackBy: trackColumnById">
           <div class="timeline__column-header">{{ column.label }}</div>
 
           <div class="timeline__column-body" [style.height.px]="timelineHeight">
@@ -26,7 +26,7 @@
               [style.height.px]="getSlotHeight(slot)">
               <span class="timeline-slot__label">{{ slot.label }}</span>
               <span class="timeline-slot__time">{{ slot.start }}</span>
-              <span class="timeline-slot__time"> {{ slot.durationMinutes }} دقیقه</span>
+              <span class="timeline-slot__time">{{ slot.durationMinutes }} دقیقه</span>
             </div>
           </div>
 
