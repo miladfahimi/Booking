@@ -27,45 +27,57 @@ export class TimelineComponent {
   readonly startHour = 8;
   readonly endHour = 21;
 
-  readonly hourLabels = this.buildHourLabels();
   readonly hourHeight = this.pixelsPerMinute * 60;
-  readonly timelineHeight = (this.endHour - this.startHour) * 60 * this.pixelsPerMinute;
+  readonly hourLabels = this.buildHourLabels();
+  readonly timelineHeight = this.hourLabels.length * this.hourHeight;
 
   readonly demoColumns: TimelineColumn[] = [
     {
       id: 'court-1',
-      label: 'Court 1',
+      label: '🥎',
       slots: [
-        { id: 'slot-1', label: 'Training', start: '09:30', durationMinutes: 60, status: 'booked' },
-        { id: 'slot-2', label: 'Available', start: '12:00', durationMinutes: 45, status: 'available' },
-        { id: 'slot-3', label: 'Coaching', start: '17:15', durationMinutes: 90, status: 'booked' }
+        { id: 'c1-slot-1', label: 'Training', start: '08:30', durationMinutes: 60, status: 'booked' },
+        { id: 'c1-slot-2', label: 'Open Play', start: '11:00', durationMinutes: 45, status: 'available' },
+        { id: 'c1-slot-3', label: 'Coaching', start: '14:15', durationMinutes: 90, status: 'booked' },
+        { id: 'c1-slot-4', label: 'Doubles', start: '18:00', durationMinutes: 60, status: 'booked' }
       ]
     },
     {
       id: 'court-2',
-      label: 'Court 2',
+      label: '🥎',
       slots: [
-        { id: 'slot-4', label: 'Maintenance', start: '10:00', durationMinutes: 30, status: 'maintenance' },
-        { id: 'slot-5', label: 'Available', start: '13:30', durationMinutes: 60, status: 'available' },
-        { id: 'slot-6', label: 'Match', start: '16:00', durationMinutes: 120, status: 'booked' }
+        { id: 'c2-slot-1', label: 'Junior Camp', start: '09:00', durationMinutes: 120, status: 'maintenance' },
+        { id: 'c2-slot-2', label: 'Available', start: '11:00', durationMinutes: 60, status: 'available' },
+        { id: 'c2-slot-3', label: 'League Match', start: '16:00', durationMinutes: 90, status: 'booked' }
       ]
     },
     {
       id: 'court-3',
-      label: 'Court 3',
+      label: '🥎',
       slots: [
-        { id: 'slot-4', label: 'Maintenance', start: '13:00', durationMinutes: 35, status: 'maintenance' },
-        { id: 'slot-5', label: 'Available', start: '13:35', durationMinutes: 60, status: 'available' },
-        { id: 'slot-6', label: 'Match', start: '16:00', durationMinutes: 120, status: 'booked' }
+        { id: 'c3-slot-1', label: 'Open Play', start: '08:00', durationMinutes: 30, status: 'available' },
+        { id: 'c3-slot-2', label: 'Match Prep', start: '10:45', durationMinutes: 75, status: 'booked' },
+        { id: 'c3-slot-3', label: 'Maintenance', start: '15:30', durationMinutes: 45, status: 'maintenance' },
+        { id: 'c3-slot-4', label: 'Evening Match', start: '18:15', durationMinutes: 105, status: 'booked' }
       ]
     },
     {
       id: 'court-4',
-      label: 'Court 4',
+      label: '🥎',
       slots: [
-        { id: 'slot-4', label: 'Maintenance', start: '11:00', durationMinutes: 55, status: 'maintenance' },
-        { id: 'slot-5', label: 'Available', start: '13:45', durationMinutes: 20, status: 'available' },
-        { id: 'slot-6', label: 'Match', start: '16:00', durationMinutes: 120, status: 'booked' }
+        { id: 'c4-slot-1', label: 'Lessons', start: '09:30', durationMinutes: 45, status: 'booked' },
+        { id: 'c4-slot-2', label: 'Available', start: '10:15', durationMinutes: 60, status: 'available' },
+        { id: 'c4-slot-3', label: 'Clinic', start: '17:00', durationMinutes: 60, status: 'booked' }
+      ]
+    },
+    {
+      id: 'court-5',
+      label: '🥎',
+      slots: [
+        { id: 'c5-slot-1', label: 'Available', start: '08:15', durationMinutes: 45, status: 'available' },
+        { id: 'c5-slot-2', label: 'Doubles', start: '09:30', durationMinutes: 90, status: 'booked' },
+        { id: 'c5-slot-3', label: 'Coaching', start: '15:00', durationMinutes: 60, status: 'booked' },
+        { id: 'c5-slot-4', label: 'Evening Open', start: '19:00', durationMinutes: 60, status: 'available' }
       ]
     }
   ];
@@ -106,7 +118,6 @@ export class TimelineComponent {
   }
 
   private pad(value: number): string {
-    // Avoid using String.prototype.padStart to remain compatible with older TS lib targets.
-    return value < 10 ? '0' + value : value.toString();
+    return value < 10 ? '0' + value.toString() : value.toString();
   }
 }
