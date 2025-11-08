@@ -24,7 +24,7 @@ interface TimelineColumn {
 })
 export class TimelineComponent {
   readonly pixelsPerMinute = 2;
-  readonly startHour = 8;
+  readonly startHour = 5;   // TODO: should be update by the first services that start to work
   readonly endHour = 21;
 
   readonly hourHeight = this.pixelsPerMinute * 60;

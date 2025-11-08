@@ -10,6 +10,9 @@
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
   overflow: hidden;
   margin-top: 25px;
+
+  /* Simple shared offset so guides/hours start exactly below the sticky headers */
+  --header-height: 40px;
 }
 
 .timeline__viewport {
@@ -27,7 +30,11 @@
 
 .timeline__guides {
   position: absolute;
-  inset: 0;
+  /* Start guides exactly below sticky headers for perfect alignment */
+  left: 0;
+  right: 0;
+  top: var(--header-height);
+  bottom: 0;
   pointer-events: none;
   background-image:
     repeating-linear-gradient(
@@ -48,19 +55,29 @@
 }
 
 .timeline__hours {
+  /* Keep the hours column pinned horizontally; it can still scroll vertically */
   position: sticky;
+  /* Logical property for RTL/LTR safety; keeps it pinned at the inline start edge */
+  inset-inline-start: 0;
+  /* Fallback for browsers without logical props */
   left: 0;
-  z-index: 2;
+
+  top: var(--header-height); /* start below sticky headers */
+  z-index: 3; /* above columns and guides */
   display: flex;
   flex-direction: column;
   backdrop-filter: blur(2px);
-  margin-top: -7px;
+  background: transparent; /* ensure it covers content under it */
+  /* remove subtle drift */
+  /* margin-top: -7px; */
+  box-shadow: 2px 0 0 rgba(15, 23, 42, 0.04); /* slight divider edge */
+    margin-top: 42px;
 }
 
 .timeline__hour {
   position: relative;
   height: calc(var(--pixels-per-minute, 2px) * 60);
-  display: flex;
+  display: flex; /* container for label */
   align-items: flex-start;
   font-size: 11px;
   font-weight: 600;
@@ -69,13 +86,19 @@
 }
 
 .timeline__hour-label {
+  /* Place the number exactly centered over the hour line (top edge of each hour row) */
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translateY(-50%); /* centers label on the guide line */
+  pointer-events: none; /* avoid accidental text selection while scrolling */
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 2px 6px;
   border-radius: 4px;
-  background-color: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+  background-color:transparent;
 }
 
 .timeline__columns {
@@ -94,12 +117,27 @@
 }
 
 .timeline__column-header {
+  /* Keep the first row (headers) visible when scrolling vertically */
+  position: sticky;
+  top: 0;
+  z-index: 4;
+
+  /* Fix header height to match the --header-height offset precisely */
+  height: var(--header-height);
+  padding: 0; /* avoid height drift due to padding */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   font-weight: 600;
   font-size: 13px;
-  padding: 12px 0;
   text-align: center;
   color: #1f2933;
   background-color: rgba(255, 255, 255, 0.95);
+
+  /* smoother sticky rendering */
+  backdrop-filter: blur(2px);
+  will-change: transform;
 }
 
 .timeline__column-body {
