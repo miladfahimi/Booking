@@ -30,10 +30,21 @@
   align-items: stretch;
   min-width: 100%;
 }
+.timeline__columns {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(60px, 60px);
+  min-width: max-content;
+}
+
+.timeline__column + .timeline__column {
+  border-inline-start: 1px solid rgba(15, 23, 42, 0.08); /* خیلی لطیف */
+}
 
 .timeline__guides {
   position: absolute;
-  /* Start guides exactly below sticky headers for perfect alignment */
   left: 0;
   right: 0;
   top: var(--header-height);
@@ -57,6 +68,7 @@
   z-index: 0;
 }
 
+
 .timeline__hours {
   position: sticky;
   inset-inline-start: 0;
@@ -65,9 +77,9 @@
   z-index: 3;
   display: flex;
   flex-direction: column;
-  background: transparent;
+  background: lightyellow;
   box-shadow: 2px 0 0 rgba(15, 23, 42, 0.04);
-  margin-top: 42px;
+  padding-top: 42px;
 }
 
 .timeline__hour {
@@ -95,14 +107,7 @@
   background-color: transparent;
 }
 
-.timeline__columns {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(60px, 60px);
-  min-width: max-content;
-}
+
 
 .timeline__column {
   display: flex;
@@ -124,8 +129,8 @@
   font-size: 13px;
   text-align: center;
   color: #1f2933;
-  background-color: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(2px);
+  background: lightyellow;
+  // backdrop-filter: blur(2px);
   will-change: transform;
 }
 
@@ -134,37 +139,33 @@
   width: 100%;
 }
 
-/* === اسلات‌ها: فقط بوردر سمت چپ با ضخامت 3px === */
 .timeline-slot {
   position: absolute;
   left: 2px;
   right: 2px;
-  border-radius: 6px;
   padding: 8px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 1px;
-  font-size: 12px;
+  font-size: 8px;
 
-  /* پایه: خاکستری روشن */
-  background-color: #f3f4f6; /* gray-100/200 */
+  background-color: #f3f4f6; 
   color: #1f2933;
-  border: none;              /* حذف کادر دور */
-  border-left: 3px solid #9ca3af; /* gray-400 */
+  border: none;   
+  border-left: 3px solid #9ca3af;
   box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08);
 }
 
 .timeline-slot__label {
   font-weight: 700;
-  font-size: 13px;
+  font-size: 10px;
 }
 
 .timeline-slot__time {
   color: #4b5563;
 }
 
-/* در دسترس: سبز روشن */
 .timeline-slot--available {
   background-color: #dcfce7;   /* green-100 */
   border-left-color: #22c55e;  /* green-500 */
