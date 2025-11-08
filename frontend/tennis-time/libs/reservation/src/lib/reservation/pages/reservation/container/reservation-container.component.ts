@@ -45,10 +45,6 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
             ...service,
             selected: service.selected || false,
           }));
-
-          if (this.items.length > 0 && !this.selectedService) {
-            this.selectDuration(this.items[0]);
-          }
         }
       })
     ).subscribe();

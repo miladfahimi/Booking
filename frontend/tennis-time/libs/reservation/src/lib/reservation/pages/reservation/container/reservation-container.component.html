@@ -11,7 +11,7 @@
       </app-reservation-calendar-desktop>
       }
 
-      <app-timeline></app-timeline>
+      <app-timeline [services]="items" [slotsByService]="slotsByService"></app-timeline>
       <div class="legend flex items-center justify-end gap-4 text-xs text-slate-500" aria-hidden="true">
         <div class="legend-item available inline-flex items-center gap-2">
           <span class="h-3.5 w-3.5 rounded"></span>

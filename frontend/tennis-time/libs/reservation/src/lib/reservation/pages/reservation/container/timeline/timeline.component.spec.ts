@@ -1,38 +1,76 @@
+import { ChangeDetectionStrategy } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ReservationTimelineComponent } from './timeline.component';
+import { TimelineComponent } from './timeline.component';
+import { ServiceDTO, SlotDTO } from '../../../../types';
 
-describe('ReservationTimelineComponent', () => {
-  let component: ReservationTimelineComponent;
-  let fixture: ComponentFixture<ReservationTimelineComponent>;
+describe('TimelineComponent', () => {
+  let component: TimelineComponent;
+  let fixture: ComponentFixture<TimelineComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ReservationTimelineComponent]
-    }).compileComponents();
+      declarations: [TimelineComponent]
+    })
+      .overrideComponent(TimelineComponent, {
+        set: { changeDetection: ChangeDetectionStrategy.Default }
+      })
+      .compileComponents();
 
-    fixture = TestBed.createComponent(ReservationTimelineComponent);
+    fixture = TestBed.createComponent(TimelineComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
-  it('should calculate slot height based on duration', () => {
-    const [firstColumn] = component.demoColumns;
-    const [slot] = firstColumn.slots;
+  it('should map service slots into timeline columns', () => {
+    const services: ServiceDTO[] = [
+      {
+        id: 'service-1',
+        name: 'Court 1',
+        type: 'type',
+        availability: true,
+        providerId: 'provider-1',
+        startTime: '08:00:00',
+        endTime: '10:00:00',
+        slotDuration: 30,
+        slotGapDuration: null,
+        tags: [],
+        price: 0,
+        maxCapacity: 4,
+        slots: [],
+        slotCount: 0,
+        selected: false
+      }
+    ];
 
-    expect(component.getSlotHeight(slot)).toBe(slot.durationMinutes * component.pixelsPerMinute);
-  });
+    const slotsByService: Record<string, SlotDTO[]> = {
+      'service-1': [
+        {
+          slotId: 'slot-1',
+          time: '08:00:00',
+          endTime: '08:30:00',
+          status: 'available',
+          price: 0,
+          capacity: 4,
+          reservedBy: null,
+          selected: false
+        }
+      ]
+    };
 
-  it('should calculate slot offset from start hour', () => {
-    const [firstColumn] = component.demoColumns;
-    const [slot] = firstColumn.slots;
-    const [hours, minutes] = slot.start.split(':').map(Number);
-    const expectedMinutesFromStart = (hours - component.startHour) * 60 + minutes;
+    component.services = services;
+    component.slotsByService = slotsByService;
 
-    expect(component.getSlotOffset(slot)).toBe(expectedMinutesFromStart * component.pixelsPerMinute);
+    fixture.detectChanges();
+
+    const columns = component.columns;
+    expect(columns.length).toBe(1);
+    expect(columns[0].slots.length).toBe(1);
+    expect(columns[0].slots[0].durationMinutes).toBe(30);
+    expect(columns[0].slots[0].status).toBe('available');
   });
 });
