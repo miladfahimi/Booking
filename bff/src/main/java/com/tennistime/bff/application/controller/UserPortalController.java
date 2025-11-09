@@ -101,7 +101,8 @@ public class UserPortalController {
      * @param date the date for which slot availability should be calculated
      * @return a ResponseEntity containing the list of services with their corresponding slots
      */
-    @GetMapping({"/services/{type}/slots/{date}", "/services/slots/{date}"})
+    // @GetMapping({"/services/{type}/slots/{date}", "/services/slots/{date}"})  ---->>>>> this does not work as it same shape as the other endpoint
+    @GetMapping({"/services/slots/{date}"})
     public ResponseEntity<List<ServiceDTO>> getServiceSlotsByTypeAndDate(
             @PathVariable(value = "type", required = false) String type,
             @PathVariable LocalDate date) {

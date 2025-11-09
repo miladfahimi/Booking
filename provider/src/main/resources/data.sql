@@ -12,11 +12,11 @@ INSERT INTO provider (id, name, address, phone, email, description, rating, logo
 -- Insert data into service table
 INSERT INTO service (id, name, type, availability, provider_id, price, currency, duration, start_time, end_time, slot_duration, slot_gap_duration, image_url, rating, created_at, updated_at, status, max_capacity, tags) VALUES
 -- Services for Hardcoded Provider (تنیس ارائه دهنده تست)
-(uuid_generate_v4(), 'زمین ۱', 'خاک رس', true, '11111111-1111-1111-1111-111111111111', 100.00, 'USD', 60, '08:00:00', '18:00:00', 30, 0, '/images/service1.png', 4.5, NOW(), NOW(), 'available', 10, '["مبتدی", "بیرون"]'),
-(uuid_generate_v4(), 'زمین ۲', 'چمن مصنوعی', true, '11111111-1111-1111-1111-111111111111', 120.00, 'USD', 90, '09:00:00', '20:00:00', 45, 0, '/images/service2.png', 4.2, NOW(), NOW(), 'available', 15, '["پیشرفته", "بیرون"]'),
+(uuid_generate_v4(), 'زمین ۱', 'خاک رس', true, '11111111-1111-1111-1111-111111111111', 100.00, 'USD', 60, '06:00:00', '18:00:00', 60, 0, '/images/service1.png', 4.5, NOW(), NOW(), 'available', 10, '["مبتدی", "بیرون"]'),
+(uuid_generate_v4(), 'زمین ۲', 'چمن مصنوعی', true, '11111111-1111-1111-1111-111111111111', 120.00, 'USD', 90, '06:00:00', '20:00:00', 60, 0, '/images/service2.png', 4.2, NOW(), NOW(), 'available', 15, '["پیشرفته", "بیرون"]'),
 -- Services for Additional Providers
-(uuid_generate_v4(), 'زمین ۳', 'خاک رس', true, '11111111-1111-1111-1111-111111111111', 110.00, 'USD', 75, '07:00:00', '19:00:00', 30, 0, '/images/service3.png', 4.0, NOW(), NOW(), 'available', 12, '["مبتدی", "بیرون"]'),
-(uuid_generate_v4(), 'زمین ۴', 'چمن مصنوعی', true, '11111111-1111-1111-1111-111111111111', 130.00, 'USD', 60, '10:00:00', '22:00:00', 30, 0, '/images/service4.png', 4.1, NOW(), NOW(), 'available', 20, '["پیشرفته", "بیرون"]'),
+(uuid_generate_v4(), 'زمین ۳', 'خاک رس', true, '11111111-1111-1111-1111-111111111111', 110.00, 'USD', 75, '06:00:00', '19:00:00', 60, 0, '/images/service3.png', 4.0, NOW(), NOW(), 'available', 12, '["مبتدی", "بیرون"]'),
+(uuid_generate_v4(), 'زمین ۴', 'چمن مصنوعی', true, '11111111-1111-1111-1111-111111111111', 130.00, 'USD', 60, '06:00:00', '22:00:00', 60, 0, '/images/service4.png', 4.1, NOW(), NOW(), 'available', 20, '["پیشرفته", "بیرون"]'),
 (uuid_generate_v4(), 'زمین ۵', 'خاک رس', true, '11111111-1111-1111-1111-111111111111', 95.00, 'USD', 50, '06:00:00', '16:00:00', 25, 5, '/images/service5.png', 3.9, NOW(), NOW(), 'available', 8, '["مبتدی", "بیرون"]'),
 (uuid_generate_v4(), 'زمین ۶', 'چمن مصنوعی', true, '11111111-1111-1111-1111-111111111111', 140.00, 'USD', 120, '11:00:00', '23:00:00', 60, 0, '/images/service6.png', 4.6, NOW(), NOW(), 'available', 25, '["پیشرفته", "بیرون"]'),
 (uuid_generate_v4(), 'زمین ۷', 'خاک رس', true, (SELECT id FROM provider WHERE name = 'تنیس ارائه دهنده ۵'), 105.00, 'USD', 65, '08:30:00', '18:30:00', 35, 0, '/images/service7.png', 4.3, NOW(), NOW(), 'available', 14, '["مبتدی", "بیرون"]');
