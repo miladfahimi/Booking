@@ -21,6 +21,18 @@ interface TimelineColumn {
   readonly slots: TimelineSlot[];
 }
 
+/** Matches the modal's expected shape */
+interface TimelineSlotDetails {
+  readonly slotId: string;
+  readonly serviceName: string;
+  readonly label: string;
+  readonly start: string;
+  readonly end: string;
+  readonly durationMinutes: number;
+  readonly status: TimelineStatus;
+  readonly statusLabel: string;
+}
+
 @Component({
   selector: 'app-timeline',
   templateUrl: './timeline.component.html',
@@ -38,6 +50,9 @@ export class TimelineComponent implements OnChanges {
 
   private columnsSnapshot: TimelineColumn[] = [];
 
+  /** Backing state for the modal input */
+  private selectedSlotDetailsSnapshot: TimelineSlotDetails | null = null;
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['services'] || changes['slotsByService']) {
       this.columnsSnapshot = this.buildColumns();
@@ -46,6 +61,11 @@ export class TimelineComponent implements OnChanges {
 
   get columns(): TimelineColumn[] {
     return this.columnsSnapshot;
+  }
+
+  /** Bind this in your template as shown in your snippet */
+  get selectedSlotDetails(): TimelineSlotDetails | null {
+    return this.selectedSlotDetailsSnapshot;
   }
 
   get hourLabels(): string[] {
@@ -163,12 +183,10 @@ export class TimelineComponent implements OnChanges {
       return 'pending';
     }
 
-    // ['available', 'free', 'open'].includes(normalized)
     if (['available', 'free', 'open'].indexOf(normalized) !== -1) {
       return 'available';
     }
 
-    // ['reserved', 'unavailable', 'taken', 'closed', 'maintenance'].includes(normalized)
     if (['reserved', 'unavailable', 'taken', 'closed', 'maintenance'].indexOf(normalized) !== -1) {
       return 'maintenance';
     }
@@ -225,7 +243,6 @@ export class TimelineComponent implements OnChanges {
       .map(service => this.toHHmm(service.startTime))
       .filter(this.isNonEmptyString);
 
-    // جایگزین flatMap
     const fromSlots = (this.columnsSnapshot ?? []).reduce<string[]>((acc, column: TimelineColumn) => {
       const slots = column && column.slots ? column.slots : [];
       for (let i = 0; i < slots.length; i++) {
@@ -242,7 +259,6 @@ export class TimelineComponent implements OnChanges {
       .map(service => this.toHHmm(service.endTime))
       .filter(this.isNonEmptyString);
 
-    // جایگزین flatMap
     const fromSlots = (this.columnsSnapshot ?? []).reduce<string[]>((acc, column: TimelineColumn) => {
       const slots = column && column.slots ? column.slots : [];
       for (let i = 0; i < slots.length; i++) {
@@ -320,7 +336,31 @@ export class TimelineComponent implements OnChanges {
     return typeof value === 'string' && value.length > 0;
   }
 
+  /** Open modal with clicked slot's details */
   onSlotClick(slot: TimelineSlot, column: TimelineColumn): void {
-    console.log({ slot, column });
+    this.selectedSlotDetailsSnapshot = {
+      slotId: slot.id,
+      serviceName: column.label,
+      label: slot.label,
+      start: slot.start,
+      end: slot.end,
+      durationMinutes: slot.durationMinutes,
+      status: slot.status,
+      statusLabel: this.getStatusLabel(slot.status)
+    };
+  }
+
+  /** Close modal */
+  onModalClose(): void {
+    this.selectedSlotDetailsSnapshot = null;
+  }
+
+  /** Handle add-to-basket action from modal */
+  onAddToBasket(): void {
+    if (!this.selectedSlotDetailsSnapshot) {
+      return;
+    }
+    // Replace with your real handler
+    console.log('Add to basket:', this.selectedSlotDetailsSnapshot);
   }
 }

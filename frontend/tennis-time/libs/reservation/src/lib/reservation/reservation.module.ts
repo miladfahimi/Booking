@@ -21,6 +21,7 @@ import {
   ReservationCalendarMobileComponent
 } from "./pages/reservation/container/calendar/calendar-mobile/reservation-calendar-mobile.component";
 import { TimelineComponent } from './pages/reservation/container/timeline/timeline.component';
+import { TimelineSlotModalComponent } from './pages/reservation/container/timeline/tileline-slot-modal/timeline-slot-modal.component';
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { TimelineComponent } from './pages/reservation/container/timeline/timeli
     ReservationHoursComponent,
     ReservationSlotsTableComponent,
     TimelineComponent,
+    TimelineSlotModalComponent,
   ],
   imports: [
     FormsModule,
