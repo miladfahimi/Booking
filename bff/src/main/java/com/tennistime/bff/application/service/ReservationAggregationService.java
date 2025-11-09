@@ -129,6 +129,22 @@ public class ReservationAggregationService {
     }
 
     /**
+     * Creates a reservation by delegating the request to the reservation service.
+     *
+     * @param reservationDTO the reservation details to persist
+     * @return the created reservation
+     */
+    public ReservationDTO createReservation(ReservationDTO reservationDTO) {
+        try {
+            logger.info("Creating reservation for user {} and service {}", reservationDTO.getUserId(), reservationDTO.getServiceId());
+            return reservationServiceClient.createReservation(reservationDTO);
+        } catch (FeignException e) {
+            logger.error("Error occurred while creating reservation: {}", e.getMessage());
+            throw new ExternalServiceException("An error occurred while creating the reservation.", e);
+        }
+    }
+
+    /**
      * Fetches a reservation by its ID.
      *
      * @param reservationId the UUID of the reservation to fetch
@@ -452,8 +468,8 @@ public class ReservationAggregationService {
     /**
      * Updates the availability slots based on existing reservations.
      *
-     * @param slots       the list of SlotDTO objects to be updated
-     * @param serviceDTO  the service details
+     * @param slots        the list of SlotDTO objects to be updated
+     * @param serviceDTO   the service details
      * @param reservations the list of reservations to be used for updating slots
      */
     private void updateSlotsWithReservations(List<SlotDTO> slots, ServiceDTO serviceDTO, List<ReservationDTO> reservations) {

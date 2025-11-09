@@ -1,10 +1,6 @@
 package com.tennistime.bff.application.controller;
 
-import com.tennistime.bff.application.dto.AggregatedReservationDTO;
-import com.tennistime.bff.application.dto.ProviderDTO;
-import com.tennistime.bff.application.dto.ReservationDTO;
-import com.tennistime.bff.application.dto.SlotDTO;
-import com.tennistime.bff.application.dto.ServiceDTO;
+import com.tennistime.bff.application.dto.*;
 import com.tennistime.bff.application.service.ReservationAggregationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +29,18 @@ public class UserPortalController {
     @GetMapping("/reservations")
     public List<ReservationDTO> getAllReservations() {
         return reservationAggregationService.getAllReservations();
+    }
+
+    /**
+     * Creates a reservation using the reservation aggregation service.
+     *
+     * @param reservationDTO the reservation details provided by the client
+     * @return a ResponseEntity containing the created reservation
+     */
+    @PostMapping("/reservations")
+    public ResponseEntity<ReservationDTO> createReservation(@RequestBody ReservationDTO reservationDTO) {
+        ReservationDTO createdReservation = reservationAggregationService.createReservation(reservationDTO);
+        return ResponseEntity.ok(createdReservation);
     }
 
     /**
