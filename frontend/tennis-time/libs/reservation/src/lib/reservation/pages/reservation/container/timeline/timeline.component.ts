@@ -1,6 +1,7 @@
 // timeline.component.ts
-import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { ServiceDTO, SlotDTO } from '../../../../types';
+import { TimelineSlotDetails } from './tileline-slot-modal/timeline-slot-modal.component';
 
 type TimelineStatus = 'available' | 'booked' | 'pending' | 'maintenance';
 
@@ -13,24 +14,14 @@ interface TimelineSlot {
   readonly end: string;
   readonly durationMinutes: number;
   readonly status: TimelineStatus;
+  readonly original: SlotDTO;
 }
 
 interface TimelineColumn {
   readonly id: string;
   readonly label: string;
   readonly slots: TimelineSlot[];
-}
-
-/** Matches the modal's expected shape */
-interface TimelineSlotDetails {
-  readonly slotId: string;
-  readonly serviceName: string;
-  readonly label: string;
-  readonly start: string;
-  readonly end: string;
-  readonly durationMinutes: number;
-  readonly status: TimelineStatus;
-  readonly statusLabel: string;
+  readonly service: ServiceDTO;
 }
 
 @Component({
@@ -42,6 +33,7 @@ interface TimelineSlotDetails {
 export class TimelineComponent implements OnChanges {
   @Input() services: ServiceDTO[] = [];
   @Input() slotsByService: SlotsByService = {};
+  @Output() addToBasket = new EventEmitter<TimelineSlotDetails>();
 
   readonly pixelsPerMinute = 2;
   readonly defaultStartHour = 8;
@@ -108,7 +100,8 @@ export class TimelineComponent implements OnChanges {
     return this.services.map((service: ServiceDTO) => ({
       id: service.id,
       label: service.name,
-      slots: this.buildSlotsForService(service)
+      slots: this.buildSlotsForService(service),
+      service
     }));
   }
 
@@ -149,7 +142,8 @@ export class TimelineComponent implements OnChanges {
       start,
       end: end || this.addMinutesToHHmm(start, durationMinutes) || start,
       durationMinutes,
-      status
+      status,
+      original: slot
     };
   }
 
@@ -339,11 +333,15 @@ export class TimelineComponent implements OnChanges {
   /** Open modal with clicked slot's details */
   onSlotClick(slot: TimelineSlot, column: TimelineColumn): void {
     this.selectedSlotDetailsSnapshot = {
-      slotId: slot.id,
+      slotId: slot.original.slotId || slot.id,
+      serviceId: column.service.id,
+      providerId: column.service.providerId,
       serviceName: column.label,
       label: slot.label,
       start: slot.start,
       end: slot.end,
+      startTime: slot.original.time ?? slot.start,
+      endTime: slot.original.endTime ?? slot.end,
       durationMinutes: slot.durationMinutes,
       status: slot.status,
       statusLabel: this.getStatusLabel(slot.status)
@@ -356,11 +354,8 @@ export class TimelineComponent implements OnChanges {
   }
 
   /** Handle add-to-basket action from modal */
-  onAddToBasket(): void {
-    if (!this.selectedSlotDetailsSnapshot) {
-      return;
-    }
-    // Replace with your real handler
-    console.log('Add to basket:', this.selectedSlotDetailsSnapshot);
+  onAddToBasket(details: TimelineSlotDetails): void {
+    this.addToBasket.emit(details);
+    this.onModalClose();
   }
 }

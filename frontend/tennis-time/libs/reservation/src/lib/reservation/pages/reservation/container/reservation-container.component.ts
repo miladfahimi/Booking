@@ -4,7 +4,11 @@ import { Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { loadProvidersWithServices, loadSlots } from '../../../store/reservation.actions';
 import { selectProviders, selectSlots, selectSlotsByService, selectSlotsLoading } from '../../../store/reservation.selectors';
-import { SlotDTO, ProviderDTO, ServiceDTO } from '../../../types';
+import { SlotDTO, ProviderDTO, ServiceDTO, CreateReservationPayload } from '../../../types';
+import { ReservationCreationService } from '../../../services/reservation-creation.service';
+import { CoreAuthService } from '@tennis-time/core';
+import * as jalaali from 'jalaali-js';
+import { TimelineSlotDetails } from './timeline/tileline-slot-modal/timeline-slot-modal.component';
 
 @Component({
   selector: 'app-reservation-container',
@@ -23,7 +27,11 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
   private providerId = '11111111-1111-1111-1111-111111111111'; // Hardcoded provider ID
   private destroy$ = new Subject<void>();
 
-  constructor(private store: Store) {
+  constructor(
+    private store: Store,
+    private reservationCreationService: ReservationCreationService,
+    private coreAuthService: CoreAuthService
+  ) {
     this.timeSlots$ = this.store.select(selectSlots);
     this.loading$ = this.store.select(selectSlotsLoading);
   }
@@ -108,6 +116,24 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
     return value < 10 ? '0' + value : value.toString();
   }
 
+  private formatDateToJalaliYYYYMMDD(date: Date): string {
+    const { jy, jm, jd } = jalaali.toJalaali(date.getFullYear(), date.getMonth() + 1, date.getDate());
+    return `${jy}-${this.padZero(jm)}-${this.padZero(jd)}`;
+  }
+
+  private ensureTimeHasSeconds(time: string | null | undefined): string {
+    if (!time) {
+      return '00:00:00';
+    }
+
+    if (time.length === 5) {
+      return `${time}:00`;
+    }
+
+    return time;
+  }
+
+
   selectSlot(slot: SlotDTO) {
     console.log('%cTime Slot Selected:', 'color: teal', slot);
   }
@@ -119,6 +145,46 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
   cancel() {
     console.log('%cReservation cancelled.', 'color: red');
   }
+
+  onAddSlotToBasket(slot: TimelineSlotDetails | null): void {
+    if (!slot) {
+      return;
+    }
+
+    const userId = this.coreAuthService.getUserId();
+    if (!userId) {
+      console.error('Cannot create reservation: missing user id.');
+      return;
+    }
+
+    const reservationDate = this.formatDateToYYYYMMDD(this.selectedDate);
+    const reservationDatePersian = this.formatDateToJalaliYYYYMMDD(this.selectedDate);
+    const startTime = this.ensureTimeHasSeconds(slot.startTime ?? slot.start);
+    const endTime = this.ensureTimeHasSeconds(slot.endTime ?? slot.end);
+
+    const payload: CreateReservationPayload = {
+      reservationDate,
+      reservationDatePersian,
+      startTime,
+      endTime,
+      userId,
+      providerId: slot.providerId,
+      serviceId: slot.serviceId
+    };
+
+    this.reservationCreationService.createReservation(payload)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: reservation => {
+          console.log('%cReservation created successfully:', 'color: green', reservation);
+          this.dispatchLoadSlotsForDate(this.selectedDate);
+        },
+        error: error => {
+          console.error('Failed to create reservation.', error);
+        }
+      });
+  }
+
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {

@@ -11,7 +11,8 @@
       </app-reservation-calendar-desktop>
       }
 
-      <app-timeline [services]="items" [slotsByService]="slotsByService"></app-timeline>
+      <app-timeline [services]="items" [slotsByService]="slotsByService"
+        (addToBasket)="onAddSlotToBasket($event)"></app-timeline>
 
     </div>
   </div>

@@ -59,9 +59,5 @@
   </div>
 </div>
 
-<app-timeline-slot-modal
-  *ngIf="selectedSlotDetails as slotDetails"
-  [slot]="slotDetails"
-  (close)="onModalClose()"
-  (addToBasket)="onAddToBasket()"
-></app-timeline-slot-modal>
+<app-timeline-slot-modal *ngIf="selectedSlotDetails as slotDetails" [slot]="slotDetails" (close)="onModalClose()"
+  (addToBasket)="onAddToBasket($event)"></app-timeline-slot-modal>
