@@ -13,32 +13,6 @@
 
       <app-timeline [services]="items" [slotsByService]="slotsByService"></app-timeline>
 
-
-      <!-- Items component kept for potential future use -->
-      <!--
-      <app-reservation-items
-        [items]="items"
-        (selectItem)="selectDuration($event)">
-      </app-reservation-items>
-      -->
-
-      <!-- Hours component kept for potential future use -->
-      <!--
-      <app-reservation-hours
-        [timeSlots]="timeSlots$ | async"
-        (selectSlot)="selectSlot($event)">
-      </app-reservation-hours>
-      -->
-
-      <app-reservation-slots-table [services]="items" [selectedServiceId]="selectedService?.id || null"
-        [slotsByService]="slotsByService" (selectSlot)="onSlotPicked($event)">
-      </app-reservation-slots-table>
-
-      <!-- Action Buttons -->
-      <div class="calendar-buttons">
-        <button class="calendar-button primary" (click)="book()">رزرو</button>
-        <button class="calendar-button secondary" (click)="cancel()">لغو</button>
-      </div>
     </div>
   </div>
 </div>

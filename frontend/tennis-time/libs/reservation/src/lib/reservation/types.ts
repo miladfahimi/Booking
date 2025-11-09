@@ -18,6 +18,18 @@ export interface UserReservationDTO {
 }
 
 
+export interface CreateReservationPayload {
+  reservationDate: string;             // Gregorian date of the reservation (Format: YYYY-MM-DD)
+  reservationDatePersian?: string;     // Optional Persian date representation (Format: YYYY-MM-DD)
+  startTime: string;                   // Reservation start time (Format: HH:MM or HH:MM:SS)
+  endTime: string;                     // Reservation end time (Format: HH:MM or HH:MM:SS)
+  status?: string;                     // Optional reservation status (e.g., CONFIRMED, PENDING)
+  userId: string;                      // ID of the user making the reservation
+  providerId: string;                  // ID of the service provider
+  serviceId: string;                   // ID of the service being reserved
+}
+
+
 export interface LoadingStatus {
   loaded: boolean;
   loading: boolean;
