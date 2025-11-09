@@ -34,7 +34,7 @@
   z-index: 1;
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: minmax(60px, 60px);
+  grid-auto-columns: minmax(60px, 70px);
   min-width: max-content;
 }
 
@@ -164,6 +164,7 @@
 
 .timeline-slot__time {
   color: #4b5563;
+  font-weight: 700;
   font-size: 7px;
 }
 

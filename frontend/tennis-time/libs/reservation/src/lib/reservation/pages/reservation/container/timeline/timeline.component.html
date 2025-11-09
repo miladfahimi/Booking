@@ -8,7 +8,7 @@
 
         <div class="timeline__hour" *ngFor="let hour of hourLabels; trackBy: trackHourByValue"
           [style.height.px]="hourHeight">
-          <span class="timeline__hour-label">{{ hour }}</span>
+          <span class="timeline__hour-label">{{ hour | faDigits }}</span>
         </div>
       </div>
 
@@ -25,9 +25,9 @@
               [class.timeline-slot--pending]="slot.status === 'pending'"
               [class.timeline-slot--maintenance]="slot.status === 'maintenance'" [style.top.px]="getSlotOffset(slot)"
               [style.height.px]="getSlotHeight(slot)">
-              <span class="timeline-slot__label">{{ slot.label }}</span>
-              <span class="timeline-slot__time">{{ slot.start }}</span>
-              <span class="timeline-slot__time">{{ slot.durationMinutes }} دقیقه</span>
+              <span class="timeline-slot__label">{{ slot.label | faDigits }}</span>
+              <span class="timeline-slot__time">{{ slot.start | faDigits }} ~ {{ slot.end | faDigits }}</span>
+              <span class="timeline-slot__time">{{ slot.durationMinutes | faDigits }} دقیقه</span>
             </div>
           </div>
 

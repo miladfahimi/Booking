@@ -9,7 +9,8 @@ type SlotsByService = Record<string, SlotDTO[]>;
 interface TimelineSlot {
   readonly id: string;
   readonly label: string;
-  readonly start: string; // HH:mm
+  readonly start: string;
+  readonly end: string;
   readonly durationMinutes: number;
   readonly status: TimelineStatus;
 }
@@ -126,6 +127,7 @@ export class TimelineComponent implements OnChanges {
       id: slot.slotId || `${service.id}-${start}`,
       label: this.getStatusLabel(status),
       start,
+      end: end || this.addMinutesToHHmm(start, durationMinutes) || start,
       durationMinutes,
       status
     };
