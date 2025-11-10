@@ -168,10 +168,18 @@ public class UserService {
     }
 
     public void logout(String token) {
-        String username = jwtUtil.getUsernameFromToken(token);
-        User user = userRepository.findByEmail(username).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        UUID userId = jwtUtil.getUserIdFromToken(token);
+        User user;
+        if (userId != null) {
+            user = userRepository.findById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        } else {
+            String username = jwtUtil.getUsernameFromToken(token);
+            user = userRepository.findByEmail(username)
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        }
         otpService.invalidateOtp(user);
 
-        logger.info("\033[1;31mLogout successful for user: {}\033[0m", username);
+        logger.info("\033[1;31mLogout successful for user: {} ({})\033[0m", user.getId(), user.getEmail());
     }
 }

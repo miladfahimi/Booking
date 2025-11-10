@@ -51,6 +51,9 @@ public class JwtUtil {
         if (customUserDetails.getPhone() != null) {
             claims.put("phone", customUserDetails.getPhone());
         }
+        if (customUserDetails.getId() != null) {
+            claims.put("userId", customUserDetails.getId().toString());
+        }
 
         String token = Jwts.builder()
                 .setClaims(claims)
@@ -101,6 +104,11 @@ public class JwtUtil {
 
     public String getPhoneFromToken(String token) {
         return getClaimFromToken(token, claims -> claims.get("phone", String.class));
+    }
+
+    public UUID getUserIdFromToken(String token) {
+        String userId = getClaimFromToken(token, claims -> claims.get("userId", String.class));
+        return userId != null ? UUID.fromString(userId) : null;
     }
 
     public List<String> getRolesFromToken(String token) {

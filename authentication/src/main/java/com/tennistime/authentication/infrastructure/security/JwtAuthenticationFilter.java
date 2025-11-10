@@ -17,6 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -37,6 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String username = null;
         String email = null;
+        UUID userId = null;
         String jwt = null;
         List<String> roles = null;
 
@@ -53,10 +55,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 username = jwtUtil.getUsernameFromToken(jwt);
                 email = jwtUtil.getEmailFromToken(jwt);
                 roles = jwtUtil.getRolesFromToken(jwt);
+                userId = jwtUtil.getUserIdFromToken(jwt);
 
                 // Logging all claims
                 logger.info("\033[1;34m----------------------------\033[0m");
                 logger.info("\033[1;34mJWT Token: {}\033[0m", jwt);
+                logger.info("\033[1;34mUser ID: {}\033[0m", userId);
                 logger.info("\033[1;34mUsername: {}\033[0m", username);
                 logger.info("\033[1;34mEmail: {}\033[0m", email);
                 logger.info("\033[1;34mRoles: {}\033[0m", roles);
@@ -78,11 +82,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 usernamePasswordAuthenticationToken.setDetails(
                         new WebAuthenticationDetailsSource().buildDetails(request)
                 );
+                if (userId != null) {
+                    request.setAttribute("authenticatedUserId", userId);
+                }
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 
                 // Logging
                 logger.info("\033[1;32m----------------------------\033[0m");
                 logger.info("\033[1;32mAuthenticated user: {}\033[0m", username);
+                logger.info("\033[1;32mUser ID: {}\033[0m", userId);
                 logger.info("\033[1;32mEmail: {}\033[0m", email);
                 logger.info("\033[1;32mRoles: {}\033[0m", roles);
                 logger.info("\033[1;32m----------------------------\033[0m");

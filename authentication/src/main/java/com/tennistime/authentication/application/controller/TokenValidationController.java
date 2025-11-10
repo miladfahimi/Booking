@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/token")
@@ -32,7 +33,12 @@ public class TokenValidationController {
             response.put("username", jwtUtil.getUsernameFromToken(token));
             response.put("email", jwtUtil.getEmailFromToken(token));
             response.put("roles", jwtUtil.getRolesFromToken(token));
+            UUID userId = jwtUtil.getUserIdFromToken(token);
+            if (userId != null) {
+                response.put("userId", userId.toString());
+            }
             response.put("valid", true);
+
 
             // Logging the response
             System.out.println("\033[1;36m----------------------------\033[0m");
