@@ -20,10 +20,12 @@
 
           <div class="timeline__column-body" [style.height.px]="timelineHeight">
             <div class="timeline-slot" *ngFor="let slot of column.slots; trackBy: trackSlotById"
-              (click)="onSlotClick(slot, column)" [class.timeline-slot--booked]="slot.status === 'booked'"
+              (click)="onSlotClick(slot, column)"
+              [class.timeline-slot--booked]="slot.status === 'booked' && !isMyBookedSlot(slot)"
               [class.timeline-slot--available]="slot.status === 'available'"
               [class.timeline-slot--pending]="slot.status === 'pending'"
-              [class.timeline-slot--maintenance]="slot.status === 'maintenance'" [style.top.px]="getSlotOffset(slot)"
+              [class.timeline-slot--maintenance]="slot.status === 'maintenance'"
+              [class.timeline-slot--mine]="isMyBookedSlot(slot)" [style.top.px]="getSlotOffset(slot)"
               [style.height.px]="getSlotHeight(slot)">
               <span class="timeline-slot__label">{{ slot.label | faDigits }}</span>
               <span class="timeline-slot__time">{{ slot.start | faDigits }} ~ {{ slot.end | faDigits }}</span>
@@ -39,6 +41,9 @@
   </div>
   <div class="timeline__legend" aria-hidden="true" role="note">
     <div class="legend">
+      <div class="legend-item mine">
+        <span></span> من
+      </div>
       <div class="legend-item available">
         <span></span>
         در دسترس

@@ -241,3 +241,13 @@ padding-bottom: 44px;
   background-color: #fef9c3;
   box-shadow: 0 0 0 2px #facc15 inset, 0 1px 2px rgba(15, 23, 42, 0.08);
 }
+
+.timeline-slot--mine {
+  background-color: #dbeafe;
+  border-left-color: #3b82f6;
+}
+
+.legend-item.mine span {
+  background-color: #dbeafe;
+  box-shadow: 0 0 0 2px #3b82f6 inset, 0 1px 2px rgba(15, 23, 42, 0.08);
+}

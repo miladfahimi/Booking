@@ -2,6 +2,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { ServiceDTO, SlotDTO } from '../../../../types';
 import { TimelineSlotDetails } from './tileline-slot-modal/timeline-slot-modal.component';
+import { AuthFacadeService } from 'libs/shared/src/lib/shared/auth/auth-facade-service';
 
 type TimelineStatus = 'available' | 'booked' | 'pending' | 'maintenance';
 
@@ -41,9 +42,13 @@ export class TimelineComponent implements OnChanges {
   readonly hourHeight = this.pixelsPerMinute * 60;
 
   private columnsSnapshot: TimelineColumn[] = [];
-
-  /** Backing state for the modal input */
+  private currentUserId: string | null = null;
   private selectedSlotDetailsSnapshot: TimelineSlotDetails | null = null;
+
+
+  constructor(private auth: AuthFacadeService) {
+    this.auth.userId$.subscribe(id => (this.currentUserId = id));
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['services'] || changes['slotsByService']) {
@@ -55,7 +60,6 @@ export class TimelineComponent implements OnChanges {
     return this.columnsSnapshot;
   }
 
-  /** Bind this in your template as shown in your snippet */
   get selectedSlotDetails(): TimelineSlotDetails | null {
     return this.selectedSlotDetailsSnapshot;
   }
@@ -330,7 +334,6 @@ export class TimelineComponent implements OnChanges {
     return typeof value === 'string' && value.length > 0;
   }
 
-  /** Open modal with clicked slot's details */
   onSlotClick(slot: TimelineSlot, column: TimelineColumn): void {
     this.selectedSlotDetailsSnapshot = {
       slotId: slot.original.slotId || slot.id,
@@ -348,12 +351,18 @@ export class TimelineComponent implements OnChanges {
     };
   }
 
-  /** Close modal */
+  isMyBookedSlot(slot: TimelineSlot): boolean {
+    return (
+      slot.status === 'booked' &&
+      !!this.currentUserId &&
+      (slot.original as any)?.reservedBy === this.currentUserId
+    );
+  }
+
   onModalClose(): void {
     this.selectedSlotDetailsSnapshot = null;
   }
 
-  /** Handle add-to-basket action from modal */
   onAddToBasket(details: TimelineSlotDetails): void {
     this.addToBasket.emit(details);
     this.onModalClose();
