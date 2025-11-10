@@ -1,4 +1,3 @@
-/* slot-modal.component.css */
 :host {
   position: fixed;
   inset: 0;
@@ -34,7 +33,6 @@
   border-radius: 0;
 }
 
-/* compact header, same background as body */
 .slot-modal__header {
   display: flex;
   align-items: center;
@@ -43,7 +41,6 @@
   background-color: #f9fafb;
 }
 
-/* smaller close button */
 .slot-modal__close {
   border: none;
   background-color: #f3f4f6;
@@ -163,6 +160,13 @@
   box-shadow: 0 0 0 1px #9ca3af inset, 0 1px 2px rgba(15, 23, 42, 0.08);
 }
 
+/* Blue theme for user's own booked slot */
+.slot-modal__status--mine {
+  background-color: #dbeafe;
+  color: #1e3a8a;
+  box-shadow: 0 0 0 1px #60a5fa inset, 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
 .slot-modal__footer {
   display: flex;
   justify-content: flex-end;
@@ -175,6 +179,12 @@
 .slot-modal__footer--muted {
   background-color: rgba(246, 180, 105, 0.297);
   border-top: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+/* Blue footer background for user's own booked slot */
+.slot-modal__footer--mine {
+  background-color: rgba(59, 130, 246, 0.18);
+  border-top: 1px solid rgba(59, 130, 246, 0.45);
 }
 
 .slot-modal__button {
@@ -201,6 +211,19 @@
 
 .slot-modal__button--ghost:hover {
   transform: translateY(-1px);
+}
+
+/* Cancel button for user's own booked slot */
+.slot-modal__button--cancel {
+  background-color: #1d4ed8;
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(29, 78, 216, 0.25);
+}
+
+.slot-modal__button--cancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .slot-modal__button:hover {

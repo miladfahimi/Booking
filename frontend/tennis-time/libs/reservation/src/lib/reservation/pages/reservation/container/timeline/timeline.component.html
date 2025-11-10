@@ -27,7 +27,9 @@
               [class.timeline-slot--maintenance]="slot.status === 'maintenance'"
               [class.timeline-slot--mine]="isMyBookedSlot(slot)" [style.top.px]="getSlotOffset(slot)"
               [style.height.px]="getSlotHeight(slot)">
-              <span class="timeline-slot__label">{{ slot.label | faDigits }}</span>
+              <span class="timeline-slot__label">
+                {{ isMyBookedSlot(slot) ? 'رزرو شده توسط شما' : slot.label | faDigits }}
+              </span>
               <span class="timeline-slot__time">{{ slot.start | faDigits }} ~ {{ slot.end | faDigits }}</span>
               <span class="timeline-slot__time">{{ slot.durationMinutes | faDigits }} دقیقه</span>
             </div>

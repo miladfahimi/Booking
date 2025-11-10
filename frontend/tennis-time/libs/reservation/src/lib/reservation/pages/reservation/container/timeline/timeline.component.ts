@@ -335,21 +335,24 @@ export class TimelineComponent implements OnChanges {
   }
 
   onSlotClick(slot: TimelineSlot, column: TimelineColumn): void {
+    const isMine = this.isMyBookedSlot(slot);
     this.selectedSlotDetailsSnapshot = {
       slotId: slot.original.slotId || slot.id,
       serviceId: column.service.id,
       providerId: column.service.providerId,
       serviceName: column.label,
-      label: slot.label,
+      label: isMine ? 'رزرو شده توسط شما' : slot.label,
       start: slot.start,
       end: slot.end,
       startTime: slot.original.time ?? slot.start,
       endTime: slot.original.endTime ?? slot.end,
       durationMinutes: slot.durationMinutes,
       status: slot.status,
-      statusLabel: this.getStatusLabel(slot.status)
+      statusLabel: isMine ? 'رزرو شده توسط شما' : this.getStatusLabel(slot.status),
+      isMine
     };
   }
+
 
   isMyBookedSlot(slot: TimelineSlot): boolean {
     return (

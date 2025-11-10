@@ -16,6 +16,7 @@ export interface TimelineSlotDetails {
   readonly durationMinutes: number;
   readonly status: TimelineSlotStatus;
   readonly statusLabel: string;
+  readonly isMine: boolean;
 }
 @Component({
   selector: 'app-timeline-slot-modal',
@@ -27,9 +28,25 @@ export class TimelineSlotModalComponent {
   @Input() slot: TimelineSlotDetails | null = null;
   @Output() close = new EventEmitter<void>();
   @Output() addToBasket = new EventEmitter<TimelineSlotDetails>();
+  @Output() cancel = new EventEmitter<string>();
+
 
   onClose(): void {
     this.close.emit();
+  }
+
+  onCancel(): void {
+    if (!this.slot) return;
+    this.cancel.emit(this.slot.slotId);
+  }
+
+  get canCancel(): boolean {
+    if (!this.slot?.startTime || this.slot.startTime.indexOf('T') === -1) return true;
+    const start = new Date(this.slot.startTime);
+    if (isNaN(start.getTime())) return true;
+    const ms = start.getTime() - Date.now();
+    const hours = ms / 36e5;
+    return hours >= 24;
   }
 
   onRemindIfCanceled() {

@@ -1,44 +1,13 @@
-<!-- slot-modal.component.html -->
 <div class="slot-modal" role="dialog" aria-modal="true" *ngIf="slot as currentSlot">
   <div class="slot-modal__backdrop" (click)="onClose()"></div>
 
   <div class="slot-modal__content" role="document">
-
     <header class="slot-modal__header">
-      <button type="button" class="slot-modal__close" (click)="onClose()" aria-label="بستن">
-        &times;
-      </button>
+      <button type="button" class="slot-modal__close" (click)="onClose()" aria-label="بستن">&times;</button>
     </header>
 
     <div class="slot-modal__body slot-modal__body--narrative">
-      <ng-container *ngIf="currentSlot.status !== 'booked'; else bookedText">
-        <p class="slot-modal__intro">
-          برای
-          <strong class="slot-modal__highlight">{{ currentSlot.serviceName | faDigits }}</strong>
-          یک نوبت از
-          <span class="slot-modal__chip slot-modal__chip--time">
-            {{ currentSlot.start | faDigits }} تا {{ currentSlot.end | faDigits }}
-          </span>
-          به مدت
-          <span class="slot-modal__emphasis">
-            {{ currentSlot.durationMinutes | faDigits }} دقیقه
-          </span>
-          در نظر گرفته شده است.
-        </p>
-
-        <div class="slot-modal__line">
-          وضعیت:
-          <span class="slot-modal__status" [ngClass]="'slot-modal__status--' + currentSlot.status">
-            {{ currentSlot.statusLabel | faDigits }}
-          </span>
-        </div>
-
-        <p class="slot-modal__note">
-          در صورت تمایل می‌توانید این نوبت را به سبد خود اضافه کنید.
-        </p>
-      </ng-container>
-
-      <ng-template #bookedText>
+      <ng-container *ngIf="currentSlot.status === 'booked' && currentSlot.isMine; else notMineTemplate">
         <p class="slot-modal__intro">
           این زمان برای
           <strong class="slot-modal__highlight">{{ currentSlot.serviceName | faDigits }}</strong>
@@ -50,31 +19,99 @@
           <span class="slot-modal__emphasis">
             {{ currentSlot.durationMinutes | faDigits }} دقیقه
           </span>
-          قبلاً رزرو شده است.
+          <span>
+            <strong class="slot-modal__highlight"> توسط شما رزرو
+              شده است.</strong>
+          </span>
         </p>
 
         <div class="slot-modal__line">
           وضعیت:
-          <span class="slot-modal__status slot-modal__status--booked">
+          <span class="slot-modal__status slot-modal__status--mine">
             {{ currentSlot.statusLabel | faDigits }}
           </span>
         </div>
 
         <p class="slot-modal__note">
-          اگر این نوبت لغو شد، با زدن دکمه زیر به شما اطلاع داده می‌شود تا بتوانید آن را رزرو کنید.
-        </p>
+          درخواست لغو صرفاً در شرایطی پذیرفته می‌شود که بیش از ۲۴ ساعت تا آغاز نوبت باقی مانده باشد. در این صورت، مبلغ
+          پرداختی قابل استرداد خواهد بود. </p>
+      </ng-container>
+
+      <ng-template #notMineTemplate>
+        <ng-container *ngIf="currentSlot.status !== 'booked'; else bookedText">
+          <p class="slot-modal__intro">
+            برای
+            <strong class="slot-modal__highlight">{{ currentSlot.serviceName | faDigits }}</strong>
+            یک نوبت از
+            <span class="slot-modal__chip slot-modal__chip--time">
+              {{ currentSlot.start | faDigits }} تا {{ currentSlot.end | faDigits }}
+            </span>
+            به مدت
+            <span class="slot-modal__emphasis">
+              {{ currentSlot.durationMinutes | faDigits }} دقیقه
+            </span>
+            در نظر گرفته شده است.
+          </p>
+
+          <div class="slot-modal__line">
+            وضعیت:
+            <span class="slot-modal__status" [ngClass]="'slot-modal__status--' + currentSlot.status">
+              {{ currentSlot.statusLabel | faDigits }}
+            </span>
+          </div>
+
+          <p class="slot-modal__note">
+            در صورت تمایل می‌توانید این نوبت را به سبد خود اضافه کنید.
+          </p>
+        </ng-container>
+
+        <ng-template #bookedText>
+          <p class="slot-modal__intro">
+            این زمان برای
+            <strong class="slot-modal__highlight">{{ currentSlot.serviceName | faDigits }}</strong>
+            از
+            <span class="slot-modal__chip slot-modal__chip--time">
+              {{ currentSlot.start | faDigits }} تا {{ currentSlot.end | faDigits }}
+            </span>
+            به مدت
+            <span class="slot-modal__emphasis">
+              {{ currentSlot.durationMinutes | faDigits }} دقیقه
+            </span>
+            قبلاً رزرو شده است.
+          </p>
+
+          <div class="slot-modal__line">
+            وضعیت:
+            <span class="slot-modal__status slot-modal__status--booked">
+              {{ currentSlot.statusLabel | faDigits }}
+            </span>
+          </div>
+
+          <p class="slot-modal__note">
+            اگر این نوبت لغو شد، با زدن دکمه زیر به شما اطلاع داده می‌شود تا بتوانید آن را رزرو کنید.
+          </p>
+        </ng-template>
       </ng-template>
     </div>
 
-    <footer class="slot-modal__footer" [ngClass]="{ 'slot-modal__footer--muted': currentSlot.status === 'booked' }">
+    <footer class="slot-modal__footer" [ngClass]="{
+              'slot-modal__footer--muted': currentSlot.status === 'booked' && !currentSlot.isMine,
+              'slot-modal__footer--mine': currentSlot.status === 'booked' && currentSlot.isMine
+            }">
+
       <button *ngIf="currentSlot.status !== 'booked'" type="button"
         class="slot-modal__button slot-modal__button--primary" (click)="onAddToBasket()">
         افزودن به سبد
       </button>
 
-      <button *ngIf="currentSlot.status === 'booked'" type="button" class="slot-modal__button slot-modal__button--ghost"
-        (click)="onRemindIfCanceled()">
+      <button *ngIf="currentSlot.status === 'booked' && !currentSlot.isMine" type="button"
+        class="slot-modal__button slot-modal__button--ghost" (click)="onRemindIfCanceled()">
         یاداوری کن
+      </button>
+
+      <button *ngIf="currentSlot.status === 'booked' && currentSlot.isMine" type="button"
+        class="slot-modal__button slot-modal__button--cancel" [disabled]="!canCancel" (click)="onCancel()">
+        لغو رزرو
       </button>
     </footer>
   </div>
