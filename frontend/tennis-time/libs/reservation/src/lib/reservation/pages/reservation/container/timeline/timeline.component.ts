@@ -355,7 +355,7 @@ export class TimelineComponent implements OnChanges {
     return (
       slot.status === 'booked' &&
       !!this.currentUserId &&
-      (slot.original as any)?.reservedBy === this.currentUserId
+      slot.original.reservedBy === this.currentUserId
     );
   }
 

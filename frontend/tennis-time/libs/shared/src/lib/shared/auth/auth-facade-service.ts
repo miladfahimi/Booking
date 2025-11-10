@@ -3,10 +3,10 @@ import { CoreAuthService } from '@tennis-time/core';
 import { BehaviorSubject, combineLatest, fromEvent, map, of, startWith, shareReplay } from 'rxjs';
 
 export interface DecodedToken {
+  userId?: string;
   sub?: string;
   roles?: string[];
   exp?: number;
-  id?: string;
   [k: string]: any;
 }
 
@@ -15,7 +15,7 @@ export class AuthFacadeService {
   private decodedToken$ = new BehaviorSubject<DecodedToken | null>(null);
 
   readonly userEmail$ = this.decodedToken$.pipe(map(t => t?.sub ?? null), shareReplay(1));
-  readonly userId$ = this.decodedToken$.pipe(map(t => t?.id ?? null), shareReplay(1));
+  readonly userId$ = this.decodedToken$.pipe(map(t => t?.userId ?? null), shareReplay(1));
   readonly roles$ = this.decodedToken$.pipe(map(t => t?.roles ?? []), shareReplay(1));
   readonly isAuth$ = combineLatest([this.decodedToken$, of(null)]).pipe(
     map(([t]) => !!t && !this.isExpired(t)),
