@@ -44,6 +44,18 @@ public class UserPortalController {
     }
 
     /**
+     * Creates multiple reservations in bulk.
+     *
+     * @param reservationDTOs the reservations provided by the client
+     * @return a ResponseEntity containing the created reservations
+     */
+    @PostMapping("/reservations/bulk")
+    public ResponseEntity<List<ReservationDTO>> createReservations(@RequestBody List<ReservationDTO> reservationDTOs) {
+        List<ReservationDTO> createdReservations = reservationAggregationService.createReservations(reservationDTOs);
+        return ResponseEntity.ok(createdReservations);
+    }
+
+    /**
      * Retrieves aggregated details for a specific reservation.
      *
      * @param reservationId the UUID of the reservation

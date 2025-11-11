@@ -31,6 +31,9 @@ public interface ReservationServiceClient {
     @PostMapping("/reservations")
     ReservationDTO createReservation(@RequestBody ReservationDTO reservationDTO);
 
+    @PostMapping("/reservations/bulk")
+    List<ReservationDTO> createReservations(@RequestBody List<ReservationDTO> reservations);
+
     @GetMapping("/reservations/service/{serviceId}")
     List<ReservationDTO> getReservationsByServiceId(@PathVariable("serviceId") UUID serviceId);
 

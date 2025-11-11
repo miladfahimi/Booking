@@ -147,6 +147,22 @@ public class ReservationAggregationService {
     }
 
     /**
+     * Creates multiple reservations in bulk by delegating to the reservation service.
+     *
+     * @param reservationDTOs the reservations to create
+     * @return the list of created reservations
+     */
+    public List<ReservationDTO> createReservations(List<ReservationDTO> reservationDTOs) {
+        try {
+            int size = reservationDTOs != null ? reservationDTOs.size() : 0;
+            logger.info("Creating {} reservations in bulk", size);
+            return reservationServiceClient.createReservations(reservationDTOs);
+        } catch (FeignException e) {
+            logger.error("Error occurred while creating reservations in bulk: {}", e.getMessage());
+            throw new ExternalServiceException("An error occurred while creating reservations in bulk.", e);
+        }
+    }
+    /**
      * Fetches a reservation by its ID.
      *
      * @param reservationId the UUID of the reservation to fetch
