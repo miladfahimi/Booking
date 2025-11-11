@@ -11,22 +11,90 @@ import java.net.URI;
  */
 @Component
 @ConfigurationProperties(prefix = "reservation.payment.sep")
-public record SepPaymentProperties(
-        @DefaultValue("https://sep.shaparak.ir/onlinepg/onlinepg") URI tokenEndpoint,
-        @DefaultValue("https://sep.shaparak.ir/OnlinePG/SendToken") URI paymentPage,
-        @DefaultValue("https://sep.shaparak.ir/verifyTxnRandomSessionkey/ipg/VerifyTransaction") URI verifyEndpoint,
-        @DefaultValue("https://sep.shaparak.ir/verifyTxnRandomSessionkey/ipg/ReverseTransaction") URI reverseEndpoint,
-        String terminalId,
-        URI callbackUrl,
-        @DefaultValue("20") Integer defaultTokenExpiryMinutes,
-        @DefaultValue("false") Boolean redirectWithGet
-) {
-    /**
-     * Builds the redirect URL for the end user based on the returned token.
-     *
-     * @param token payment token returned by SEP.
-     * @return fully qualified redirect URI for the client.
-     */
+public class SepPaymentProperties {
+
+    private URI tokenEndpoint = URI.create("https://sep.shaparak.ir/onlinepg/onlinepg");
+    private URI paymentPage = URI.create("https://sep.shaparak.ir/OnlinePG/SendToken");
+    private URI verifyEndpoint = URI.create("https://sep.shaparak.ir/verifyTxnRandomSessionkey/ipg/VerifyTransaction");
+    private URI reverseEndpoint = URI.create("https://sep.shaparak.ir/verifyTxnRandomSessionkey/ipg/ReverseTransaction");
+    private String terminalId;
+    private URI callbackUrl;
+    private Integer defaultTokenExpiryMinutes = 20;
+    private Boolean redirectWithGet = false;
+    private Boolean mockEnabled = false;
+
+    public URI tokenEndpoint() {
+        return tokenEndpoint;
+    }
+
+    public void setTokenEndpoint(URI tokenEndpoint) {
+        this.tokenEndpoint = tokenEndpoint;
+    }
+
+    public URI paymentPage() {
+        return paymentPage;
+    }
+
+    public void setPaymentPage(URI paymentPage) {
+        this.paymentPage = paymentPage;
+    }
+
+    public URI verifyEndpoint() {
+        return verifyEndpoint;
+    }
+
+    public void setVerifyEndpoint(URI verifyEndpoint) {
+        this.verifyEndpoint = verifyEndpoint;
+    }
+
+    public URI reverseEndpoint() {
+        return reverseEndpoint;
+    }
+
+    public void setReverseEndpoint(URI reverseEndpoint) {
+        this.reverseEndpoint = reverseEndpoint;
+    }
+
+    public String terminalId() {
+        return terminalId;
+    }
+
+    public void setTerminalId(String terminalId) {
+        this.terminalId = terminalId;
+    }
+
+    public URI callbackUrl() {
+        return callbackUrl;
+    }
+
+    public void setCallbackUrl(URI callbackUrl) {
+        this.callbackUrl = callbackUrl;
+    }
+
+    public Integer defaultTokenExpiryMinutes() {
+        return defaultTokenExpiryMinutes;
+    }
+
+    public void setDefaultTokenExpiryMinutes(Integer defaultTokenExpiryMinutes) {
+        this.defaultTokenExpiryMinutes = defaultTokenExpiryMinutes;
+    }
+
+    public Boolean redirectWithGet() {
+        return redirectWithGet;
+    }
+
+    public void setRedirectWithGet(Boolean redirectWithGet) {
+        this.redirectWithGet = redirectWithGet;
+    }
+
+    public Boolean mockEnabled() {
+        return mockEnabled;
+    }
+
+    public void setMockEnabled(Boolean mockEnabled) {
+        this.mockEnabled = mockEnabled;
+    }
+
     public URI buildRedirectUrl(String token) {
         return URI.create(paymentPage.toString() + "?token=" + token);
     }

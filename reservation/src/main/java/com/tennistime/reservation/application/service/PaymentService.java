@@ -63,6 +63,20 @@ public class PaymentService {
             throw new PaymentGatewayException("SEP terminal or callback URL is not configured");
         }
 
+        if (Boolean.TRUE.equals(paymentProperties.mockEnabled())) {
+            String token = "MOCK-" + payment.getReferenceNumber();
+            payment.registerToken(token);
+            paymentRepository.save(payment);
+
+            PaymentInitiationResponse response = new PaymentInitiationResponse();
+            response.setPaymentId(payment.getId());
+            response.setToken(token);
+            response.setReferenceNumber(payment.getReferenceNumber());
+            response.setRedirectUrl(paymentProperties.buildRedirectUrl(token));
+            return response;
+        }
+
+
         SepTokenRequest tokenRequest = new SepTokenRequest(
                 "token",
                 paymentProperties.terminalId(),
@@ -110,6 +124,19 @@ public class PaymentService {
         PaymentVerificationResponse response = new PaymentVerificationResponse();
         response.setPaymentId(payment.getId());
 
+        if (Boolean.TRUE.equals(paymentProperties.mockEnabled())) {
+            payment.markVerified();
+            response.setSuccess(true);
+            response.setMessage("Payment verified in mock mode");
+            response.setBankReferenceNumber(
+                    request.getRefNum() != null && !request.getRefNum().isBlank() ? request.getRefNum() : payment.getReferenceNumber());
+            response.setRetrievalReferenceNumber(request.getRrn());
+            response.setVerifiedAt(payment.getVerifiedAt());
+            paymentRepository.save(payment);
+            return response;
+        }
+
+
         if (request.getRefNum() == null || request.getRefNum().isBlank()) {
             payment.markFailed();
             response.setSuccess(false);
@@ -152,6 +179,18 @@ public class PaymentService {
         if (!payment.canBeReversed()) {
             throw new PaymentGatewayException("Payment cannot be reversed because it is not verified yet");
         }
+
+        if (Boolean.TRUE.equals(paymentProperties.mockEnabled())) {
+            payment.markReversed();
+            PaymentReverseResponse response = new PaymentReverseResponse();
+            response.setPaymentId(payment.getId());
+            response.setReversed(true);
+            response.setMessage("Reverse transaction completed in mock mode");
+            response.setReversedAt(payment.getReversedAt());
+            paymentRepository.save(payment);
+            return response;
+        }
+
 
         SepReverseResponse reverseResponse = sepPaymentClient.reverseTransaction(
                 new SepReverseRequest(payment.getBankReferenceNumber(), paymentProperties.terminalId()));
