@@ -66,4 +66,12 @@ public interface ReservationRepository {
      * @param id UUID of the reservation to delete.
      */
     void deleteById(UUID id); // Updated from UUID to UUID
+
+    /**
+     * Retrieves all reservations that match the provided identifiers.
+     *
+     * @param ids collection of reservation identifiers to load.
+     * @return reservations matching the identifiers.
+     */
+    List<Reservation> findAllById(Iterable<UUID> ids);
 }

@@ -53,6 +53,20 @@ public class ReservationController {
         return ResponseEntity.ok(createdReservation);
     }
 
+    /**
+     * Accepts multiple reservation requests and persists them with a pending status.
+     *
+     * @param reservationRequests reservations to create.
+     * @return response containing all created reservations.
+     */
+    @PostMapping("/bulk")
+    @Operation(summary = "Create multiple reservations", description = "Create several reservations in a single request and mark them as pending")
+    public ResponseEntity<List<ReservationDTO>> createReservations(
+            @Parameter(description = "Collection of reservations to create", required = true) @RequestBody List<ReservationDTO> reservationRequests) {
+        List<ReservationDTO> createdReservations = reservationService.saveAll(reservationRequests);
+        return ResponseEntity.ok(createdReservations);
+    }
+
     @PutMapping("/{id}")
     @Operation(summary = "Update a reservation", description = "Update an existing reservation with the provided details")
     public ResponseEntity<ReservationDTO> updateReservation(

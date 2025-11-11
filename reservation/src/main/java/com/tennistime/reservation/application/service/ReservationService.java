@@ -2,12 +2,10 @@ package com.tennistime.reservation.application.service;
 
 import com.github.mfathi91.time.PersianDate;
 import com.tennistime.reservation.application.dto.ReservationDTO;
-import com.tennistime.reservation.application.dto.UserBookingHistoryUpdateRequest;
 import com.tennistime.reservation.application.mapper.ReservationMapper;
 import com.tennistime.reservation.domain.model.Reservation;
 import com.tennistime.reservation.domain.model.types.ReservationStatus;
 import com.tennistime.reservation.domain.repository.ReservationRepository;
-import com.tennistime.reservation.infrastructure.feign.UserBookingHistoryClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +14,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -31,15 +28,15 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationMapper reservationMapper;
-    private final UserBookingHistoryClient userBookingHistoryClient;
+    private final UserBookingHistoryUpdater userBookingHistoryUpdater;
 
     @Autowired
     public ReservationService(ReservationRepository reservationRepository,
                               ReservationMapper reservationMapper,
-                              UserBookingHistoryClient userBookingHistoryClient) {
+                              UserBookingHistoryUpdater userBookingHistoryUpdater) {
         this.reservationRepository = reservationRepository;
         this.reservationMapper = reservationMapper;
-        this.userBookingHistoryClient = userBookingHistoryClient;
+        this.userBookingHistoryUpdater = userBookingHistoryUpdater;
     }
 
     /**
@@ -68,20 +65,34 @@ public class ReservationService {
                 .orElse(null);
     }
 
-    /**
-     * Creates a new reservation record.
-     *
-     * @param reservationDTO DTO containing the details of the reservation to create.
-     * @return The created ReservationDTO.
-     */
     public ReservationDTO save(ReservationDTO reservationDTO) {
         logger.info("Creating new reservation.");
         Reservation reservation = convertToEntity(reservationDTO);
         Reservation savedReservation = reservationRepository.save(reservation);
 
-        updateUserBookingHistory(savedReservation);
+        userBookingHistoryUpdater.updateUserBookingHistory(savedReservation);
 
         return convertToDTO(savedReservation);
+    }
+
+    /**
+     * Creates multiple reservations in a single request, forcing each to start in {@link ReservationStatus#PENDING} state.
+     *
+     * @param reservationDTOs reservations to persist.
+     * @return list containing the persisted reservations represented as DTOs.
+     */
+    public List<ReservationDTO> saveAll(List<ReservationDTO> reservationDTOs) {
+        int requestedReservations = reservationDTOs != null ? reservationDTOs.size() : 0;
+        logger.info("Creating {} reservations in bulk mode.", requestedReservations);
+        if (reservationDTOs == null || reservationDTOs.isEmpty()) {
+            return List.of();
+        }
+        return reservationDTOs.stream()
+                .map(this::convertToEntity)
+                .map(reservationRepository::save)
+                .peek(userBookingHistoryUpdater::updateUserBookingHistory)
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -97,7 +108,7 @@ public class ReservationService {
                 .map(existingReservation -> {
                     updateReservationDetails(existingReservation, reservationDTO);
                     Reservation updatedReservation = reservationRepository.save(existingReservation);
-                    updateUserBookingHistory(updatedReservation);
+                    userBookingHistoryUpdater.updateUserBookingHistory(updatedReservation);
                     return convertToDTO(updatedReservation);
                 })
                 .orElse(null);
@@ -116,7 +127,7 @@ public class ReservationService {
                 .map(existingReservation -> {
                     existingReservation.setStatus(status);
                     Reservation updatedReservation = reservationRepository.save(existingReservation);
-                    updateUserBookingHistory(updatedReservation);
+                    userBookingHistoryUpdater.updateUserBookingHistory(updatedReservation);
                     return convertToDTO(updatedReservation);
                 })
                 .orElse(null);
@@ -231,35 +242,6 @@ public class ReservationService {
     }
 
     /**
-     * Updates the user booking history in the profile service.
-     *
-     * @param reservation The reservation for which to update the history.
-     */
-    private void updateUserBookingHistory(Reservation reservation) {
-        String bookingDate = reservation.getReservationDate().atTime(reservation.getStartTime()).toString();
-        UserBookingHistoryUpdateRequest updateRequest = new UserBookingHistoryUpdateRequest(
-                reservation.getUserId(),
-                reservation.getId(),
-                reservation.getServiceId(),
-                bookingDate,
-                reservation.getStatus(),
-                reservation.getReservationDatePersian().toString(),
-                false,
-                false,
-                null
-        );
-
-        try {
-            logger.info("Updating user booking history: {}", updateRequest);
-            userBookingHistoryClient.updateUserBookingHistory(updateRequest);
-            logger.info("Successfully updated UserBookingHistory for reservation ID: {}", reservation.getId());
-        } catch (Exception e) {
-            logger.error("Failed to update UserBookingHistory for reservation ID: {} - Error: {}", reservation.getId(), e.getMessage());
-        }
-    }
-
-    /**
-     * Updates an existing reservation with new details.
      *
      * @param existingReservation The reservation to update.
      * @param reservationDTO      The new details to update the reservation with.
@@ -296,9 +278,7 @@ public class ReservationService {
     private Reservation convertToEntity(ReservationDTO reservationDTO) {
         Reservation reservation = reservationMapper.toEntity(reservationDTO);
         reservation.setReservationDatePersian(PersianDate.parse(reservationDTO.getReservationDatePersian()));
-        if (reservation.getStatus() == null) {
-            reservation.setStatus(ReservationStatus.PENDING);
-        }
+        reservation.setStatus(ReservationStatus.PENDING);
         return reservation;
     }
 }
