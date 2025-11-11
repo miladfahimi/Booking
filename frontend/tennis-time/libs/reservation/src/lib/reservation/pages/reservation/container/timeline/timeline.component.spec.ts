@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TimelineComponent } from './timeline.component';␊
+import { TimelineComponent } from './timeline.component';
 import { ReservationStatus, ServiceDTO, SlotDTO } from '../../../../types';
 
 describe('TimelineComponent', () => {

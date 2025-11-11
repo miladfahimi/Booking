@@ -79,7 +79,7 @@ public class OtpController {
     /**
      * Send an OTP code to the specified phone number via SMS.
      * <p>
-     * The phone number must be in E.164 format (e.g., +46701234567).␊
+     * The phone number must be in E.164 format (e.g., +46701234567).
      * A lightweight user record is provisioned automatically for first-time phone numbers
      * so the subsequent validation step can succeed.
      *
