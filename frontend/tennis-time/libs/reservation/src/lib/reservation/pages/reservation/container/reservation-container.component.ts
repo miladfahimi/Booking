@@ -4,7 +4,7 @@ import { Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { loadProvidersWithServices, loadSlots } from '../../../store/reservation.actions';
 import { selectProviders, selectSlots, selectSlotsByService, selectSlotsLoading } from '../../../store/reservation.selectors';
-import { SlotDTO, ProviderDTO, ServiceDTO, CreateReservationPayload } from '../../../types';
+import { SlotDTO, ProviderDTO, ServiceDTO, CreateReservationPayload, ReservationStatus } from '../../../types';
 import { ReservationCreationService } from '../../../services/reservation-creation.service';
 import { CoreAuthService } from '@tennis-time/core';
 import * as jalaali from 'jalaali-js';
@@ -169,7 +169,8 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
       endTime,
       userId,
       providerId: slot.providerId,
-      serviceId: slot.serviceId
+      serviceId: slot.serviceId,
+      status: slot.status as ReservationStatus
     };
 
     this.reservationCreationService.createReservation(payload)

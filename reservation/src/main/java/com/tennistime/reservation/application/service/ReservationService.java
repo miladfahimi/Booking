@@ -5,6 +5,7 @@ import com.tennistime.reservation.application.dto.ReservationDTO;
 import com.tennistime.reservation.application.dto.UserBookingHistoryUpdateRequest;
 import com.tennistime.reservation.application.mapper.ReservationMapper;
 import com.tennistime.reservation.domain.model.Reservation;
+import com.tennistime.reservation.domain.model.types.ReservationStatus;
 import com.tennistime.reservation.domain.repository.ReservationRepository;
 import com.tennistime.reservation.infrastructure.feign.UserBookingHistoryClient;
 import org.slf4j.Logger;
@@ -109,7 +110,7 @@ public class ReservationService {
      * @param status New status for the reservation.
      * @return The updated ReservationDTO, or null if the reservation was not found.
      */
-    public ReservationDTO updateReservationStatus(UUID id, String status) {
+    public ReservationDTO updateReservationStatus(UUID id, ReservationStatus status) {
         logger.info("Updating status of reservation with ID: {}", id);
         return reservationRepository.findById(id)
                 .map(existingReservation -> {
@@ -189,7 +190,7 @@ public class ReservationService {
      * @param referenceNumber Reference number of the reservation (optional).
      * @return List of ReservationDTOs matching the filters.
      */
-    public List<ReservationDTO> findReservations(UUID userId, UUID serviceId, UUID providerId, String status,
+    public List<ReservationDTO> findReservations(UUID userId, UUID serviceId, UUID providerId, ReservationStatus status,
                                                  LocalDate reservationDate, String persianDateStr, LocalTime startTime,
                                                  LocalTime endTime, String referenceNumber) {
         logger.info("Filtering reservations with multiple criteria.");
@@ -205,24 +206,24 @@ public class ReservationService {
     /**
      * Checks if a reservation matches the provided filter criteria.
      *
-     * @param reservation             The reservation to check.
-     * @param userId                  UUID of the user.
-     * @param serviceId               UUID of the service.
-     * @param providerId              UUID of the provider.
-     * @param status                  Status of the reservation.
-     * @param reservationDate         Reservation date in Gregorian calendar.
-     * @param persianToGregorianDate  Reservation date in Persian calendar converted to Gregorian.
-     * @param startTime               Start time of the reservation.
-     * @param endTime                 End time of the reservation.
+     * @param reservation            The reservation to check.
+     * @param userId                 UUID of the user.
+     * @param serviceId              UUID of the service.
+     * @param providerId             UUID of the provider.
+     * @param status                 Status of the reservation.
+     * @param reservationDate        Reservation date in Gregorian calendar.
+     * @param persianToGregorianDate Reservation date in Persian calendar converted to Gregorian.
+     * @param startTime              Start time of the reservation.
+     * @param endTime                End time of the reservation.
      * @return true if the reservation matches the filter, otherwise false.
      */
-    private boolean matchesFilter(Reservation reservation, UUID userId, UUID serviceId, UUID providerId, String status,
+    private boolean matchesFilter(Reservation reservation, UUID userId, UUID serviceId, UUID providerId, ReservationStatus status,
                                   LocalDate reservationDate, LocalDate persianToGregorianDate, LocalTime startTime,
                                   LocalTime endTime, String referenceNumber) {
         return (userId == null || reservation.getUserId().equals(userId)) &&
                 (serviceId == null || reservation.getServiceId().equals(serviceId)) &&
                 (providerId == null || reservation.getProviderId().equals(providerId)) &&
-                (status == null || reservation.getStatus().equals(status)) &&
+                (status == null || reservation.getStatus() == status) &&
                 (reservationDate == null || reservation.getReservationDate().equals(reservationDate)) &&
                 (persianToGregorianDate == null || reservation.getReservationDate().equals(persianToGregorianDate)) &&
                 (startTime == null || reservation.getStartTime().equals(startTime)) &&
@@ -267,7 +268,9 @@ public class ReservationService {
         existingReservation.setReservationDate(reservationDTO.getReservationDate());
         existingReservation.setStartTime(reservationDTO.getStartTime());
         existingReservation.setEndTime(reservationDTO.getEndTime());
-        existingReservation.setStatus(reservationDTO.getStatus());
+        if (reservationDTO.getStatus() != null) {
+            existingReservation.setStatus(reservationDTO.getStatus());
+        }
         existingReservation.setUserId(reservationDTO.getUserId());
         existingReservation.setServiceId(reservationDTO.getServiceId());
     }
@@ -293,6 +296,9 @@ public class ReservationService {
     private Reservation convertToEntity(ReservationDTO reservationDTO) {
         Reservation reservation = reservationMapper.toEntity(reservationDTO);
         reservation.setReservationDatePersian(PersianDate.parse(reservationDTO.getReservationDatePersian()));
+        if (reservation.getStatus() == null) {
+            reservation.setStatus(ReservationStatus.PENDING);
+        }
         return reservation;
     }
 }

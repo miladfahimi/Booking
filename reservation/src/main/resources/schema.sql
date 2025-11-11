@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS reservation (
     reminder_sent_at TIMESTAMP,
 
     -- Status and Workflow
-    status VARCHAR(50),
+    status VARCHAR(50) NOT NULL DEFAULT 'PENDING' CHECK (status IN ('AVAILABLE', 'CONFIRMED', 'PENDING', 'CANCELED' , 'EXPIRED', 'MAINTENANCE', 'ADMIN_HOLD')),
     payment_status VARCHAR(50),
 
     -- Integration Fields

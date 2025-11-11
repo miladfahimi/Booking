@@ -2,6 +2,7 @@ package com.tennistime.bff.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.tennistime.bff.domain.model.types.ReservationStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -66,8 +67,8 @@ public class ReservationDTO {
     private LocalTime endTime;
 
     /** Reservation status (e.g., pending, confirmed, cancelled). */
-    @Schema(example = "confirmed", description = "Reservation status.")
-    private String status;
+    @Schema(example = "CONFIRMED", description = "Reservation status.")
+    private ReservationStatus status;
 
     /** Identifier of the user who made the reservation. */
     @Schema(example = "d290f1ee-6c54-4b01-90e6-d701748f0851", description = "User ID.")

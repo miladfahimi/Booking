@@ -166,7 +166,8 @@ padding-bottom: 44px;
 .timeline-slot__time {
   color: #4b5563;
   font-weight: 700;
-  font-size: 7px;
+  font-size: 9px;
+  white-space: nowrap;
 }
 
 .timeline-slot--available {

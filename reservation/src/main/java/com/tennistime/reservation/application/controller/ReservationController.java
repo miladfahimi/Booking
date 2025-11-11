@@ -2,6 +2,7 @@ package com.tennistime.reservation.application.controller;
 
 import com.tennistime.reservation.application.dto.ReservationDTO;
 import com.tennistime.reservation.application.service.ReservationService;
+import com.tennistime.reservation.domain.model.types.ReservationStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -65,7 +66,7 @@ public class ReservationController {
     @Operation(summary = "Update reservation status", description = "Update the status of an existing reservation")
     public ResponseEntity<ReservationDTO> updateReservationStatus(
             @Parameter(description = "ID of the reservation to update the status", required = true) @PathVariable UUID id,
-            @Parameter(description = "New status of the reservation", required = true) @RequestParam String status) {
+            @Parameter(description = "New status of the reservation", required = true) @RequestParam ReservationStatus status) {
         ReservationDTO updatedReservation = reservationService.updateReservationStatus(id, status);
         return updatedReservation != null ? ResponseEntity.ok(updatedReservation) : ResponseEntity.notFound().build();
     }
@@ -84,7 +85,7 @@ public class ReservationController {
             @Parameter(description = "ID of the user whose reservations to retrieve") @RequestParam(required = false) UUID userId,
             @Parameter(description = "ID of the service whose reservations to retrieve") @RequestParam(required = false) UUID serviceId,
             @Parameter(description = "ID of the provider offering the service") @RequestParam(required = false) UUID providerId,
-            @Parameter(description = "Status of the reservation to retrieve") @RequestParam(required = false) String status,
+            @Parameter(description = "Status of the reservation to retrieve") @RequestParam(required = false) ReservationStatus status,
             @Parameter(description = "Gregorian date of the reservation") @RequestParam(required = false) LocalDate reservationDate,
             @Parameter(description = "Persian date to retrieve reservations for") @RequestParam(required = false) String persianDate,
             @Parameter(description = "Start time of the reservation") @RequestParam(required = false) LocalTime startTime,

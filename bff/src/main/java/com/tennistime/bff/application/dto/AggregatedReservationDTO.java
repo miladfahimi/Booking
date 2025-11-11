@@ -1,5 +1,6 @@
 package com.tennistime.bff.application.dto;
 
+import com.tennistime.bff.domain.model.types.ReservationStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +19,7 @@ public class AggregatedReservationDTO {
     private String reservationDatePersian;
     private LocalTime startTime;
     private LocalTime endTime;
-    private String status;
+    private ReservationStatus status;
     private UserProfileDTO userId;
 
     private ProviderDTO provider;

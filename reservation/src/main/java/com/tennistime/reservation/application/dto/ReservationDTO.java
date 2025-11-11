@@ -1,5 +1,6 @@
 package com.tennistime.reservation.application.dto;
 
+import com.tennistime.reservation.domain.model.types.ReservationStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,8 +30,8 @@ public class ReservationDTO {
     @Schema(example = "12:00")
     private LocalTime endTime;
 
-    @Schema(example = "confirmed")
-    private String status;
+    @Schema(example = "CONFIRMED")
+    private ReservationStatus status;
 
     @Schema(example = "d290f1ee-6c54-4b01-90e6-d701748f0851")
     private UUID userId;

@@ -1,6 +1,7 @@
 package com.tennistime.reservation.domain.model;
 
 import com.github.mfathi91.time.PersianDate;
+import com.tennistime.reservation.domain.model.types.ReservationStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -41,7 +42,9 @@ public class Reservation {
     private Boolean reminderEnabled = false;
     private LocalDateTime reminderSentAt;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ReservationStatus status = ReservationStatus.PENDING;
     private String paymentStatus;
 
     private String externalId;
