@@ -1,7 +1,8 @@
 // timeline-slot-modal.component.ts
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ReservationStatus } from 'libs/reservation/src/lib/reservation/types';
 
-type TimelineSlotStatus = 'available' | 'booked' | 'pending' | 'maintenance';
+
 
 export interface TimelineSlotDetails {
   readonly slotId: string;
@@ -14,7 +15,7 @@ export interface TimelineSlotDetails {
   readonly startTime: string | null;
   readonly endTime: string | null;
   readonly durationMinutes: number;
-  readonly status: TimelineSlotStatus;
+  readonly status: ReservationStatus;
   readonly statusLabel: string;
   readonly isMine: boolean;
 }
@@ -29,7 +30,7 @@ export class TimelineSlotModalComponent {
   @Output() close = new EventEmitter<void>();
   @Output() addToBasket = new EventEmitter<TimelineSlotDetails>();
   @Output() cancel = new EventEmitter<string>();
-
+  readonly ReservationStatusEnum = ReservationStatus;
 
   onClose(): void {
     this.close.emit();

@@ -2,13 +2,11 @@
   <label>انتخاب زمان</label>
   <div class="slot-options">
     @for (slot of timeSlots; track slot) {
-      <button
-        (click)="onSelectSlot(slot)"
-        [class.selected]="isSelected(slot)"
-        [class.booked]="slot.status === 'booked'"
-        [disabled]="slot.status === 'booked'">
-        {{ slot.time }}
-      </button>
+    <button (click)="onSelectSlot(slot)" [class.selected]="isSelected(slot)"
+      [class.booked]="slot.status !== ReservationStatusEnum.AVAILABLE"
+      [disabled]="slot.status !== ReservationStatusEnum.AVAILABLE">
+      {{ slot.time }}
+    </button>
     }
   </div>
 </div>

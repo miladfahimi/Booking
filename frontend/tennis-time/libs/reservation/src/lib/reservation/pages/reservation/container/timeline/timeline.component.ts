@@ -1,10 +1,8 @@
 // timeline.component.ts
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { ServiceDTO, SlotDTO } from '../../../../types';
+import { ReservationStatus, ServiceDTO, SlotDTO } from '../../../../types';
 import { TimelineSlotDetails } from './tileline-slot-modal/timeline-slot-modal.component';
 import { AuthFacadeService } from 'libs/shared/src/lib/shared/auth/auth-facade-service';
-
-type TimelineStatus = 'available' | 'booked' | 'pending' | 'maintenance';
 
 type SlotsByService = Record<string, SlotDTO[]>;
 
@@ -14,7 +12,7 @@ interface TimelineSlot {
   readonly start: string;
   readonly end: string;
   readonly durationMinutes: number;
-  readonly status: TimelineStatus;
+  readonly status: ReservationStatus;
   readonly original: SlotDTO;
 }
 
@@ -40,6 +38,7 @@ export class TimelineComponent implements OnChanges {
   readonly defaultStartHour = 8;
   readonly defaultEndHour = 21;
   readonly hourHeight = this.pixelsPerMinute * 60;
+  readonly ReservationStatusEnum = ReservationStatus;
 
   private columnsSnapshot: TimelineColumn[] = [];
   private currentUserId: string | null = null;
@@ -166,39 +165,56 @@ export class TimelineComponent implements OnChanges {
     return 0;
   }
 
-  private normalizeStatus(status?: string | null): TimelineStatus {
+  private normalizeStatus(status?: ReservationStatus | null): ReservationStatus {
     if (!status) {
-      return 'maintenance';
+      return ReservationStatus.MAINTENANCE;
     }
 
-    const normalized = status.trim().toLowerCase();
+    const normalized = String(status).trim().toUpperCase();
 
-    if (normalized.indexOf('book') !== -1) {
-      return 'booked';
+    switch (normalized) {
+      case ReservationStatus.AVAILABLE:
+        return ReservationStatus.AVAILABLE;
+      case ReservationStatus.PENDING:
+        return ReservationStatus.PENDING;
+      case ReservationStatus.CONFIRMED:
+      case ReservationStatus.ADMIN_HOLD:
+        return ReservationStatus.CONFIRMED;
+      case ReservationStatus.MAINTENANCE:
+        return ReservationStatus.MAINTENANCE;
+      case ReservationStatus.CANCELED:
+      case ReservationStatus.EXPIRED:
+        return ReservationStatus.AVAILABLE;
+      default:
+        break;
     }
 
-    if (normalized.indexOf('pend') !== -1) {
-      return 'pending';
+    if (normalized.indexOf('BOOK') !== -1) {
+      return ReservationStatus.CONFIRMED;
     }
 
-    if (['available', 'free', 'open'].indexOf(normalized) !== -1) {
-      return 'available';
+    if (normalized.indexOf('PEND') !== -1) {
+      return ReservationStatus.PENDING;
     }
 
-    if (['reserved', 'unavailable', 'taken', 'closed', 'maintenance'].indexOf(normalized) !== -1) {
-      return 'maintenance';
+    if (['AVAILABLE', 'FREE', 'OPEN'].indexOf(normalized) !== -1) {
+      return ReservationStatus.AVAILABLE;
     }
 
-    return 'maintenance';
+    if (['RESERVED', 'UNAVAILABLE', 'TAKEN', 'CLOSED', 'MAINTENANCE'].indexOf(normalized) !== -1) {
+      return ReservationStatus.MAINTENANCE;
+    }
+
+    return ReservationStatus.MAINTENANCE;
   }
 
-  private getStatusLabel(status: TimelineStatus): string {
+  private getStatusLabel(status: ReservationStatus): string {
     switch (status) {
-      case 'booked':
+      case ReservationStatus.CONFIRMED:
         return 'رزرو شده';
-      case 'pending':
+      case ReservationStatus.PENDING:
         return 'در انتظار';
-      case 'available':
+      case ReservationStatus.AVAILABLE:
         return 'در دسترس';
       default:
         return 'نامشخص';
@@ -356,7 +372,7 @@ export class TimelineComponent implements OnChanges {
 
   isMyBookedSlot(slot: TimelineSlot): boolean {
     return (
-      slot.status === 'booked' &&
+      slot.status === ReservationStatus.CONFIRMED &&
       !!this.currentUserId &&
       slot.original.reservedBy === this.currentUserId
     );

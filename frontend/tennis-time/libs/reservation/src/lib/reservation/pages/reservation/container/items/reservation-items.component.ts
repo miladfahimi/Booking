@@ -7,12 +7,12 @@ import { ServiceDTO } from '../../../../types';
   styleUrls: ['./reservation-items.component.scss']
 })
 export class ReservationItemsComponent {
-  @Input() items: ServiceDTO[] = []; // List of services to display
-  @Output() selectItem = new EventEmitter<ServiceDTO>(); // Emits the selected item
+  @Input() items: ServiceDTO[] = [];
+  @Output() selectItem = new EventEmitter<ServiceDTO>();
 
   onSelectDuration(item: ServiceDTO) {
-    this.items.forEach(d => d.selected = false); // Deselect all items
-    item.selected = true; // Select the clicked item
+    this.items.forEach(d => d.selected = false);
+    item.selected = true;
     console.log('%cService Selected:', 'color: purple', item);
     this.selectItem.emit(item);
   }

@@ -170,7 +170,7 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
       userId,
       providerId: slot.providerId,
       serviceId: slot.serviceId,
-      status: slot.status as ReservationStatus
+      status: ReservationStatus.CONFIRMED
     };
 
     this.reservationCreationService.createReservation(payload)

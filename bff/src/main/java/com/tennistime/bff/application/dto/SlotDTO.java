@@ -1,5 +1,6 @@
 package com.tennistime.bff.application.dto;
 
+import com.tennistime.bff.domain.model.types.ReservationStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,9 +32,9 @@ public class SlotDTO {
     private String endTime;
 
     /**
-     * The status of the slot, indicating availability (e.g., "available", "booked").
+     * The status of the slot, mirroring {@link ReservationStatus} values (e.g., AVAILABLE, CONFIRMED).
      */
-    private String status;
+    private ReservationStatus status;
 
     /**
      * The price for reserving this slot.

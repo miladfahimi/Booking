@@ -1,9 +1,19 @@
+export enum ReservationStatus {
+  AVAILABLE = 'AVAILABLE',
+  PENDING = 'PENDING',
+  CONFIRMED = 'CONFIRMED',
+  CANCELED = 'CANCELED',
+  EXPIRED = 'EXPIRED',
+  MAINTENANCE = 'MAINTENANCE',
+  ADMIN_HOLD = 'ADMIN_HOLD',
+}
+
 export interface UserReservationDTO {
   id: string;                          // Unique identifier for the reservation
   userId: string;                      // ID of the user making the reservation
   serviceId: string;                   // ID of the service being reserved
   providerId: string;                  // ID of the service provider
-  status: string;                      // Status of the reservation (e.g., CONFIRMED, PENDING, CANCELED)
+  status: ReservationStatus;           // Status of the reservation (e.g., CONFIRMED, PENDING, CANCELED)
   reservationDate: string;             // Date of the reservation in Gregorian calendar (Format: YYYY-MM-DD)
   reservationDatePersian: string;      // Date of the reservation in Persian calendar (Format: YYYY-MM-DD)
   startTime: string;                   // Start time of the reservation (Format: HH:MM:SS)
@@ -16,9 +26,6 @@ export interface UserReservationDTO {
   preferences: string;                 // User's preferences or special requirements
   reservationPicture: string;          // URL or path to an image associated with the reservation
 }
-
-
-export type ReservationStatus = 'CONFIRMED' | 'PENDING' | 'CANCELED';
 
 export interface CreateReservationPayload {
   reservationDate: string;             // Gregorian date of the reservation (Format: YYYY-MM-DD)
@@ -51,7 +58,7 @@ export interface SlotDTO {
   slotId: string;
   time: string;
   endTime: string;
-  status: string;
+  status: ReservationStatus;
   price: number;
   capacity: number;
   reservedBy?: string | null;

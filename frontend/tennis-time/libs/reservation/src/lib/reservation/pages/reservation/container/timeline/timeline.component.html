@@ -21,10 +21,10 @@
           <div class="timeline__column-body" [style.height.px]="timelineHeight">
             <div class="timeline-slot" *ngFor="let slot of column.slots; trackBy: trackSlotById"
               (click)="onSlotClick(slot, column)"
-              [class.timeline-slot--booked]="slot.status === 'booked' && !isMyBookedSlot(slot)"
-              [class.timeline-slot--available]="slot.status === 'available'"
-              [class.timeline-slot--pending]="slot.status === 'pending'"
-              [class.timeline-slot--maintenance]="slot.status === 'maintenance'"
+              [class.timeline-slot--booked]="slot.status === ReservationStatusEnum.CONFIRMED && !isMyBookedSlot(slot)"
+              [class.timeline-slot--available]="slot.status === ReservationStatusEnum.AVAILABLE"
+              [class.timeline-slot--pending]="slot.status === ReservationStatusEnum.PENDING"
+              [class.timeline-slot--maintenance]="slot.status === ReservationStatusEnum.MAINTENANCE"
               [class.timeline-slot--mine]="isMyBookedSlot(slot)" [style.top.px]="getSlotOffset(slot)"
               [style.height.px]="getSlotHeight(slot)">
               <span class="timeline-slot__label">

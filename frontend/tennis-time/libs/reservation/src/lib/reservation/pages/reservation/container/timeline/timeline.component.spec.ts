@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TimelineComponent } from './timeline.component';
-import { ServiceDTO, SlotDTO } from '../../../../types';
+import { TimelineComponent } from './timeline.component';␊
+import { ReservationStatus, ServiceDTO, SlotDTO } from '../../../../types';
 
 describe('TimelineComponent', () => {
   let component: TimelineComponent;
@@ -53,7 +53,7 @@ describe('TimelineComponent', () => {
           slotId: 'slot-1',
           time: '08:00:00',
           endTime: '08:30:00',
-          status: 'available',
+          status: ReservationStatus.AVAILABLE,
           price: 0,
           capacity: 4,
           reservedBy: null,

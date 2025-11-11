@@ -7,7 +7,8 @@
     </header>
 
     <div class="slot-modal__body slot-modal__body--narrative">
-      <ng-container *ngIf="currentSlot.status === 'booked' && currentSlot.isMine; else notMineTemplate">
+      <ng-container
+        *ngIf="currentSlot.status === ReservationStatusEnum.CONFIRMED && currentSlot.isMine; else notMineTemplate">
         <p class="slot-modal__intro">
           این زمان برای
           <strong class="slot-modal__highlight">{{ currentSlot.serviceName | faDigits }}</strong>
@@ -38,7 +39,7 @@
       </ng-container>
 
       <ng-template #notMineTemplate>
-        <ng-container *ngIf="currentSlot.status !== 'booked'; else bookedText">
+        <ng-container *ngIf="currentSlot.status !== ReservationStatusEnum.CONFIRMED; else bookedText">
           <p class="slot-modal__intro">
             برای
             <strong class="slot-modal__highlight">{{ currentSlot.serviceName | faDigits }}</strong>
@@ -95,21 +96,21 @@
     </div>
 
     <footer class="slot-modal__footer" [ngClass]="{
-              'slot-modal__footer--muted': currentSlot.status === 'booked' && !currentSlot.isMine,
-              'slot-modal__footer--mine': currentSlot.status === 'booked' && currentSlot.isMine
+              'slot-modal__footer--muted': currentSlot.status === ReservationStatusEnum.CONFIRMED && !currentSlot.isMine,
+              'slot-modal__footer--mine': currentSlot.status === ReservationStatusEnum.CONFIRMED && currentSlot.isMine
             }">
 
-      <button *ngIf="currentSlot.status !== 'booked'" type="button"
+      <button *ngIf="currentSlot.status !== ReservationStatusEnum.CONFIRMED" type="button"
         class="slot-modal__button slot-modal__button--primary" (click)="onAddToBasket()">
         افزودن به سبد
       </button>
 
-      <button *ngIf="currentSlot.status === 'booked' && !currentSlot.isMine" type="button"
+      <button *ngIf="currentSlot.status === ReservationStatusEnum.CONFIRMED && !currentSlot.isMine" type="button"
         class="slot-modal__button slot-modal__button--ghost" (click)="onRemindIfCanceled()">
         یاداوری کن
       </button>
 
-      <button *ngIf="currentSlot.status === 'booked' && currentSlot.isMine" type="button"
+      <button *ngIf="currentSlot.status === ReservationStatusEnum.CONFIRMED && currentSlot.isMine" type="button"
         class="slot-modal__button slot-modal__button--cancel" [disabled]="!canCancel" (click)="onCancel()">
         لغو رزرو
       </button>

@@ -78,54 +78,46 @@ td {
 /* بدون تغییر TS/HTML – فقط CSS  */
 /* ============================= */
 
-/* برای خط‌کشی‌های ظریف 1px و حذف فاصله‌ها */
 table {
   border-collapse: separate !important;
   border-spacing: 0 !important;
 }
 
-/* پدینگ سلول‌ها صفر تا به خطوط بچسبند */
 thead th,
 tbody th.time-cell,
 td {
   padding: 0 !important;
 }
 
-/* خطوط عمودی بین ستون‌ها (از ستون دوم به بعد) */
 thead th + th,
 td + td {
   border-left: 1px solid #e2e8f0; /* slate-200 */
 }
 
-/* خطوط افقی بین ردیف‌های ساعت (از ردیف دوم به بعد) */
 tbody tr:not(:first-child) td,
 tbody tr:not(:first-child) th.time-cell {
   border-top: 1px solid #e2e8f0;
 }
 
-/* ستونِ ساعت sticky با خط جداکننده سمت راست */
 tbody th.time-cell {
   background: #fff;
   border-right: 1px solid #e2e8f0 !important;
 }
 
-/* دکمه اسلات تمام‌قدِ سلول باشد؛ ظاهر باکس حذف شود */
 .slot-cell {
-  height: 44px !important;            /* h-11 */
+  height: 44px !important;
   width: 100% !important;
   border: 0 !important;
   border-radius: 0 !important;
-  background: transparent !important; /* پیش‌فرض شفاف؛ رنگ فقط با status */
+  background: transparent !important;
   box-shadow: none !important;
   transform: none !important;
   transition: none !important;
 }
 
-/* هاور/فوکوس ساده و بدون پرش */
 .slot-cell:hover { transform: none !important; box-shadow: none !important; }
 .slot-cell:focus-visible { outline: 2px solid rgba(14,165,233,0.5); outline-offset: -2px; }
 
-/* وقتی خالی است: کاملاً شفاف و بدون کادر */
 .slot-cell.empty {
   border: 0 !important;
   background: transparent !important;

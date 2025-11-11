@@ -1,6 +1,7 @@
 package com.tennistime.bff.application.service;
 
 import com.tennistime.bff.application.dto.*;
+import com.tennistime.bff.domain.model.types.ReservationStatus;
 import com.tennistime.bff.exceptions.ExternalServiceException;
 import com.tennistime.bff.exceptions.ReservationNotFoundException;
 import com.tennistime.bff.exceptions.ServiceNotFoundException;
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -353,7 +355,7 @@ public class ReservationAggregationService {
             slot.setTime(currentTime.toString());
             LocalTime slotEndTime = effectiveSlotUsage == 0 ? currentTime : currentTime.plusMinutes(effectiveSlotUsage);
             slot.setEndTime(slotEndTime.toString());
-            slot.setStatus("available");
+            slot.setStatus(ReservationStatus.AVAILABLE);
             slot.setPrice(price);
             slot.setCapacity(serviceDTO.getMaxCapacity());
             slot.setReservedBy(null);
@@ -482,9 +484,28 @@ public class ReservationAggregationService {
 
             if (slotIndex >= 0 && slotIndex < slots.size()) {
                 SlotDTO slot = slots.get(slotIndex);
-                slot.setStatus("booked");
-                slot.setReservedBy(reservation.getUserId().toString());
-                slot.setPrice(slot.getPrice().multiply(new BigDecimal("1.2"))); // Example: Increase price for booked slots (premium pricing)
+
+                if (slot.getStatus() != null && slot.getStatus() != ReservationStatus.AVAILABLE) {
+                    continue;
+                }
+
+                ReservationStatus reservationStatus = Optional.ofNullable(reservation.getStatus())
+                        .orElse(ReservationStatus.PENDING);
+
+                if (reservationStatus == ReservationStatus.CANCELED || reservationStatus == ReservationStatus.EXPIRED) {
+                    continue;
+                }
+
+                slot.setStatus(reservationStatus);
+
+                if (reservationStatus == ReservationStatus.CONFIRMED || reservationStatus == ReservationStatus.PENDING) {
+                    slot.setReservedBy(Optional.ofNullable(reservation.getUserId())
+                            .map(UUID::toString)
+                            .orElse(null));
+                    slot.setPrice(slot.getPrice().multiply(new BigDecimal("1.2"))); // Example: Increase price for reserved slots (premium pricing)
+                } else {
+                    slot.setReservedBy(null);
+                }
             }
         }
     }
