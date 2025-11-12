@@ -194,9 +194,11 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
   ): Record<string, SlotDTO[]> {
     if (!slotsByService) return {};
 
-    // --- CHANGE 2: Accept both composite and legacy slotIds from basket
+    const currentDate = this.formatDateToYYYYMMDD(this.selectedDate);
     const basketKeys = new Set(
-      basket.map(i => (i.slotId.includes(':') ? i.slotId : `${i.serviceId}:${i.slotId}`))
+      basket
+        .filter(item => item.reservationDate === currentDate)
+        .map(item => item.slotId.includes(':') ? item.slotId : `${item.serviceId}:${item.slotId}`)
     );
 
     const next: Record<string, SlotDTO[]> = {};
