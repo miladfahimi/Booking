@@ -3,16 +3,6 @@ import { ProviderDTO, ServiceDTO } from '../types';
 import { ReservationBasketItem, ReservationSummary } from '../types/reservation-basket.types';
 import { PaymentInitiationResult } from '../types/reservation-payment.types';
 
-// export const loadSlots = createAction(
-//   '[Reservation] Load Slots',
-//   props<{ serviceId: string, date: string }>()
-// );
-
-// export const loadSlotsSuccess = createAction(
-//   '[Reservation] Load Slots Success',
-//   props<{ service: ServiceDTO }>() // Updated to expect ServiceDTO
-// );
-
 export const loadSlots = createAction(
   '[Reservation] Load Slots',
   props<{ date: string }>()
@@ -47,13 +37,58 @@ export const addSlotToBasket = createAction(
   props<{ item: ReservationBasketItem }>()
 );
 
+export const addSlotToBasketSuccess = createAction(
+  '[Reservation] Add Slot To Basket Success',
+  props<{ item: ReservationBasketItem }>()
+);
+
+export const addSlotToBasketFailure = createAction(
+  '[Reservation] Add Slot To Basket Failure',
+  props<{ slotId: string; error: any }>()
+);
+
 export const removeSlotFromBasket = createAction(
   '[Reservation] Remove Slot From Basket',
+  props<{ userId: string; slotId: string }>()
+);
+
+export const removeSlotFromBasketSuccess = createAction(
+  '[Reservation] Remove Slot From Basket Success',
   props<{ slotId: string }>()
 );
 
+export const removeSlotFromBasketFailure = createAction(
+  '[Reservation] Remove Slot From Basket Failure',
+  props<{ slotId: string; error: any }>()
+);
+
 export const clearBasket = createAction(
-  '[Reservation] Clear Basket'
+  '[Reservation] Clear Basket',
+  props<{ userId: string }>()
+);
+
+export const clearBasketSuccess = createAction(
+  '[Reservation] Clear Basket Success'
+);
+
+export const clearBasketFailure = createAction(
+  '[Reservation] Clear Basket Failure',
+  props<{ error: any }>()
+);
+
+export const loadBasket = createAction(
+  '[Reservation] Load Basket',
+  props<{ userId: string }>()
+);
+
+export const loadBasketSuccess = createAction(
+  '[Reservation] Load Basket Success',
+  props<{ items: ReservationBasketItem[] }>()
+);
+
+export const loadBasketFailure = createAction(
+  '[Reservation] Load Basket Failure',
+  props<{ error: any }>()
 );
 
 export const checkoutBasket = createAction(

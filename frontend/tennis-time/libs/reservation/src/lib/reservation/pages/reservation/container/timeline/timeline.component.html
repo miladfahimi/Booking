@@ -24,6 +24,7 @@
               [class.timeline-slot--booked]="slot.status === ReservationStatusEnum.CONFIRMED && !isMyBookedSlot(slot)"
               [class.timeline-slot--available]="slot.status === ReservationStatusEnum.AVAILABLE"
               [class.timeline-slot--pending]="slot.status === ReservationStatusEnum.PENDING"
+              [class.timeline-slot--basket]="slot.status === ReservationStatusEnum.IN_BASKET"
               [class.timeline-slot--maintenance]="slot.status === ReservationStatusEnum.MAINTENANCE"
               [class.timeline-slot--mine]="isMyBookedSlot(slot)" [style.top.px]="getSlotOffset(slot)"
               [style.height.px]="getSlotHeight(slot)">
@@ -56,7 +57,7 @@
       </div>
       <div class=" legend-item pending">
         <span></span>
-        در انتظار
+        در انتظار پرداخت
       </div>
       <div class="legend-item maintenance">
         <span></span>

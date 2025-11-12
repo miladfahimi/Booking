@@ -6,6 +6,7 @@ export enum ReservationStatus {
   EXPIRED = 'EXPIRED',
   MAINTENANCE = 'MAINTENANCE',
   ADMIN_HOLD = 'ADMIN_HOLD',
+  IN_BASKET = 'IN_BASKET',
 }
 
 export interface UserReservationDTO {

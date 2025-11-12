@@ -83,10 +83,16 @@ export const selectBasket = createSelector(
   (state: ReservationState) => state.basket
 );
 
+export const selectBasketLoading = createSelector(
+  selectReservationState,
+  (state: ReservationState) => state.basketLoading
+);
+
 export const selectBasketCount = createSelector(
   selectBasket,
   (items) => items.length
 );
+
 
 export const selectBasketTotal = createSelector(
   selectBasket,

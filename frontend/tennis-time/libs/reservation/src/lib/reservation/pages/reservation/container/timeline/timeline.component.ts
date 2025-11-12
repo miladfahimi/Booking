@@ -178,6 +178,8 @@ export class TimelineComponent implements OnChanges {
         return ReservationStatus.AVAILABLE;
       case ReservationStatus.PENDING:
         return ReservationStatus.PENDING;
+      case ReservationStatus.IN_BASKET:
+        return ReservationStatus.IN_BASKET;
       case ReservationStatus.CONFIRMED:
       case ReservationStatus.ADMIN_HOLD:
         return ReservationStatus.CONFIRMED;
@@ -192,6 +194,10 @@ export class TimelineComponent implements OnChanges {
 
     if (normalized.indexOf('BOOK') !== -1) {
       return ReservationStatus.CONFIRMED;
+    }
+
+    if (normalized.indexOf('BASKET') !== -1) {
+      return ReservationStatus.IN_BASKET;
     }
 
     if (normalized.indexOf('PEND') !== -1) {
@@ -215,12 +221,15 @@ export class TimelineComponent implements OnChanges {
         return 'رزرو شده';
       case ReservationStatus.PENDING:
         return 'در انتظار';
+      case ReservationStatus.IN_BASKET:
+        return 'در سبد پرداخت';
       case ReservationStatus.AVAILABLE:
         return 'در دسترس';
       default:
         return 'نامشخص';
     }
   }
+
 
   private toHHmm(value?: string | null): string | null {
     if (!value) {

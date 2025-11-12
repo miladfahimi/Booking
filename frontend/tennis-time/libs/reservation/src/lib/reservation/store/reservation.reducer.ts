@@ -10,6 +10,7 @@ export interface ReservationState {
   loadingStatus: LoadingStatus;
   providersLoadingStatus: LoadingStatus;
   basket: ReservationBasketItem[];
+  basketLoading: boolean;
   checkoutStatus: LoadingStatus;
   paymentResult: PaymentInitiationResult | null;
   error: any;
@@ -21,6 +22,7 @@ export const initialState: ReservationState = {
   loadingStatus: { loading: false, loaded: false },
   providersLoadingStatus: { loading: false, loaded: false },
   basket: [],
+  basketLoading: false,
   checkoutStatus: { loading: false, loaded: false },
   paymentResult: null,
   error: null,
@@ -75,28 +77,84 @@ export const reservationReducer = createReducer(
     providersLoadingStatus: { loading: false, loaded: true },
   })),
 
-  on(ReservationActions.addSlotToBasket, (state, { item }) => {
-    if (state.basket.some(existing => existing.slotId === item.slotId)) {
-      return state;
-    }
+  on(ReservationActions.loadBasket, (state) => ({
+    ...state,
+    basketLoading: true,
+    error: null,
+  })),
+
+  on(ReservationActions.addSlotToBasket, (state) => ({
+    ...state,
+    basketLoading: true,
+    error: null,
+  })),
+
+  on(ReservationActions.removeSlotFromBasket, (state) => ({
+    ...state,
+    basketLoading: true,
+    error: null,
+  })),
+
+  on(ReservationActions.loadBasketSuccess, (state, { items }) => ({
+    ...state,
+    basket: items,
+    basketLoading: false,
+    checkoutStatus: { loading: false, loaded: false },
+    paymentResult: null,
+  })),
+
+  on(ReservationActions.loadBasketFailure, (state, { error }) => ({
+    ...state,
+    basketLoading: false,
+    error,
+  })),
+
+  on(ReservationActions.addSlotToBasketSuccess, (state, { item }) => {
+    const withoutExisting = state.basket.filter(existing => existing.slotId !== item.slotId);
 
     return {
       ...state,
-      basket: [...state.basket, item],
+      basket: [...withoutExisting, item],
+      basketLoading: false,
       paymentResult: null,
       checkoutStatus: { loading: false, loaded: false },
     };
   }),
 
-  on(ReservationActions.removeSlotFromBasket, (state, { slotId }) => ({
+  on(ReservationActions.addSlotToBasketFailure, (state, { error }) => ({
     ...state,
-    basket: state.basket.filter(item => item.slotId !== slotId)
+    basketLoading: false,
+    error,
+  })),
+
+  on(ReservationActions.removeSlotFromBasketSuccess, (state, { slotId }) => ({
+    ...state,
+    basket: state.basket.filter(item => item.slotId !== slotId),
+    basketLoading: false,
+  })),
+
+  on(ReservationActions.removeSlotFromBasketFailure, (state, { error }) => ({
+    ...state,
+    basketLoading: false,
+    error,
   })),
 
   on(ReservationActions.clearBasket, (state) => ({
     ...state,
+    basketLoading: true,
+  })),
+
+  on(ReservationActions.clearBasketSuccess, (state) => ({
+    ...state,
     basket: [],
+    basketLoading: false,
     checkoutStatus: { loading: false, loaded: false },
+  })),
+
+  on(ReservationActions.clearBasketFailure, (state, { error }) => ({
+    ...state,
+    basketLoading: false,
+    error,
   })),
 
   on(ReservationActions.checkoutBasket, (state) => ({
@@ -108,6 +166,7 @@ export const reservationReducer = createReducer(
   on(ReservationActions.checkoutBasketSuccess, (state, { reservations, payment }) => ({
     ...state,
     basket: [],
+    basketLoading: false,
     checkoutStatus: { loading: false, loaded: true },
     paymentResult: payment,
     error: null,

@@ -1,6 +1,7 @@
 import { ReservationStatus } from '../types';
 
 export interface ReservationBasketItem {
+  id?: string;
   slotId: string;
   serviceId: string;
   providerId: string;
@@ -12,6 +13,7 @@ export interface ReservationBasketItem {
   userId: string;
   price: number;
   durationMinutes: number;
+  status?: ReservationStatus;
 }
 
 export interface ReservationBulkRequestItem {

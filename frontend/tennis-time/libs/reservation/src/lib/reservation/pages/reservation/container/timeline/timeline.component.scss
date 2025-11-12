@@ -191,6 +191,21 @@ padding-bottom: 44px;
   to { background-position: 60px 0; }
 }
 
+.timeline-slot--basket {
+  border-left: 3px solid  #22c55e;;
+  background: repeating-linear-gradient(
+    45deg,
+    #b7f5af 0 6px,
+    #dcfce7 6px 12px
+  );
+  animation: moveStripes 5s linear infinite;
+}
+
+@keyframes moveStripes {
+  from { background-position: 0 0; }
+  to { background-position: 60px 0; }
+}
+
 /* تعمیرات/نگهداری: خاکستری روشن */
 .timeline-slot--maintenance {
   background-color: #e5e7eb;   /* gray-200 */

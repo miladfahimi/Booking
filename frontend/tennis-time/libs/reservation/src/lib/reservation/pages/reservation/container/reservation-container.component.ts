@@ -5,7 +5,7 @@ import { map, takeUntil } from 'rxjs/operators';
 import * as jalaali from 'jalaali-js';
 import { CoreAuthService } from '@tennis-time/core';
 
-import { addSlotToBasket, checkoutBasket, loadProvidersWithServices, loadSlots, removeSlotFromBasket } from '../../../store/reservation.actions';
+import { addSlotToBasket, checkoutBasket, loadBasket, loadProvidersWithServices, loadSlots, removeSlotFromBasket } from '../../../store/reservation.actions';
 import { selectBasket, selectBasketTotal, selectCheckoutLoading, selectPaymentResult, selectProviders, selectSlotsByService, selectSlotsLoading } from '../../../store/reservation.selectors';
 import { ProviderDTO, ReservationStatus, ServiceDTO, SlotDTO } from '../../../types';
 import { ReservationBasketItem } from '../../../types/reservation-basket.types';
@@ -31,6 +31,7 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
 
   private readonly providerId = '11111111-1111-1111-1111-111111111111';
   private readonly destroy$ = new Subject<void>();
+  private userId: string | null = null;
 
   constructor(
     private readonly store: Store,
@@ -51,6 +52,11 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.userId = this.coreAuthService.getUserId();
+    if (this.userId) {
+      this.store.dispatch(loadBasket({ userId: this.userId }));
+    }
+
     this.store.dispatch(loadProvidersWithServices());
     this.dispatchLoadSlotsForDate(this.selectedDate);
 
@@ -136,8 +142,7 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const userId = this.coreAuthService.getUserId();
-    if (!userId) {
+    if (!this.userId) {
       return;
     }
 
@@ -160,17 +165,22 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
       reservationDatePersian,
       startTime,
       endTime,
-      userId,
+      userId: this.userId,
       price,
-      durationMinutes: slot.durationMinutes
+      durationMinutes: slot.durationMinutes,
+      status: ReservationStatus.IN_BASKET
     };
 
     this.store.dispatch(addSlotToBasket({ item }));
   }
 
   onRemoveFromBasket(slotId: string): void {
+    if (!this.userId) {
+      return;
+    }
+
     // This now receives the composite slotId from the basket component
-    this.store.dispatch(removeSlotFromBasket({ slotId }));
+    this.store.dispatch(removeSlotFromBasket({ userId: this.userId, slotId }));
   }
 
   onCheckout(): void {
@@ -194,7 +204,7 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
     Object.keys(slotsByService).forEach(serviceId => {
       next[serviceId] = (slotsByService[serviceId] ?? []).map(slot => {
         const key = `${serviceId}:${slot.slotId}`;
-        return basketKeys.has(key) ? { ...slot, status: ReservationStatus.PENDING } : slot;
+        return basketKeys.has(key) ? { ...slot, status: ReservationStatus.IN_BASKET } : slot;
       });
     });
 

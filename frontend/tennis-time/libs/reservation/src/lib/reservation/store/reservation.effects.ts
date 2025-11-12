@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { Store } from '@ngrx/store';
+import { Store, Action } from '@ngrx/store';
 import { of } from 'rxjs';
 import { catchError, map, mergeMap, withLatestFrom } from 'rxjs/operators';
 import * as ReservationActions from './reservation.actions';
@@ -8,6 +8,7 @@ import { ReservationService } from '../services/reservation.service';
 import { ServiceDTO, ProviderDTO } from '../types';
 import { selectBasket } from './reservation.selectors';
 import { ReservationCheckoutService } from '../services/reservation-checkout.service';
+import { ReservationBasketApiService } from '../services/reservation-basket-api.service';
 
 @Injectable()
 export class ReservationEffects {
@@ -15,10 +16,10 @@ export class ReservationEffects {
     private actions$: Actions,
     private reservationService: ReservationService,
     private reservationCheckoutService: ReservationCheckoutService,
+    private reservationBasketApiService: ReservationBasketApiService,
     private store: Store
   ) { }
 
-  // Effect for loading slots
   loadSlots$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ReservationActions.loadSlots),
@@ -35,18 +36,65 @@ export class ReservationEffects {
     )
   );
 
-  // Effect for loading providers with services
   loadProvidersWithServices$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ReservationActions.loadProvidersWithServices),
       mergeMap(() =>
         this.reservationService.getProvidersWithServices().pipe(
           map((providers: ProviderDTO[]) =>
-            ReservationActions.loadProvidersWithServicesSuccess({ providers })  // Pass the array of ProviderDTO objects
+            ReservationActions.loadProvidersWithServicesSuccess({ providers })
           ),
           catchError(error =>
             of(ReservationActions.loadProvidersWithServicesFailure({ error }))
           )
+        )
+      )
+    )
+  );
+
+  loadBasket$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ReservationActions.loadBasket),
+      mergeMap(({ userId }) =>
+        this.reservationBasketApiService.getBasket(userId).pipe(
+          map(items => ReservationActions.loadBasketSuccess({ items })),
+          catchError(error => of(ReservationActions.loadBasketFailure({ error })))
+        )
+      )
+    )
+  );
+
+  addSlotToBasket$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ReservationActions.addSlotToBasket),
+      mergeMap(({ item }) =>
+        this.reservationBasketApiService.addItem(item).pipe(
+          map(savedItem => ReservationActions.addSlotToBasketSuccess({ item: savedItem })),
+          catchError(error => of(ReservationActions.addSlotToBasketFailure({ slotId: item.slotId, error })))
+        )
+      )
+    )
+  );
+
+  removeSlotFromBasket$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ReservationActions.removeSlotFromBasket),
+      mergeMap(({ userId, slotId }) =>
+        this.reservationBasketApiService.removeItem(userId, slotId).pipe(
+          map(() => ReservationActions.removeSlotFromBasketSuccess({ slotId })),
+          catchError(error => of(ReservationActions.removeSlotFromBasketFailure({ slotId, error })))
+        )
+      )
+    )
+  );
+
+  clearBasket$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ReservationActions.clearBasket),
+      mergeMap(({ userId }) =>
+        this.reservationBasketApiService.clear(userId).pipe(
+          map(() => ReservationActions.clearBasketSuccess()),
+          catchError(error => of(ReservationActions.clearBasketFailure({ error })))
         )
       )
     )
@@ -62,10 +110,20 @@ export class ReservationEffects {
         }
 
         return this.reservationCheckoutService.checkout(basket).pipe(
-          mergeMap(result => [
-            ReservationActions.checkoutBasketSuccess({ reservations: result.reservations, payment: result.payment }),
-            ReservationActions.loadSlots({ date: action.date })
-          ]),
+          mergeMap(result => {
+            const userId = basket[0]?.userId;
+
+            const followUpActions: Action[] = [
+              ReservationActions.checkoutBasketSuccess({ reservations: result.reservations, payment: result.payment }),
+              ReservationActions.loadSlots({ date: action.date })
+            ];
+
+            if (userId) {
+              followUpActions.push(ReservationActions.clearBasket({ userId }));
+            }
+
+            return followUpActions;
+          }),
           catchError(error =>
             of(ReservationActions.checkoutBasketFailure({ error }))
           )
