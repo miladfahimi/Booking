@@ -1,35 +1,160 @@
 <div class="mock-payment" *ngIf="session as current">
-  <div class="mock-payment__panel">
-    <h1 class="mock-payment__title">درگاه پرداخت ش模ک</h1>
-    <div class="mock-payment__summary">
-      <div class="mock-payment__row">
-        <span>شناسه پرداخت</span>
-        <strong>{{ current.paymentId | faDigits }}</strong>
-      </div>
-      <div class="mock-payment__row" *ngIf="current.referenceNumber">
-        <span>کد مرجع</span>
-        <strong>{{ current.referenceNumber | faDigits }}</strong>
-      </div>
-      <div class="mock-payment__row">
-        <span>مبلغ</span>
-        <strong>{{ current.total | number:'1.0-0' | faDigits }} تومان</strong>
-      </div>
-    </div>
-
-    <div class="mock-payment__items">
-      <div class="mock-payment__item" *ngFor="let item of reservations">
-        <span>{{ item.reservationDate | faDigits }}</span>
-        <span>{{ item.startTime | faDigits }} ~ {{ item.endTime | faDigits }}</span>
-      </div>
-    </div>
-
-    <button type="button" class="mock-payment__submit" (click)="onConfirmPayment()" [disabled]="(completionLoading$ | async) ?? false">
-      <ng-container *ngIf="(completionLoading$ | async) ?? false; else submitLabel">در حال تایید...</ng-container>
-    </button>
-    <ng-template #submitLabel>پرداخت و بازگشت</ng-template>
-
-    <div class="mock-payment__error" *ngIf="(completionError$ | async) as error">
-      پرداخت با خطا روبرو شد. لطفا دوباره تلاش کنید.
-    </div>
+  <div class="topbar">
+    <div class="phone">021-84880</div>
+    <div class="note">درگاه پرداخت کاملا غیرقانونی است.</div>
   </div>
+
+  <header class="page-header">
+    <div class="header-logos">
+      <img src="/trust-seal.png" alt="Trust Seal" />
+      <div class="title">درگاه پرداخت اینترنتی سامان</div>
+      <img class="header-right-logo" src="/bank-logo.png" alt="Saman Logo" />
+    </div>
+  </header>
+
+  <main class="container" dir="rtl">
+    <div class="panes">
+      <section class="card form-card">
+        <div class="card-head">اطلاعات کارت</div>
+        <form class="form" autocomplete="off">
+          <div class="row">
+            <div class="field field-inline">
+              <label>انتخاب کارت</label>
+              <div class="control select-like">
+                <select class="input">
+                  <option>همه کارت‌ها</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field field-inline">
+              <label>شماره کارت</label>
+              <div class="control grid-cc">
+                <input class="input" inputmode="numeric" maxlength="4" />
+                <input class="input" inputmode="numeric" maxlength="4" />
+                <input class="input" inputmode="numeric" maxlength="4" />
+                <input class="input" inputmode="numeric" maxlength="4" />
+              </div>
+            </div>
+          </div>
+
+          <div class="row grid-2">
+            <div class="field field-inline">
+              <label>رمز اینترنتی</label>
+              <div class="control">
+                <input class="input" type="password" />
+              </div>
+            </div>
+            <div class="field field-inline">
+              <label>CVV2</label>
+              <div class="control">
+                <input class="input" inputmode="numeric" maxlength="4" />
+              </div>
+            </div>
+          </div>
+
+          <div class="row grid-2">
+            <div class="field field-inline">
+              <label>تاریخ انقضا</label>
+              <div class="control grid-2">
+                <select class="input" aria-label="ماه">
+                  <option>ماه</option>
+                  <option>01</option>
+                  <option>02</option>
+                  <option>03</option>
+                  <option>04</option>
+                  <option>05</option>
+                  <option>06</option>
+                  <option>07</option>
+                  <option>08</option>
+                  <option>09</option>
+                  <option>10</option>
+                  <option>11</option>
+                  <option>12</option>
+                </select>
+                <select class="input" aria-label="سال">
+                  <option>سال</option>
+                  <option>1403</option>
+                  <option>1404</option>
+                  <option>1405</option>
+                  <option>1406</option>
+                </select>
+              </div>
+            </div>
+            <div class="field field-inline">
+              <label>کد امنیتی</label>
+              <div class="control captcha">
+                <input class="input" inputmode="numeric" maxlength="6" />
+                <img src="/captcha.png" alt="کپچا" />
+              </div>
+            </div>
+          </div>
+
+          <div class="row grid-3">
+            <div class="field field-inline" style="grid-column: 1 / span 2;">
+              <label>ایمیل</label>
+              <div class="control">
+                <input class="input" type="email" placeholder="example@email.com" />
+                <div class="remember">
+                  <input id="remember" type="checkbox" />
+                  <label for="remember">ذخیره شماره کارت و تاریخ انقضا در سامانه‌های پرداخت سامان</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button type="button" class="btn btn-cancel">انصراف</button>
+            <button type="button" class="btn btn-pay" (click)="onConfirmPayment()"
+              [disabled]="(completionLoading$ | async) ?? false">
+              <ng-container *ngIf="(completionLoading$ | async) ?? false; else payText">در حال تایید...</ng-container>
+              <ng-template #payText>پرداخت ✓</ng-template>
+            </button>
+          </div>
+
+          <div class="success-line" *ngIf="paymentCompleted">
+            پرداخت با موفقیت انجام شد لطفا اگر تا این <strong>{{countdown}}</strong> ثانیه به فروشگاه منتقل نشدید
+            <a href="" (click)="closeNow($event)">اینجا</a>
+            کلیک کنید
+          </div>
+
+          <div class="mock-payment__error" *ngIf="(completionError$ | async) as error">
+            پرداخت با خطا روبرو شد. لطفا دوباره تلاش کنید.
+          </div>
+        </form>
+      </section>
+
+      <section class="card">
+        <div class="mock-payment">
+          <div class="mock-payment__panel">
+            <h1 class="mock-payment__title">اطلاعات پذیرنده</h1>
+            <div class="mock-payment__summary">
+              <div class="mock-payment__row">
+                <span>شناسه پرداخت</span>
+                <strong>current.paymentId | faDigits</strong>
+              </div>
+              <div class="mock-payment__row">
+                <span>کد مرجع</span>
+                <strong>{{ current.referenceNumber | faDigits }}</strong>
+              </div>
+              <div class="mock-payment__row">
+                <span>مبلغ</span>
+                <strong>{{ current.total | number:'1.0-0' | faDigits }} تومان</strong>
+              </div>
+            </div>
+          </div>
+          <div class="mock-payment__items">
+            <div class="mock-payment__item" *ngFor="let item of reservations">
+              <span>{{ item.reservationDate | faDigits }}</span>
+              <span>{{ item.startTime | faDigits }} ~ {{ item.endTime | faDigits }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="spacer"></div>
+  </main>
 </div>
