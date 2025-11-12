@@ -18,6 +18,7 @@ export interface TimelineSlotDetails {
   readonly status: ReservationStatus;
   readonly statusLabel: string;
   readonly isMine: boolean;
+  readonly price?: number | null;
 }
 @Component({
   selector: 'app-timeline-slot-modal',

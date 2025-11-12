@@ -1,28 +1,17 @@
 import { createReducer, on } from '@ngrx/store';
 import * as ReservationActions from './reservation.actions';
 import { LoadingStatus, ServiceDTO, ProviderDTO, SlotDTO } from '../types';
-
-// export interface ReservationState {
-//   service: ServiceDTO | null;
-//   providers: ProviderDTO[] | null;
-//   loadingStatus: LoadingStatus;
-//   providersLoadingStatus: LoadingStatus;
-//   error: any;
-// }
-
-// export const initialState: ReservationState = {
-//   service: null,
-//   providers: null,
-//   loadingStatus: {loading: false, loaded: false},
-//   providersLoadingStatus: {loading: false, loaded: false},
-//   error: null,
-// };
+import { ReservationBasketItem } from '../types/reservation-basket.types';
+import { PaymentInitiationResult } from '../types/reservation-payment.types';
 
 export interface ReservationState {
   slotsByService: Record<string, SlotDTO[]>;
   providers: ProviderDTO[] | null;
   loadingStatus: LoadingStatus;
   providersLoadingStatus: LoadingStatus;
+  basket: ReservationBasketItem[];
+  checkoutStatus: LoadingStatus;
+  paymentResult: PaymentInitiationResult | null;
   error: any;
 }
 
@@ -31,8 +20,12 @@ export const initialState: ReservationState = {
   providers: null,
   loadingStatus: { loading: false, loaded: false },
   providersLoadingStatus: { loading: false, loaded: false },
+  basket: [],
+  checkoutStatus: { loading: false, loaded: false },
+  paymentResult: null,
   error: null,
 };
+
 
 export const reservationReducer = createReducer(
   initialState,
@@ -80,5 +73,49 @@ export const reservationReducer = createReducer(
     ...state,
     error,
     providersLoadingStatus: { loading: false, loaded: true },
+  })),
+
+  on(ReservationActions.addSlotToBasket, (state, { item }) => {
+    if (state.basket.some(existing => existing.slotId === item.slotId)) {
+      return state;
+    }
+
+    return {
+      ...state,
+      basket: [...state.basket, item],
+      paymentResult: null,
+      checkoutStatus: { loading: false, loaded: false },
+    };
+  }),
+
+  on(ReservationActions.removeSlotFromBasket, (state, { slotId }) => ({
+    ...state,
+    basket: state.basket.filter(item => item.slotId !== slotId)
+  })),
+
+  on(ReservationActions.clearBasket, (state) => ({
+    ...state,
+    basket: [],
+    checkoutStatus: { loading: false, loaded: false },
+  })),
+
+  on(ReservationActions.checkoutBasket, (state) => ({
+    ...state,
+    checkoutStatus: { loading: true, loaded: false },
+    error: null,
+  })),
+
+  on(ReservationActions.checkoutBasketSuccess, (state, { reservations, payment }) => ({
+    ...state,
+    basket: [],
+    checkoutStatus: { loading: false, loaded: true },
+    paymentResult: payment,
+    error: null,
+  })),
+
+  on(ReservationActions.checkoutBasketFailure, (state, { error }) => ({
+    ...state,
+    checkoutStatus: { loading: false, loaded: false },
+    error,
   }))
 );

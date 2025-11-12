@@ -365,7 +365,8 @@ export class TimelineComponent implements OnChanges {
       durationMinutes: slot.durationMinutes,
       status: slot.status,
       statusLabel: isMine ? 'رزرو شده توسط شما' : this.getStatusLabel(slot.status),
-      isMine
+      isMine,
+      price: slot.original.price
     };
   }
 

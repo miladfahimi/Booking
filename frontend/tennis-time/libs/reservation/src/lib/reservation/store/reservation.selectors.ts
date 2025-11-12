@@ -77,3 +77,33 @@ export const selectProvidersLoaded = createSelector(
   selectReservationState,
   (state: ReservationState) => state.providersLoadingStatus.loaded
 );
+
+export const selectBasket = createSelector(
+  selectReservationState,
+  (state: ReservationState) => state.basket
+);
+
+export const selectBasketCount = createSelector(
+  selectBasket,
+  (items) => items.length
+);
+
+export const selectBasketTotal = createSelector(
+  selectBasket,
+  (items) => items.reduce((total, item) => total + (item.price || 0), 0)
+);
+
+export const selectCheckoutStatus = createSelector(
+  selectReservationState,
+  (state: ReservationState) => state.checkoutStatus
+);
+
+export const selectCheckoutLoading = createSelector(
+  selectCheckoutStatus,
+  (status) => status.loading
+);
+
+export const selectPaymentResult = createSelector(
+  selectReservationState,
+  (state: ReservationState) => state.paymentResult
+);

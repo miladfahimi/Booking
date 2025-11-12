@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { CreateReservationPayload, UserReservationDTO } from '../types';
+import { CreateReservationPayload, ReservationStatus, UserReservationDTO } from '../types';
+import { ReservationBulkRequestItem, ReservationSummary } from '../types/reservation-basket.types';
 
 @Injectable({
   providedIn: 'root',
@@ -15,5 +16,15 @@ export class ReservationCreationService {
   createReservation(payload: CreateReservationPayload): Observable<UserReservationDTO> {
     const url = `${this.baseUrl}/portal/user/reservations`;
     return this.http.post<UserReservationDTO>(url, payload);
+  }
+
+  createReservationsBulk(payload: ReservationBulkRequestItem[]): Observable<ReservationSummary[]> {
+    const url = `${this.baseUrl}/portal/user/reservations/bulk`;
+    return this.http.post<ReservationSummary[]>(url, payload);
+  }
+
+  updateReservationStatus(reservationId: string, status: ReservationStatus): Observable<ReservationSummary> {
+    const url = `${this.baseUrl}/portal/user/reservations/${reservationId}/status`;
+    return this.http.put<ReservationSummary>(url, null, { params: { status } });
   }
 }

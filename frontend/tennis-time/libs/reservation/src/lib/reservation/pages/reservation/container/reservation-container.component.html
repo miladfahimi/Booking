@@ -11,8 +11,12 @@
       </app-reservation-calendar-desktop>
       }
 
-      <app-timeline [services]="items" [slotsByService]="slotsByService"
+      <app-timeline [services]="items" [slotsByService]="(timeSlots$ | async) ?? {}"
         (addToBasket)="onAddSlotToBasket($event)"></app-timeline>
+
+      <app-reservation-basket [items]="(basketItems$ | async) ?? []" [total]="(basketTotal$ | async) ?? 0"
+        [loading]="(checkoutLoading$ | async) ?? false" [payment]="paymentResult$ | async"
+        (remove)="onRemoveFromBasket($event)" (checkout)="onCheckout()"></app-reservation-basket>
 
     </div>
   </div>

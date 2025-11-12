@@ -1,0 +1,138 @@
+:host {
+  display: block;
+  margin-top: 24px;
+}
+
+.basket {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.basket__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.basket__title {
+  font-size: 20px;
+  margin: 0;
+}
+
+.basket__count {
+  background: #64c271;
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 2px 12px;
+  font-size: 14px;
+}
+
+.basket__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.basket__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f7f7f7;
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+.basket__details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.basket__service {
+  font-weight: 600;
+}
+
+.basket__time,
+.basket__date {
+  font-size: 14px;
+  color: #666666;
+}
+
+.basket__meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.basket__price {
+  font-weight: 600;
+}
+
+.basket__remove {
+  border: none;
+  background: transparent;
+  color: #d14343;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.basket__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 16px;
+}
+
+.basket__checkout {
+  border: none;
+  background: #64c271;
+  color: #ffffff;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.basket__checkout[disabled] {
+  background: #a7a7a7;
+  cursor: not-allowed;
+}
+
+.basket__payment {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+  color: #1f7a8c;
+}
+
+.basket__empty {
+  text-align: center;
+  color: #666666;
+}
+
+@media (max-width: 768px) {
+  .basket {
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  .basket__item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .basket__meta {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

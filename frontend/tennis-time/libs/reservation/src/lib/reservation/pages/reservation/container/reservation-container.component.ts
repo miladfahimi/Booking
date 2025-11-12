@@ -1,13 +1,15 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable, Subject } from 'rxjs';
+import { combineLatest, Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
-import { loadProvidersWithServices, loadSlots } from '../../../store/reservation.actions';
-import { selectProviders, selectSlots, selectSlotsByService, selectSlotsLoading } from '../../../store/reservation.selectors';
-import { SlotDTO, ProviderDTO, ServiceDTO, CreateReservationPayload, ReservationStatus } from '../../../types';
-import { ReservationCreationService } from '../../../services/reservation-creation.service';
-import { CoreAuthService } from '@tennis-time/core';
 import * as jalaali from 'jalaali-js';
+import { CoreAuthService } from '@tennis-time/core';
+
+import { addSlotToBasket, checkoutBasket, loadProvidersWithServices, loadSlots, removeSlotFromBasket } from '../../../store/reservation.actions';
+import { selectBasket, selectBasketTotal, selectCheckoutLoading, selectPaymentResult, selectProviders, selectSlotsByService, selectSlotsLoading } from '../../../store/reservation.selectors';
+import { ProviderDTO, ReservationStatus, ServiceDTO, SlotDTO } from '../../../types';
+import { ReservationBasketItem } from '../../../types/reservation-basket.types';
+import { PaymentInitiationResult } from '../../../types/reservation-payment.types';
 import { TimelineSlotDetails } from './timeline/tileline-slot-modal/timeline-slot-modal.component';
 
 @Component({
@@ -16,80 +18,76 @@ import { TimelineSlotDetails } from './timeline/tileline-slot-modal/timeline-slo
   styleUrls: ['./reservation-container.component.scss']
 })
 export class ReservationContainerComponent implements OnInit, OnDestroy {
-  isMobileView: boolean = window.innerWidth <= 768;
+  isMobileView = window.innerWidth <= 768;
   timeSlots$: Observable<Record<string, SlotDTO[]>>;
   loading$: Observable<boolean>;
-  items: ServiceDTO[] = []; // ServiceDTO[] type
-  selectedService: ServiceDTO | null = null; // Track the selected service
-  selectedDate: Date = new Date(); // Track the selected date
-  slotsByService: Record<string, SlotDTO[]> = {};
+  basketItems$: Observable<ReservationBasketItem[]>;
+  basketTotal$: Observable<number>;
+  checkoutLoading$: Observable<boolean>;
+  paymentResult$: Observable<PaymentInitiationResult | null>;
+  items: ServiceDTO[] = [];
+  selectedService: ServiceDTO | null = null;
+  selectedDate: Date = new Date();
 
-  private providerId = '11111111-1111-1111-1111-111111111111'; // Hardcoded provider ID
-  private destroy$ = new Subject<void>();
+  private readonly providerId = '11111111-1111-1111-1111-111111111111';
+  private readonly destroy$ = new Subject<void>();
 
   constructor(
-    private store: Store,
-    private reservationCreationService: ReservationCreationService,
-    private coreAuthService: CoreAuthService
+    private readonly store: Store,
+    private readonly coreAuthService: CoreAuthService
   ) {
-    this.timeSlots$ = this.store.select(selectSlots);
     this.loading$ = this.store.select(selectSlotsLoading);
+    this.basketItems$ = this.store.select(selectBasket);
+    this.basketTotal$ = this.store.select(selectBasketTotal);
+    this.checkoutLoading$ = this.store.select(selectCheckoutLoading);
+    this.paymentResult$ = this.store.select(selectPaymentResult);
+
+    this.timeSlots$ = combineLatest([
+      this.store.select(selectSlotsByService),
+      this.store.select(selectBasket)
+    ]).pipe(
+      map(([slots, basket]) => this.mergeBasketSlots(slots, basket))
+    );
   }
 
   ngOnInit(): void {
-    this.store.dispatch(loadProvidersWithServices()); // Load providers and services
+    this.store.dispatch(loadProvidersWithServices());
     this.dispatchLoadSlotsForDate(this.selectedDate);
 
-    this.store.select(selectProviders).pipe(
-      takeUntil(this.destroy$),
-      map((providers: ProviderDTO[] | null) => {
-        if (!providers) return;
+    this.store.select(selectProviders)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((providers: ProviderDTO[] | null) => {
+        if (!providers) {
+          return;
+        }
 
-        // Find the provider by ID and generate items from its services
         const provider = providers.find(p => p.id === this.providerId);
         if (provider && provider.services) {
-          // Ensure all services have selected initialized to false
           this.items = provider.services.map(service => ({
             ...service,
             selected: service.selected || false,
           }));
         }
-      })
-    ).subscribe();
-
-    this.store.select(selectSlotsByService).pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(slotsByService => {
-      this.slotsByService = slotsByService ?? {};
-    });
+      });
   }
 
-  onDaySelected(day: any) {
-    console.log('%cRaw Selected Day:', 'color: red', day.date);
+  onDaySelected(day: any): void {
     this.selectedDate = typeof day.date === 'string' ? this.parseDate(day.date) : new Date(day.date);
-    console.log('%cParsed Date:', 'color: green', this.selectedDate);
-    const formattedDate = this.formatDateToYYYYMMDD(this.selectedDate);
-    console.log('%cFormatted Date:', 'color: blue', formattedDate);
-
     this.dispatchLoadSlotsForDate(this.selectedDate);
   }
 
-  selectDuration(service: ServiceDTO) {
-    // Reset selected property for all items
-    this.items.forEach(d => d.selected = false);
-    // Set selected to true for the clicked service
+  selectDuration(service: ServiceDTO): void {
+    this.items.forEach(item => item.selected = false);
     service.selected = true;
     this.selectedService = service;
-    console.log('%cService Selected:', 'color: purple', service);
   }
 
-  onSlotPicked(event: { service: ServiceDTO; slot: SlotDTO }) {
+  onSlotPicked(event: { service: ServiceDTO; slot: SlotDTO }): void {
     if (!event) {
       return;
     }
 
     this.selectDuration(event.service);
-    this.selectSlot(event.slot);
   }
 
   private parseDate(dateString: string): Date {
@@ -133,19 +131,6 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
     return time;
   }
 
-
-  selectSlot(slot: SlotDTO) {
-    console.log('%cTime Slot Selected:', 'color: teal', slot);
-  }
-
-  book() {
-    console.log('%cBooking reservation...', 'color: green');
-  }
-
-  cancel() {
-    console.log('%cReservation cancelled.', 'color: red');
-  }
-
   onAddSlotToBasket(slot: TimelineSlotDetails | null): void {
     if (!slot) {
       return;
@@ -153,7 +138,6 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
 
     const userId = this.coreAuthService.getUserId();
     if (!userId) {
-      console.error('Cannot create reservation: missing user id.');
       return;
     }
 
@@ -161,34 +145,58 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
     const reservationDatePersian = this.formatDateToJalaliYYYYMMDD(this.selectedDate);
     const startTime = this.ensureTimeHasSeconds(slot.startTime ?? slot.start);
     const endTime = this.ensureTimeHasSeconds(slot.endTime ?? slot.end);
+    const service = this.items.find(item => item.id === slot.serviceId);
+    const price = slot.price ?? service?.price ?? 0;
 
-    const payload: CreateReservationPayload = {
+    const item: ReservationBasketItem = {
+      slotId: slot.slotId,
+      serviceId: slot.serviceId,
+      providerId: slot.providerId,
+      serviceName: slot.serviceName,
       reservationDate,
       reservationDatePersian,
       startTime,
       endTime,
       userId,
-      providerId: slot.providerId,
-      serviceId: slot.serviceId,
-      status: ReservationStatus.CONFIRMED
+      price,
+      durationMinutes: slot.durationMinutes
     };
 
-    this.reservationCreationService.createReservation(payload)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: reservation => {
-          console.log('%cReservation created successfully:', 'color: green', reservation);
-          this.dispatchLoadSlotsForDate(this.selectedDate);
-        },
-        error: error => {
-          console.error('Failed to create reservation.', error);
-        }
-      });
+    this.store.dispatch(addSlotToBasket({ item }));
   }
 
+  onRemoveFromBasket(slotId: string): void {
+    this.store.dispatch(removeSlotFromBasket({ slotId }));
+  }
+
+  onCheckout(): void {
+    const date = this.formatDateToYYYYMMDD(this.selectedDate);
+    this.store.dispatch(checkoutBasket({ date }));
+  }
+
+  private mergeBasketSlots(slotsByService: Record<string, SlotDTO[]>, basket: ReservationBasketItem[]): Record<string, SlotDTO[]> {
+    if (!slotsByService) {
+      return {};
+    }
+
+    const selectedIds = new Set(basket.map(item => item.slotId));
+    const next: Record<string, SlotDTO[]> = {};
+
+    Object.keys(slotsByService).forEach(serviceId => {
+      const slots = slotsByService[serviceId];
+      next[serviceId] = (slots ?? []).map(slot => {
+        if (selectedIds.has(slot.slotId)) {
+          return { ...slot, status: ReservationStatus.PENDING };
+        }
+        return slot;
+      });
+    });
+
+    return next;
+  }
 
   @HostListener('window:resize', ['$event'])
-  onResize(event: any) {
+  onResize(event: any): void {
     this.isMobileView = event.target.innerWidth <= 768;
   }
 
