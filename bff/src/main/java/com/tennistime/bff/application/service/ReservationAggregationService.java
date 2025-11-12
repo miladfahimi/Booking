@@ -528,11 +528,14 @@ public class ReservationAggregationService {
                 ReservationStatus reservationStatus = Optional.ofNullable(reservation.getStatus())
                         .orElse(ReservationStatus.PENDING);
 
-                if (reservationStatus == ReservationStatus.CANCELED || reservationStatus == ReservationStatus.EXPIRED) {
+                if (reservationStatus == ReservationStatus.CANCELED
+                        || reservationStatus == ReservationStatus.EXPIRED
+                        || reservationStatus == ReservationStatus.IN_BASKET) {
                     continue;
                 }
 
                 slot.setStatus(reservationStatus);
+
 
                 if (reservationStatus == ReservationStatus.CONFIRMED || reservationStatus == ReservationStatus.PENDING) {
                     slot.setReservedBy(Optional.ofNullable(reservation.getUserId())

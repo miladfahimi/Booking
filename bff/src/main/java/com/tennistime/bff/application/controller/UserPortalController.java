@@ -1,7 +1,9 @@
 package com.tennistime.bff.application.controller;
 
 import com.tennistime.bff.application.dto.*;
+import com.tennistime.bff.application.dto.ReservationBasketItemDTO;
 import com.tennistime.bff.application.service.ReservationAggregationService;
+import com.tennistime.bff.application.service.ReservationBasketApplicationService;
 import com.tennistime.bff.domain.model.types.ReservationStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,7 @@ import java.util.UUID;
 public class UserPortalController {
 
     private final ReservationAggregationService reservationAggregationService;
+    private final ReservationBasketApplicationService reservationBasketApplicationService;
 
     /**
      * Retrieves all reservations.
@@ -145,6 +148,72 @@ public class UserPortalController {
             @PathVariable LocalDate date) {
         List<ServiceDTO> servicesWithSlots = reservationAggregationService.getServiceSlotsByTypeAndDate(type, date);
         return ResponseEntity.ok(servicesWithSlots);
+    }
+
+    /**
+     * Retrieves the basket content for a specific user.
+     *
+     * @param userId identifier of the user
+     * @return collection of basket items
+     */
+    @GetMapping("/basket/{userId}")
+    public ResponseEntity<List<ReservationBasketItemDTO>> getBasket(@PathVariable UUID userId) {
+        List<ReservationBasketItemDTO> basketItems = reservationBasketApplicationService.getBasket(userId);
+        return ResponseEntity.ok(basketItems);
+    }
+
+    /**
+     * Adds a new item to the basket or updates an existing entry.
+     *
+     * @param basketItemDTO basket payload
+     * @return persisted basket item
+     */
+    @PostMapping("/basket")
+    public ResponseEntity<ReservationBasketItemDTO> addBasketItem(@RequestBody ReservationBasketItemDTO basketItemDTO) {
+        ReservationBasketItemDTO savedItem = reservationBasketApplicationService.addBasketItem(basketItemDTO);
+        return ResponseEntity.ok(savedItem);
+    }
+
+    /**
+     * Deletes a specific slot from the user's basket.
+     *
+     * @param userId identifier of the user
+     * @param slotId identifier of the slot
+     * @return empty response on success
+     */
+    @DeleteMapping("/basket/{userId}/{slotId}")
+    public ResponseEntity<Void> removeBasketItem(@PathVariable UUID userId, @PathVariable String slotId) {
+        reservationBasketApplicationService.removeBasketItem(userId, slotId);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Clears all entries from the basket.
+     *
+     * @param userId identifier of the user
+     * @return empty response on success
+     */
+    @DeleteMapping("/basket/{userId}")
+    public ResponseEntity<Void> clearBasket(@PathVariable UUID userId) {
+        reservationBasketApplicationService.clearBasket(userId);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Updates the status of a basket entry.
+     *
+     * @param userId identifier of the user
+     * @param slotId identifier of the slot
+     * @param status new status to set
+     * @return updated basket item
+     */
+    @PutMapping("/basket/{userId}/{slotId}/status")
+    public ResponseEntity<ReservationBasketItemDTO> updateBasketStatus(
+            @PathVariable UUID userId,
+            @PathVariable String slotId,
+            @RequestParam ReservationStatus status) {
+        ReservationBasketItemDTO updatedItem = reservationBasketApplicationService.updateBasketStatus(userId, slotId, status);
+        return ResponseEntity.ok(updatedItem);
     }
 
 }

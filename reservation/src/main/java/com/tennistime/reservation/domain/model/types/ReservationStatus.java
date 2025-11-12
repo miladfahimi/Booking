@@ -7,13 +7,19 @@ import java.util.Arrays;
  */
 public enum ReservationStatus {
     AVAILABLE,
+    /**
+     * Indicates that the slot is temporarily reserved inside a customer's basket and visible only to that customer.
+     */
+    IN_BASKET,
+    /**
+     * Signals that the payment workflow has started and the slot must be locked for all users.
+     */
     PENDING,
     CONFIRMED,
     CANCELED,
     EXPIRED,
     MAINTENANCE,
     ADMIN_HOLD;
-
 
     /**
      * Resolve a {@link ReservationStatus} from a case-insensitive string representation.

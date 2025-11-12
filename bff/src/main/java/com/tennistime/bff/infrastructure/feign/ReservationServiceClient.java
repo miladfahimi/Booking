@@ -1,9 +1,11 @@
 package com.tennistime.bff.infrastructure.feign;
 
 import com.tennistime.bff.application.dto.ReservationDTO;
+import com.tennistime.bff.application.dto.ReservationBasketItemDTO;
 import com.tennistime.bff.domain.model.types.ReservationStatus;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +36,25 @@ public interface ReservationServiceClient {
 
     @PostMapping("/reservations/bulk")
     List<ReservationDTO> createReservations(@RequestBody List<ReservationDTO> reservations);
+
+    @GetMapping("/reservations/basket/{userId}")
+    List<ReservationBasketItemDTO> getBasketItems(@PathVariable("userId") UUID userId);
+
+    @PostMapping("/reservations/basket")
+    ReservationBasketItemDTO addBasketItem(@RequestBody ReservationBasketItemDTO basketItemDTO);
+
+    @DeleteMapping("/reservations/basket/{userId}/{slotId}")
+    void removeBasketItem(@PathVariable("userId") UUID userId, @PathVariable("slotId") String slotId);
+
+    @DeleteMapping("/reservations/basket/{userId}")
+    void clearBasket(@PathVariable("userId") UUID userId);
+
+    @PutMapping("/reservations/basket/{userId}/{slotId}/status")
+    ReservationBasketItemDTO updateBasketStatus(
+            @PathVariable("userId") UUID userId,
+            @PathVariable("slotId") String slotId,
+            @RequestParam("status") ReservationStatus status
+    );
 
     @PutMapping("/reservations/{id}/status")
     ReservationDTO updateReservationStatus(

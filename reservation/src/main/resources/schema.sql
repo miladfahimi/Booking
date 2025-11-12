@@ -1,5 +1,3 @@
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 -- Create reservation table
 DROP TABLE IF EXISTS reservation CASCADE;
 CREATE TABLE IF NOT EXISTS reservation (
@@ -21,7 +19,7 @@ CREATE TABLE IF NOT EXISTS reservation (
     reminder_sent_at TIMESTAMP,
 
     -- Status and Workflow
-    status VARCHAR(50) NOT NULL DEFAULT 'PENDING' CHECK (status IN ('AVAILABLE', 'CONFIRMED', 'PENDING', 'CANCELED' , 'EXPIRED', 'MAINTENANCE', 'ADMIN_HOLD')),
+    status VARCHAR(50) NOT NULL DEFAULT 'PENDING' CHECK (status IN ('AVAILABLE', 'IN_BASKET', 'CONFIRMED', 'PENDING', 'CANCELED' , 'EXPIRED', 'MAINTENANCE', 'ADMIN_HOLD')),
     payment_status VARCHAR(50),
 
     -- Integration Fields
@@ -35,4 +33,24 @@ CREATE TABLE IF NOT EXISTS reservation (
     -- Audit Fields
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
+);
+
+DROP TABLE IF EXISTS reservation_basket_item CASCADE;
+CREATE TABLE IF NOT EXISTS reservation_basket_item (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL,
+    provider_id UUID NOT NULL,
+    service_id UUID NOT NULL,
+    service_name VARCHAR(255),
+    slot_id VARCHAR(255) NOT NULL,
+    reservation_date DATE NOT NULL,
+    reservation_date_persian VARCHAR(32),
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    price NUMERIC(19, 2),
+    duration_minutes INTEGER,
+    status VARCHAR(50) NOT NULL DEFAULT 'IN_BASKET' CHECK (status IN ('AVAILABLE', 'IN_BASKET', 'CONFIRMED', 'PENDING', 'CANCELED' , 'EXPIRED', 'MAINTENANCE', 'ADMIN_HOLD')),
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    CONSTRAINT uk_basket_user_slot UNIQUE (user_id, slot_id)
 );

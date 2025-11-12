@@ -5,6 +5,13 @@ package com.tennistime.bff.domain.model.types;
  */
 public enum ReservationStatus {
     AVAILABLE,
+    /**
+     * Marks a slot that currently lives only inside a customer's basket.
+     */
+    IN_BASKET,
+    /**
+     * Indicates that a checkout flow has started and the slot should be blocked system-wide.
+     */
     PENDING,
     CONFIRMED,
     CANCELED,
