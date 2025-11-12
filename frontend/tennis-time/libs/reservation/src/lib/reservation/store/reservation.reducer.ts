@@ -13,6 +13,8 @@ export interface ReservationState {
   basketLoading: boolean;
   checkoutStatus: LoadingStatus;
   paymentResult: PaymentInitiationResult | null;
+  paymentCompletionStatus: LoadingStatus;
+  paymentCompletionError: string | null;
   error: any;
 }
 
@@ -25,6 +27,8 @@ export const initialState: ReservationState = {
   basketLoading: false,
   checkoutStatus: { loading: false, loaded: false },
   paymentResult: null,
+  paymentCompletionStatus: { loading: false, loaded: false },
+  paymentCompletionError: null,
   error: null,
 };
 
@@ -101,6 +105,8 @@ export const reservationReducer = createReducer(
     basketLoading: false,
     checkoutStatus: { loading: false, loaded: false },
     paymentResult: null,
+    paymentCompletionStatus: { loading: false, loaded: false },
+    paymentCompletionError: null,
   })),
 
   on(ReservationActions.loadBasketFailure, (state, { error }) => ({
@@ -169,6 +175,8 @@ export const reservationReducer = createReducer(
     basketLoading: false,
     checkoutStatus: { loading: false, loaded: true },
     paymentResult: payment,
+    paymentCompletionStatus: { loading: false, loaded: false },
+    paymentCompletionError: null,
     error: null,
   })),
 
@@ -176,5 +184,24 @@ export const reservationReducer = createReducer(
     ...state,
     checkoutStatus: { loading: false, loaded: false },
     error,
+  })),
+
+  on(ReservationActions.completeMockPayment, (state) => ({
+    ...state,
+    paymentCompletionStatus: { loading: true, loaded: false },
+    paymentCompletionError: null,
+  })),
+
+  on(ReservationActions.completeMockPaymentSuccess, (state) => ({
+    ...state,
+    paymentCompletionStatus: { loading: false, loaded: true },
+    paymentCompletionError: null,
+    paymentResult: null,
+  })),
+
+  on(ReservationActions.completeMockPaymentFailure, (state, { error }) => ({
+    ...state,
+    paymentCompletionStatus: { loading: false, loaded: false },
+    paymentCompletionError: typeof error === 'string' ? error : 'PAYMENT_FAILED',
   }))
 );

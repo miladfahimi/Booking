@@ -23,9 +23,12 @@ export class ProfileEffects {
           map((profile: UserProfileDTO) =>
             ProfileActions.loadProfileSuccess({ profile })
           ),
-          catchError((error) =>
-            of(ProfileActions.loadProfileFailure({ error }))
-          )
+          catchError((error) => {
+            if (error?.status === 404) {
+              return of(ProfileActions.loadProfileNotFound());
+            }
+            return of(ProfileActions.loadProfileFailure({ error }));
+          })
         )
       )
     )

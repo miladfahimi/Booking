@@ -16,6 +16,10 @@ export const loadProfileFailure = createAction(
   props<{ error: any }>()
 );
 
+export const loadProfileNotFound = createAction(
+  '[Profile] Load Profile Not Found'
+);
+
 export const initializeProfile = createAction(
   '[Profile] Initialize Profile',
   props<{ payload: UserInitializationRequestDTO }>()

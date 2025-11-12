@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store, Action } from '@ngrx/store';
-import { of } from 'rxjs';
+import { from, of } from 'rxjs';
 import { catchError, map, mergeMap, withLatestFrom } from 'rxjs/operators';
 import * as ReservationActions from './reservation.actions';
 import { ReservationService } from '../services/reservation.service';
@@ -9,6 +9,7 @@ import { ServiceDTO, ProviderDTO } from '../types';
 import { selectBasket } from './reservation.selectors';
 import { ReservationCheckoutService } from '../services/reservation-checkout.service';
 import { ReservationBasketApiService } from '../services/reservation-basket-api.service';
+import { MockPaymentSessionService } from '../services/mock/mock-payment-session.service';
 
 @Injectable()
 export class ReservationEffects {
@@ -17,6 +18,7 @@ export class ReservationEffects {
     private reservationService: ReservationService,
     private reservationCheckoutService: ReservationCheckoutService,
     private reservationBasketApiService: ReservationBasketApiService,
+    private mockPaymentSession: MockPaymentSessionService,
     private store: Store
   ) { }
 
@@ -112,9 +114,19 @@ export class ReservationEffects {
         return this.reservationCheckoutService.checkout(basket).pipe(
           mergeMap(result => {
             const userId = basket[0]?.userId;
+            const totalAmount = basket.reduce((total, item) => total + (item.price || 0), 0);
+            let payment = result.payment;
+
+            if (this.mockPaymentSession.isEnabled()) {
+              payment = this.mockPaymentSession.beginSession({
+                payment,
+                reservations: result.reservations,
+                total: totalAmount
+              });
+            }
 
             const followUpActions: Action[] = [
-              ReservationActions.checkoutBasketSuccess({ reservations: result.reservations, payment: result.payment }),
+              ReservationActions.checkoutBasketSuccess({ reservations: result.reservations, payment }),
               ReservationActions.loadSlots({ date: action.date })
             ];
 
@@ -127,6 +139,35 @@ export class ReservationEffects {
           catchError(error =>
             of(ReservationActions.checkoutBasketFailure({ error }))
           )
+        );
+      })
+    )
+  );
+
+  completeMockPayment$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ReservationActions.completeMockPayment),
+      mergeMap(() => {
+        if (!this.mockPaymentSession.isEnabled()) {
+          return of(ReservationActions.completeMockPaymentFailure({ error: 'MOCK_DISABLED' }));
+        }
+
+        const session = this.mockPaymentSession.loadSession();
+        if (!session || !session.reservations.length) {
+          return of(ReservationActions.completeMockPaymentFailure({ error: 'NO_SESSION' }));
+        }
+
+        return this.reservationCheckoutService.finalizeReservations(session.reservations).pipe(
+          mergeMap(() => {
+            this.mockPaymentSession.clear();
+            const actions: Action[] = [
+              ReservationActions.completeMockPaymentSuccess(),
+              ReservationActions.loadSlots({ date: session.reservationDate })
+            ];
+
+            return from(actions);
+          }),
+          catchError(error => of(ReservationActions.completeMockPaymentFailure({ error })))
         );
       })
     )

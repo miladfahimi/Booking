@@ -21,6 +21,7 @@ export const profileReducer = createReducer(
   on(ProfileActions.loadProfile, (state) => ({ ...state, loading: true, error: undefined })),
   on(ProfileActions.loadProfileSuccess, (state, { profile }) => ({ ...state, loading: false, profile })),
   on(ProfileActions.loadProfileFailure, (state, { error }) => ({ ...state, loading: false, error })),
+  on(ProfileActions.loadProfileNotFound, (state) => ({ ...state, loading: false, profile: undefined, error: undefined })),
 
   on(ProfileActions.initializeProfile, (state) => ({ ...state, loading: true, error: undefined })),
   on(ProfileActions.initializeProfileSuccess, (state, { response }) => ({

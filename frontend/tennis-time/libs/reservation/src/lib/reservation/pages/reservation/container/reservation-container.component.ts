@@ -4,6 +4,8 @@ import { combineLatest, Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import * as jalaali from 'jalaali-js';
 import { CoreAuthService } from '@tennis-time/core';
+import { MockPaymentSessionService } from '../../../services/mock/mock-payment-session.service';
+import { MockPaymentNavigationService } from '../../../services/mock/mock-payment-navigation.service';
 
 import { addSlotToBasket, checkoutBasket, loadBasket, loadProvidersWithServices, loadSlots, removeSlotFromBasket } from '../../../store/reservation.actions';
 import { selectBasket, selectBasketTotal, selectCheckoutLoading, selectPaymentResult, selectProviders, selectSlotsByService, selectSlotsLoading } from '../../../store/reservation.selectors';
@@ -32,10 +34,13 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
   private readonly providerId = '11111111-1111-1111-1111-111111111111';
   private readonly destroy$ = new Subject<void>();
   private userId: string | null = null;
+  private lastOpenedPaymentId: string | null = null;
 
   constructor(
     private readonly store: Store,
-    private readonly coreAuthService: CoreAuthService
+    private readonly coreAuthService: CoreAuthService,
+    private readonly mockPaymentSession: MockPaymentSessionService,
+    private readonly mockPaymentNavigation: MockPaymentNavigationService
   ) {
     this.loading$ = this.store.select(selectSlotsLoading);
     this.basketItems$ = this.store.select(selectBasket);
@@ -49,7 +54,32 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
     ]).pipe(
       map(([slots, basket]) => this.mergeBasketSlots(slots, basket))
     );
+
+    this.paymentResult$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(payment => {
+        if (!payment) {
+          this.lastOpenedPaymentId = null;
+          return;
+        }
+
+        if (!this.mockPaymentSession.isEnabled()) {
+          return;
+        }
+
+        if (!payment.redirectUrl || !payment.paymentId) {
+          return;
+        }
+
+        if (this.lastOpenedPaymentId === payment.paymentId) {
+          return;
+        }
+
+        this.lastOpenedPaymentId = payment.paymentId;
+        this.mockPaymentNavigation.open(payment.redirectUrl);
+      });
   }
+
 
   ngOnInit(): void {
     this.userId = this.coreAuthService.getUserId();

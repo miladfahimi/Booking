@@ -1,0 +1,35 @@
+<div class="mock-payment" *ngIf="session as current">
+  <div class="mock-payment__panel">
+    <h1 class="mock-payment__title">درگاه پرداخت ش模ک</h1>
+    <div class="mock-payment__summary">
+      <div class="mock-payment__row">
+        <span>شناسه پرداخت</span>
+        <strong>{{ current.paymentId | faDigits }}</strong>
+      </div>
+      <div class="mock-payment__row" *ngIf="current.referenceNumber">
+        <span>کد مرجع</span>
+        <strong>{{ current.referenceNumber | faDigits }}</strong>
+      </div>
+      <div class="mock-payment__row">
+        <span>مبلغ</span>
+        <strong>{{ current.total | number:'1.0-0' | faDigits }} تومان</strong>
+      </div>
+    </div>
+
+    <div class="mock-payment__items">
+      <div class="mock-payment__item" *ngFor="let item of reservations">
+        <span>{{ item.reservationDate | faDigits }}</span>
+        <span>{{ item.startTime | faDigits }} ~ {{ item.endTime | faDigits }}</span>
+      </div>
+    </div>
+
+    <button type="button" class="mock-payment__submit" (click)="onConfirmPayment()" [disabled]="(completionLoading$ | async) ?? false">
+      <ng-container *ngIf="(completionLoading$ | async) ?? false; else submitLabel">در حال تایید...</ng-container>
+    </button>
+    <ng-template #submitLabel>پرداخت و بازگشت</ng-template>
+
+    <div class="mock-payment__error" *ngIf="(completionError$ | async) as error">
+      پرداخت با خطا روبرو شد. لطفا دوباره تلاش کنید.
+    </div>
+  </div>
+</div>

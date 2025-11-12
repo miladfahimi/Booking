@@ -105,3 +105,16 @@ export const checkoutBasketFailure = createAction(
   '[Reservation] Checkout Basket Failure',
   props<{ error: any }>()
 );
+
+export const completeMockPayment = createAction(
+  '[Reservation] Complete Mock Payment'
+);
+
+export const completeMockPaymentSuccess = createAction(
+  '[Reservation] Complete Mock Payment Success'
+);
+
+export const completeMockPaymentFailure = createAction(
+  '[Reservation] Complete Mock Payment Failure',
+  props<{ error: any }>()
+);

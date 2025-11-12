@@ -23,6 +23,11 @@ import {
 import { TimelineComponent } from './pages/reservation/container/timeline/timeline.component';
 import { TimelineSlotModalComponent } from './pages/reservation/container/timeline/tileline-slot-modal/timeline-slot-modal.component';
 import { ReservationBasketComponent } from './pages/reservation/container/basket/reservation-basket.component';
+import { ReservationMockPaymentComponent } from './pages/mock-payment/reservation-mock-payment.component';
+import { environment } from '@tennis-time/environment';
+import { RESERVATION_FEATURE_CONFIG } from './config/reservation-feature-config.token';
+import { MockPaymentSessionService } from './services/mock/mock-payment-session.service';
+import { ReservationCheckoutService } from './services/reservation-checkout.service';
 
 @NgModule({
   declarations: [
@@ -35,6 +40,7 @@ import { ReservationBasketComponent } from './pages/reservation/container/basket
     TimelineComponent,
     TimelineSlotModalComponent,
     ReservationBasketComponent,
+    ReservationMockPaymentComponent,
   ],
   imports: [
     FormsModule,
@@ -46,8 +52,16 @@ import { ReservationBasketComponent } from './pages/reservation/container/basket
     EffectsModule.forFeature([ReservationEffects])
   ],
   providers: [
-    ReservationService,  // Ensure ReservationService is provided here if not provided in root
+    ReservationService,
     CoreAuthService,
+    {
+      provide: RESERVATION_FEATURE_CONFIG,
+      useValue: {
+        useMockPaymentGateway: environment.mockPaymentPageEnabled
+      }
+    },
+    MockPaymentSessionService,
+    ReservationCheckoutService
   ]
 })
 export class ReservationModule { }

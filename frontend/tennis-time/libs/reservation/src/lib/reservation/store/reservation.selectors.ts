@@ -113,3 +113,18 @@ export const selectPaymentResult = createSelector(
   selectReservationState,
   (state: ReservationState) => state.paymentResult
 );
+
+export const selectPaymentCompletionStatus = createSelector(
+  selectReservationState,
+  (state: ReservationState) => state.paymentCompletionStatus
+);
+
+export const selectPaymentCompletionLoading = createSelector(
+  selectPaymentCompletionStatus,
+  (status) => status.loading
+);
+
+export const selectPaymentCompletionError = createSelector(
+  selectReservationState,
+  (state: ReservationState) => state.paymentCompletionError
+);
