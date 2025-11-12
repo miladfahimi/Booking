@@ -162,6 +162,26 @@ public class ReservationAggregationService {
             throw new ExternalServiceException("An error occurred while creating reservations in bulk.", e);
         }
     }
+
+    /**
+     * Updates the status of a reservation by delegating to the reservation service.
+     *
+     * @param reservationId the reservation identifier to update
+     * @param status the new status to apply
+     * @return the updated reservation
+     */
+    public ReservationDTO updateReservationStatus(UUID reservationId, ReservationStatus status) {
+        try {
+            logger.info("Updating reservation {} to status {}", reservationId, status);
+            return reservationServiceClient.updateReservationStatus(reservationId, status);
+        } catch (FeignException.NotFound e) {
+            logger.error("Reservation with ID {} not found while updating status.", reservationId);
+            throw new ReservationNotFoundException("Reservation with ID " + reservationId + " not found.", e);
+        } catch (FeignException e) {
+            logger.error("Error occurred while updating reservation status for ID {}: {}", reservationId, e.getMessage());
+            throw new ExternalServiceException("An error occurred while updating reservation status.", e);
+        }
+    }
     /**
      * Fetches a reservation by its ID.
      *

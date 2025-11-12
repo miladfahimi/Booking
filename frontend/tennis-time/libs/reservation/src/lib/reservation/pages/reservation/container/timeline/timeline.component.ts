@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Out
 import { ReservationStatus, ServiceDTO, SlotDTO } from '../../../../types';
 import { TimelineSlotDetails } from './tileline-slot-modal/timeline-slot-modal.component';
 import { AuthFacadeService } from 'libs/shared/src/lib/shared/auth/auth-facade-service';
+import { ConditionalExpr } from '@angular/compiler';
 
 type SlotsByService = Record<string, SlotDTO[]>;
 

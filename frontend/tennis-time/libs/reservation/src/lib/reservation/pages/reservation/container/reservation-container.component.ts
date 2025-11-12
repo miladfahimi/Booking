@@ -148,8 +148,11 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
     const service = this.items.find(item => item.id === slot.serviceId);
     const price = slot.price ?? service?.price ?? 0;
 
+    // --- CHANGE 1: Use composite key as slotId inside basket to keep items unique per service+slot
+    const compositeSlotId = `${slot.serviceId}:${slot.slotId}`;
+
     const item: ReservationBasketItem = {
-      slotId: slot.slotId,
+      slotId: compositeSlotId,           // <— composite id
       serviceId: slot.serviceId,
       providerId: slot.providerId,
       serviceName: slot.serviceName,
@@ -166,6 +169,7 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
   }
 
   onRemoveFromBasket(slotId: string): void {
+    // This now receives the composite slotId from the basket component
     this.store.dispatch(removeSlotFromBasket({ slotId }));
   }
 
@@ -174,21 +178,23 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
     this.store.dispatch(checkoutBasket({ date }));
   }
 
-  private mergeBasketSlots(slotsByService: Record<string, SlotDTO[]>, basket: ReservationBasketItem[]): Record<string, SlotDTO[]> {
-    if (!slotsByService) {
-      return {};
-    }
+  private mergeBasketSlots(
+    slotsByService: Record<string, SlotDTO[]>,
+    basket: ReservationBasketItem[]
+  ): Record<string, SlotDTO[]> {
+    if (!slotsByService) return {};
 
-    const selectedIds = new Set(basket.map(item => item.slotId));
+    // --- CHANGE 2: Accept both composite and legacy slotIds from basket
+    const basketKeys = new Set(
+      basket.map(i => (i.slotId.includes(':') ? i.slotId : `${i.serviceId}:${i.slotId}`))
+    );
+
     const next: Record<string, SlotDTO[]> = {};
 
     Object.keys(slotsByService).forEach(serviceId => {
-      const slots = slotsByService[serviceId];
-      next[serviceId] = (slots ?? []).map(slot => {
-        if (selectedIds.has(slot.slotId)) {
-          return { ...slot, status: ReservationStatus.PENDING };
-        }
-        return slot;
+      next[serviceId] = (slotsByService[serviceId] ?? []).map(slot => {
+        const key = `${serviceId}:${slot.slotId}`;
+        return basketKeys.has(key) ? { ...slot, status: ReservationStatus.PENDING } : slot;
       });
     });
 

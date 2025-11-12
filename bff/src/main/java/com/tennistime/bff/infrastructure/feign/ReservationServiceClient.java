@@ -7,6 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -33,6 +34,12 @@ public interface ReservationServiceClient {
 
     @PostMapping("/reservations/bulk")
     List<ReservationDTO> createReservations(@RequestBody List<ReservationDTO> reservations);
+
+    @PutMapping("/reservations/{id}/status")
+    ReservationDTO updateReservationStatus(
+            @PathVariable("id") UUID reservationId,
+            @RequestParam("status") ReservationStatus status
+    );
 
     @GetMapping("/reservations/service/{serviceId}")
     List<ReservationDTO> getReservationsByServiceId(@PathVariable("serviceId") UUID serviceId);

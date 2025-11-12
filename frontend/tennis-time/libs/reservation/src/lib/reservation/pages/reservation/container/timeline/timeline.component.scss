@@ -39,10 +39,6 @@ padding-bottom: 44px;
   min-width: max-content;
 }
 
-.timeline__column + .timeline__column {
-  border-inline-start: 1px solid rgba(15, 23, 42, 0.08); /* خیلی لطیف */
-}
-
 .timeline__guides {
   position: absolute;
   left: 0;
@@ -181,8 +177,18 @@ padding-bottom: 44px;
 }
 
 .timeline-slot--pending {
-  background-color: #fef9c3;   /* yellow-100 */
-  border-left-color: #facc15;  /* yellow-400 */
+  border-left: 3px solid #bc9602;
+  background: repeating-linear-gradient(
+    45deg,
+    #e3da79 0 6px,
+    #fef08a 6px 12px
+  );
+  animation: moveStripes 5s linear infinite;
+}
+
+@keyframes moveStripes {
+  from { background-position: 0 0; }
+  to { background-position: 60px 0; }
 }
 
 /* تعمیرات/نگهداری: خاکستری روشن */

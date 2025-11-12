@@ -2,6 +2,7 @@ package com.tennistime.bff.application.controller;
 
 import com.tennistime.bff.application.dto.*;
 import com.tennistime.bff.application.service.ReservationAggregationService;
+import com.tennistime.bff.domain.model.types.ReservationStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -53,6 +54,22 @@ public class UserPortalController {
     public ResponseEntity<List<ReservationDTO>> createReservations(@RequestBody List<ReservationDTO> reservationDTOs) {
         List<ReservationDTO> createdReservations = reservationAggregationService.createReservations(reservationDTOs);
         return ResponseEntity.ok(createdReservations);
+    }
+
+    /**
+     * Updates the status of a reservation.
+     *
+     * @param reservationId the reservation identifier to update
+     * @param status the new status to apply
+     * @return a ResponseEntity containing the updated reservation
+     */
+    @PutMapping("/reservations/{reservationId}/status")
+    public ResponseEntity<ReservationDTO> updateReservationStatus(
+            @PathVariable UUID reservationId,
+            @RequestParam ReservationStatus status
+    ) {
+        ReservationDTO updatedReservation = reservationAggregationService.updateReservationStatus(reservationId, status);
+        return ResponseEntity.ok(updatedReservation);
     }
 
     /**
