@@ -203,5 +203,33 @@ export const reservationReducer = createReducer(
     ...state,
     paymentCompletionStatus: { loading: false, loaded: false },
     paymentCompletionError: typeof error === 'string' ? error : 'PAYMENT_FAILED',
-  }))
+  })),
+
+  on(ReservationActions.slotStatusUpdated, (state, { notification }) => {
+    const slots = state.slotsByService[notification.serviceId];
+    if (!slots || !slots.length) {
+      return state;
+    }
+    let changed = false;
+    const updatedSlots = slots.map(slot => {
+      if (slot.slotId === notification.slotId || slot.slotId === notification.compositeSlotId) {
+        if (slot.status === notification.status) {
+          return slot;
+        }
+        changed = true;
+        return { ...slot, status: notification.status };
+      }
+      return slot;
+    });
+    if (!changed) {
+      return state;
+    }
+    return {
+      ...state,
+      slotsByService: {
+        ...state.slotsByService,
+        [notification.serviceId]: updatedSlots,
+      },
+    };
+  })
 );

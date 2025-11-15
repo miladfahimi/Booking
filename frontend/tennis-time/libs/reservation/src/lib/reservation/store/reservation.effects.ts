@@ -10,6 +10,7 @@ import { selectBasket } from './reservation.selectors';
 import { ReservationCheckoutService } from '../services/reservation-checkout.service';
 import { ReservationBasketApiService } from '../services/reservation-basket-api.service';
 import { MockPaymentSessionService } from '../services/mock/mock-payment-session.service';
+import { SlotStatusRealtimeService } from '../realtime/slot-status-realtime.service';
 
 @Injectable()
 export class ReservationEffects {
@@ -19,8 +20,17 @@ export class ReservationEffects {
     private reservationCheckoutService: ReservationCheckoutService,
     private reservationBasketApiService: ReservationBasketApiService,
     private mockPaymentSession: MockPaymentSessionService,
-    private store: Store
-  ) { }
+    private store: Store,
+    private slotStatusRealtime: SlotStatusRealtimeService
+  ) {
+    this.slotStatusRealtime.connect();
+  }
+
+  slotStatusUpdates$ = createEffect(() =>
+    this.slotStatusRealtime.updates$.pipe(
+      map(notification => ReservationActions.slotStatusUpdated({ notification }))
+    )
+  );
 
   loadSlots$ = createEffect(() =>
     this.actions$.pipe(

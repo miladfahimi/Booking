@@ -1,5 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { ProviderDTO, ServiceDTO } from '../types';
+import { SlotStatusNotification } from '../realtime/slot-status-notification';
 import { ReservationBasketItem, ReservationSummary } from '../types/reservation-basket.types';
 import { PaymentInitiationResult } from '../types/reservation-payment.types';
 
@@ -117,4 +118,9 @@ export const completeMockPaymentSuccess = createAction(
 export const completeMockPaymentFailure = createAction(
   '[Reservation] Complete Mock Payment Failure',
   props<{ error: any }>()
+);
+
+export const slotStatusUpdated = createAction(
+  '[Reservation] Slot Status Updated',
+  props<{ notification: SlotStatusNotification }>()
 );
