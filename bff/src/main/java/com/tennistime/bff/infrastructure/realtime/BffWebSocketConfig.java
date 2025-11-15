@@ -1,4 +1,4 @@
-package com.tennistime.reservation.infrastructure.realtime;
+package com.tennistime.bff.infrastructure.realtime;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -7,19 +7,17 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
 /**
- * Configures the STOMP broker responsible for delivering reservation slot status updates.
+ * Configures the outbound WebSocket endpoint exposed by the BFF.
  */
 @Configuration
 @EnableWebSocketMessageBroker
-public class ReservationWebSocketConfig implements WebSocketMessageBrokerConfigurer {
+public class BffWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    /** {@inheritDoc} */
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/api/v1/ws/reservation").setAllowedOriginPatterns("*");
+        registry.addEndpoint("/ws/bff").setAllowedOriginPatterns("*");
     }
 
-    /** {@inheritDoc} */
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.enableSimpleBroker("/topic");
