@@ -2,9 +2,11 @@ package com.tennistime.reservation.application.service;
 
 import com.tennistime.reservation.application.dto.ReservationBasketItemDTO;
 import com.tennistime.reservation.application.mapper.ReservationBasketItemMapper;
+import com.tennistime.reservation.application.notification.SlotStatusNotifier;
 import com.tennistime.reservation.domain.model.basket.ReservationBasketItem;
 import com.tennistime.reservation.domain.model.types.ReservationStatus;
 import com.tennistime.reservation.domain.repository.ReservationBasketItemRepository;
+import com.tennistime.reservation.domain.notification.SlotStatusNotification;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +30,7 @@ public class ReservationBasketService {
 
     private final ReservationBasketItemRepository basketItemRepository;
     private final ReservationBasketItemMapper basketItemMapper;
+    private final SlotStatusNotifier slotStatusNotifier;
 
     /**
      * Retrieves the current basket items for a user.
@@ -68,6 +71,7 @@ public class ReservationBasketService {
         }
 
         ReservationBasketItem persisted = basketItemRepository.save(basketItem);
+        notifyStatusChange(persisted, persisted.getStatus());
         return basketItemMapper.toDTO(persisted);
     }
 
@@ -81,7 +85,12 @@ public class ReservationBasketService {
     public void removeItem(UUID userId, String slotId) {
         Objects.requireNonNull(slotId, "Slot identifier is required");
         logger.info("Removing slot {} from user {} basket", slotId, userId);
+        ReservationBasketItem basketItem = basketItemRepository.findByUserIdAndSlotId(userId, slotId)
+                .orElse(null);
         basketItemRepository.deleteByUserIdAndSlotId(userId, slotId);
+        if (basketItem != null) {
+            notifyStatusChange(basketItem, ReservationStatus.AVAILABLE);
+        }
     }
 
     /**
@@ -92,7 +101,9 @@ public class ReservationBasketService {
     @Transactional
     public void clearBasket(UUID userId) {
         logger.info("Clearing basket for user {}", userId);
+        List<ReservationBasketItem> items = basketItemRepository.findByUserId(userId);
         basketItemRepository.deleteByUserId(userId);
+        items.forEach(item -> notifyStatusChange(item, ReservationStatus.AVAILABLE));
     }
 
     /**
@@ -111,6 +122,37 @@ public class ReservationBasketService {
                 .orElseThrow(() -> new IllegalArgumentException("Basket item not found for slot " + slotId));
         basketItem.setStatus(status);
         ReservationBasketItem persisted = basketItemRepository.save(basketItem);
+        notifyStatusChange(persisted, persisted.getStatus());
         return basketItemMapper.toDTO(persisted);
+    }
+
+    /**
+     * Publishes a real-time notification describing the provided basket item's status.
+     *
+     * @param basketItem basket item containing slot identifiers
+     * @param status     resolved status to propagate
+     */
+    private void notifyStatusChange(ReservationBasketItem basketItem, ReservationStatus status) {
+        SlotStatusNotification notification = SlotStatusNotification.builder()
+                .slotId(extractRawSlotId(basketItem.getSlotId()))
+                .compositeSlotId(basketItem.getSlotId())
+                .serviceId(basketItem.getServiceId())
+                .status(status)
+                .build();
+        slotStatusNotifier.publish(notification);
+    }
+
+    /**
+     * Extracts the underlying slot identifier from the composite key stored in the basket.
+     *
+     * @param compositeSlotId identifier stored in persistence
+     * @return raw slot identifier without service prefix
+     */
+    private String extractRawSlotId(String compositeSlotId) {
+        int separatorIndex = compositeSlotId.indexOf(':');
+        if (separatorIndex < 0) {
+            return compositeSlotId;
+        }
+        return compositeSlotId.substring(separatorIndex + 1);
     }
 }

@@ -52,8 +52,10 @@ public class DevSecurityConfig {
                                 "/swagger-ui.html",
                                 "/cache/invalidate",
                                 "/logout",
-                                "/reservations/**"
+                                "/reservations/**",
+                                "/ws/reservation/**"
                         ).permitAll()
+                        // Allowing eas
                         // Allowing easy testing for authenticated endpoints
                         // Ensure that only authorized roles can access specific endpoints
                         .requestMatchers("/reservations/test/admin/**").hasRole("ADMIN")
