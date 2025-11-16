@@ -21,9 +21,9 @@ export interface TimelineSlotDetails {
   readonly price?: number | null;
 }
 @Component({
-  selector: 'app-timeline-slot-modal',
-  templateUrl: './timeline-slot-modal.component.html',
-  styleUrls: ['./timeline-slot-modal.component.scss'],
+  selector: 'app-timeline-slot-modals',
+  templateUrl: './timeline-slot-modals.component.html',
+  styleUrls: ['./timeline-slot-modals.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TimelineSlotModalComponent {
@@ -31,10 +31,29 @@ export class TimelineSlotModalComponent {
   @Output() close = new EventEmitter<void>();
   @Output() addToBasket = new EventEmitter<TimelineSlotDetails>();
   @Output() cancel = new EventEmitter<string>();
-  readonly ReservationStatusEnum = ReservationStatus;
 
   onClose(): void {
     this.close.emit();
+  }
+
+  get isMineSlot(): boolean {
+    return !!this.slot && this.slot.status === ReservationStatus.CONFIRMED && !!this.slot.isMine;
+  }
+
+  get isBookedSlot(): boolean {
+    return !!this.slot && this.slot.status === ReservationStatus.CONFIRMED && !this.slot.isMine;
+  }
+
+  get isAvailableSlot(): boolean {
+    return (
+      !!this.slot &&
+      this.slot.status !== ReservationStatus.CONFIRMED &&
+      this.slot.status !== ReservationStatus.PENDING
+    );
+  }
+
+  get isPendingSlot(): boolean {
+    return !!this.slot && this.slot.status === ReservationStatus.PENDING;
   }
 
   onCancel(): void {
@@ -42,17 +61,8 @@ export class TimelineSlotModalComponent {
     this.cancel.emit(this.slot.slotId);
   }
 
-  get canCancel(): boolean {
-    if (!this.slot?.startTime || this.slot.startTime.indexOf('T') === -1) return true;
-    const start = new Date(this.slot.startTime);
-    if (isNaN(start.getTime())) return true;
-    const ms = start.getTime() - Date.now();
-    const hours = ms / 36e5;
-    return hours >= 24;
-  }
-
   onRemindIfCanceled() {
-    // TODO: 
+    // TODO:
   }
 
 

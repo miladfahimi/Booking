@@ -1,0 +1,38 @@
+@if (slot; as currentSlot) {
+<div class="slot-modal__body slot-modal__body--narrative">
+  <p class="slot-modal__intro">
+    این زمان برای
+    <strong class="slot-modal__highlight">{{ currentSlot.serviceName | faDigits }}</strong>
+    از
+    <span class="slot-modal__chip slot-modal__chip--time">
+      {{ currentSlot.start | faDigits }} تا {{ currentSlot.end | faDigits }}
+    </span>
+    به مدت
+    <span class="slot-modal__emphasis">
+      {{ currentSlot.durationMinutes | faDigits }} دقیقه
+    </span>
+    <span>
+      <strong class="slot-modal__highlight"> توسط شما رزرو شده است.</strong>
+    </span>
+  </p>
+
+  <div class="slot-modal__line">
+    وضعیت:
+    <span class="slot-modal__status slot-modal__status--mine">
+      {{ currentSlot.statusLabel | faDigits }}
+    </span>
+  </div>
+
+  <p class="slot-modal__note">
+    درخواست لغو صرفاً در شرایطی پذیرفته می‌شود که بیش از ۲۴ ساعت تا آغاز نوبت باقی مانده باشد.
+    در این صورت، مبلغ پرداختی قابل استرداد خواهد بود.
+  </p>
+</div>
+
+<footer class="slot-modal__footer slot-modal__footer--mine">
+  <button type="button" class="slot-modal__button slot-modal__button--cancel" [disabled]="!canCancel"
+    (click)="onCancel()">
+    لغو رزرو
+  </button>
+</footer>
+}

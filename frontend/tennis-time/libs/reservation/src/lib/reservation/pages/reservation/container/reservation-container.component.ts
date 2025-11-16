@@ -12,7 +12,7 @@ import { selectBasket, selectBasketTotal, selectCheckoutLoading, selectPaymentRe
 import { ProviderDTO, ReservationStatus, ServiceDTO, SlotDTO } from '../../../types';
 import { ReservationBasketItem } from '../../../types/reservation-basket.types';
 import { PaymentInitiationResult } from '../../../types/reservation-payment.types';
-import { TimelineSlotDetails } from './timeline/tileline-slot-modal/timeline-slot-modal.component';
+import { TimelineSlotDetails } from './timeline/tileline-slot-modals/timeline-slot-modals.component';
 
 @Component({
   selector: 'app-reservation-container',

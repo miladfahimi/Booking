@@ -1,0 +1,33 @@
+@if (slot; as currentSlot) {
+<div class="slot-modal" role="dialog" aria-modal="true">
+  <div class="slot-modal__backdrop" (click)="onClose()"></div>
+
+  <div class="slot-modal__content" role="document">
+    <header class="slot-modal__header">
+      <button type="button" class="slot-modal__close" (click)="onClose()" aria-label="بستن">
+        &times;
+      </button>
+    </header>
+
+    @if (isMineSlot) {
+    <app-timeline-slot-modal-model-mine [slot]="currentSlot" (cancel)="onCancel()">
+    </app-timeline-slot-modal-model-mine>
+    }
+
+    @if (isAvailableSlot) {
+    <app-timeline-slot-modal-model-available [slot]="currentSlot" (add)="onAddToBasket()">
+    </app-timeline-slot-modal-model-available>
+    }
+
+    @if (isPendingSlot) {
+    <app-timeline-slot-modal-model-pending [slot]="currentSlot">
+    </app-timeline-slot-modal-model-pending>
+    }
+
+    @if (isBookedSlot) {
+    <app-timeline-slot-modal-model-booked [slot]="currentSlot" (remind)="onRemindIfCanceled()">
+    </app-timeline-slot-modal-model-booked>
+    }
+  </div>
+</div>
+}

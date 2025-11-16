@@ -21,13 +21,17 @@ import {
   ReservationCalendarMobileComponent
 } from "./pages/reservation/container/calendar/calendar-mobile/reservation-calendar-mobile.component";
 import { TimelineComponent } from './pages/reservation/container/timeline/timeline.component';
-import { TimelineSlotModalComponent } from './pages/reservation/container/timeline/tileline-slot-modal/timeline-slot-modal.component';
+import { TimelineSlotModalComponent } from './pages/reservation/container/timeline/tileline-slot-modals/timeline-slot-modals.component';
 import { ReservationBasketComponent } from './pages/reservation/container/basket/reservation-basket.component';
 import { ReservationMockPaymentComponent } from './pages/mock-payment/reservation-mock-payment.component';
 import { environment } from '@tennis-time/environment';
 import { RESERVATION_FEATURE_CONFIG } from './config/reservation-feature-config.token';
 import { MockPaymentSessionService } from './services/mock/mock-payment-session.service';
 import { ReservationCheckoutService } from './services/reservation-checkout.service';
+import { MineSlotModalModelComponent } from './pages/reservation/container/timeline/tileline-slot-modals/mine-slot-modal/mine-slot-modal.model.component';
+import { AvailableSlotModalModelComponent } from './pages/reservation/container/timeline/tileline-slot-modals/available-slot-modal/available-slot-modal.model.component';
+import { BookedSlotModalModelComponent } from './pages/reservation/container/timeline/tileline-slot-modals/booked-slot-modal/booked-slot-modal.model.component';
+import { PendingSlotModalModelComponent } from './pages/reservation/container/timeline/tileline-slot-modals/pending-slot-modal/pending-slot-modal.model.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +45,10 @@ import { ReservationCheckoutService } from './services/reservation-checkout.serv
     TimelineSlotModalComponent,
     ReservationBasketComponent,
     ReservationMockPaymentComponent,
+    MineSlotModalModelComponent,
+    AvailableSlotModalModelComponent,
+    BookedSlotModalModelComponent,
+    PendingSlotModalModelComponent,
   ],
   imports: [
     FormsModule,
