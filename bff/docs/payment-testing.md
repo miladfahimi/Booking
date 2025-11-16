@@ -1,105 +1,68 @@
-# Testing the BFF payment flow in a local development environment
+# Realtime slot status notifications
 
-The BFF proxies every payment-related operation to the reservation service. In the development profile the reservation service ships with `reservation.payment.sep.mock-enabled=true`, so no external SEP gateway is contacted and the entire flow can be exercised locally.【F:reservation/src/main/resources/application-dev.properties†L45-L53】【F:reservation/src/main/java/com/tennistime/reservation/application/service/PaymentService.java†L51-L90】【F:reservation/src/main/java/com/tennistime/reservation/application/service/PaymentService.java†L111-L139】
+This document describes the realtime pipeline that keeps slot availability synchronized across clients and outlines the steps required to migrate the flow to a dedicated notification service when the number of notifications grows.
 
-Follow the steps below to run end-to-end tests against the BFF while the mock is enabled.
+## Current architecture
 
-## 1. Start the stack
+The realtime implementation is intentionally isolated inside dedicated packages so that it can be replaced without touching unrelated modules.
 
-From the repository root start the docker-compose development environment. This brings up PostgreSQL, Redis, the Authentication service, the Reservation service, and the BFF on their default ports.【F:README.md†L43-L92】
+### Reservation service
 
-```bash
-docker-compose -f devops/docker-compose.dev.yml up --build
+* `ReservationWebSocketConfig` enables the Spring messaging broker, exposes `/ws/reservation`, and configures `/topic/**` as brokered destinations so that downstream bridges can subscribe with plain STOMP.【F:reservation/src/main/java/com/tennistime/reservation/infrastructure/realtime/ReservationWebSocketConfig.java†L1-L28】
+* All domain services send updates through the `SlotStatusNotifier` interface; the default implementation (`WebSocketSlotStatusNotifier`) simply calls `SimpMessagingTemplate.convertAndSend("/topic/slot-status", notification)` to broadcast payloads produced by the services.【F:reservation/src/main/java/com/tennistime/reservation/infrastructure/realtime/WebSocketSlotStatusNotifier.java†L3-L28】
+* `ReservationBasketService` is responsible for emitting `IN_BASKET`, `PENDING`, and `AVAILABLE` events whenever a basket item is added, updated, or cleared. It builds `SlotStatusNotification` objects with both the composite slot id (service + slot) and the stripped slot id so consumers can match either format.【F:reservation/src/main/java/com/tennistime/reservation/application/service/ReservationBasketService.java†L55-L157】
+* `ReservationService` emits `PENDING`, `CONFIRMED`, and other final reservation statuses after persistence operations so the rest of the system receives the definitive availability state for each slot.【F:reservation/src/main/java/com/tennistime/reservation/application/service/ReservationService.java†L77-L337】
+
+### BFF
+
+* `BffWebSocketConfig` mirrors the reservation WebSocket configuration, exposing `/ws/bff` for browsers while brokering outbound messages on `/topic/slot-status`. This keeps the frontend shielded from the reservation service credentials or topology.【F:bff/src/main/java/com/tennistime/bff/infrastructure/realtime/BffWebSocketConfig.java†L1-L26】
+* `RealtimeProperties` records the upstream reservation endpoint/topic and the downstream BFF topic, allowing deployments to override URLs without code changes.【F:bff/src/main/java/com/tennistime/bff/infrastructure/realtime/RealtimeProperties.java†L1-L30】
+* `RealtimeClientConfig` wires a resilient `WebSocketStompClient` (plus message converter and scheduler) that the bridge component uses to subscribe to the reservation topic.【F:bff/src/main/java/com/tennistime/bff/infrastructure/realtime/RealtimeClientConfig.java†L1-L65】
+* `ReservationSlotStatusBridge` connects to `/ws/reservation`, subscribes to `/topic/slot-status`, and republished every `SlotStatusNotification` to the local `/topic/slot-status` endpoint exposed by the BFF. The bridge also re-establishes the upstream session when transport errors occur.【F:bff/src/main/java/com/tennistime/bff/infrastructure/realtime/ReservationSlotStatusBridge.java†L1-L92】
+
+### Frontend
+
+* `SlotStatusRealtimeService` opens a raw WebSocket to `/api/v1/ws/bff`, issues STOMP `CONNECT`/`SUBSCRIBE` frames, parses each JSON body into a `SlotStatusNotification`, and emits the value to RxJS subscribers. Automatic reconnects ensure that temporary outages do not break the UI stream.【F:frontend/tennis-time/libs/reservation/src/lib/reservation/realtime/slot-status-realtime.service.ts†L1-L154】
+* `ReservationEffects` wires the service into NgRx by turning every realtime update into a `slotStatusUpdated` action when the effects class is constructed, guaranteeing that consumers start listening as soon as the feature module loads.【F:frontend/tennis-time/libs/reservation/src/lib/reservation/store/reservation.effects.ts†L1-L140】
+* `reservation.reducer` reconciles the updates by locating the matching slot (by service id + slot id) and replacing its `status`. The UI instantly re-renders because selectors read from the `slotsByService` dictionary.【F:frontend/tennis-time/libs/reservation/src/lib/reservation/store/reservation.reducer.ts†L208-L234】
+
+These layers deliberately hide transport details from the domain so that the notifier can be swapped for a message broker or another protocol without touching controllers or UI state management.
+
+## Slot lifecycle and example flow
+
+The domain uses the `ReservationStatus` enum to describe every state a slot can be in. Key stages are `AVAILABLE`, `IN_BASKET`, `PENDING`, and `CONFIRMED`, while `CANCELED`, `EXPIRED`, `MAINTENANCE`, and `ADMIN_HOLD` are reserved for administrative flows.【F:reservation/src/main/java/com/tennistime/reservation/domain/model/types/ReservationStatus.java†L8-L37】 The following illustrates how those states propagate through the realtime stack:
+
+1. **User picks a slot (IN_BASKET):** `ReservationBasketService.addOrUpdateItem` sets the basket entry to `IN_BASKET` and publishes a notification so every client knows the slot is temporarily locked for that user.【F:reservation/src/main/java/com/tennistime/reservation/application/service/ReservationBasketService.java†L55-L142】
+2. **Checkout begins (PENDING):** The frontend calls the basket status endpoint, which delegates to `ReservationBasketService.updateStatus`. This method saves the new status (typically `PENDING`) and emits another notification, indicating that payment has started and the slot should appear blocked for everyone.【F:reservation/src/main/java/com/tennistime/reservation/application/service/ReservationBasketService.java†L117-L142】
+3. **Payment succeeds (CONFIRMED):** During checkout the client uses `ReservationService` APIs to create reservations (`save`, `saveAll`) which start as `PENDING` and then invokes `updateReservationStatus` (e.g., via `ReservationCheckoutService.confirmReservations`) to mark them `CONFIRMED`. Each persistence call triggers `notifyStatusChange`, which broadcasts the final state through the notifier.【F:reservation/src/main/java/com/tennistime/reservation/application/service/ReservationService.java†L77-L337】【F:frontend/tennis-time/libs/reservation/src/lib/reservation/services/reservation-checkout.service.ts†L91-L123】
+4. **User abandons checkout (AVAILABLE):** Removing a basket entry or clearing the basket calls `notifyStatusChange(..., ReservationStatus.AVAILABLE)`, releasing the slot for others. Likewise, cancellation flows inside `ReservationService` produce the relevant status transitions.【F:reservation/src/main/java/com/tennistime/reservation/application/service/ReservationBasketService.java†L84-L142】【F:reservation/src/main/java/com/tennistime/reservation/application/service/ReservationService.java†L122-L153】
+
+Because every state change goes through the same notifier interface, additional transitions (e.g., `EXPIRED`) automatically feed the realtime channel without touching the transport layer.
+
+## Slot status payload contract
+
+All layers exchange the `SlotStatusNotification` DTO, which carries both the `slotId` and `compositeSlotId`, the owning `serviceId`, and the latest `ReservationStatus`. The composite identifier (service + slot) lets consumers disambiguate identical slot ids served by different services, while `slotId` helps UI components that only know the raw slot key.【F:reservation/src/main/java/com/tennistime/reservation/domain/notification/SlotStatusNotification.java†L12-L25】【F:bff/src/main/java/com/tennistime/bff/domain/realtime/SlotStatusNotification.java†L1-L21】 When migrating to another notifier implementation, keep this payload stable so that the frontend continues to work without recompilation.
+
+## Configuration
+
+## Configuration
+
+Default connection settings live in the following properties:
+
+```
+realtime.reservation.url=ws://localhost:8085/ws/reservation
+realtime.reservation.topic=/topic/slot-status
+realtime.bff.topic=/topic/slot-status
 ```
 
-Keep the stack running in a separate terminal.
+Frontend builds use `environment.slotStatusWebSocketUrl` and `environment.slotStatusTopic`. Override the variables per environment (for example via `RESERVATION_REALTIME_URL`) to point to deployed services.
 
-## 2. Obtain a JWT access token
+## Migrating to a dedicated notification service
 
-Authentication endpoints are exposed at `http://localhost:8082/api/v1/auth`. The database is seeded with several demo users whose passwords are all `123` (bcrypt-hashed in `data.sql`).【F:authentication/src/main/resources/data.sql†L1-L8】
+1. **Introduce a message broker:** Replace `WebSocketSlotStatusNotifier` with a publisher that writes to a broker (Kafka, Redis Streams, etc.) but continue to expose it through `SlotStatusNotifier`. No other class should need to know whether messages go through STOMP or a broker.【F:reservation/src/main/java/com/tennistime/reservation/infrastructure/realtime/WebSocketSlotStatusNotifier.java†L3-L28】
+2. **Add a broker consumer inside the BFF (temporary):** Instead of connecting directly to `/ws/reservation`, create a consumer component next to `ReservationSlotStatusBridge` that subscribes to the broker topic and forwards updates to `/topic/slot-status`. This allows you to verify the new delivery mechanism before standing up a new app.【F:bff/src/main/java/com/tennistime/bff/infrastructure/realtime/ReservationSlotStatusBridge.java†L1-L92】
+3. **Spin up the notification service:** Move the WebSocket endpoint currently configured by `BffWebSocketConfig` into the new application and let it subscribe to the broker topic. Keep the STOMP topic and payload identical so the frontend does not notice the change.【F:bff/src/main/java/com/tennistime/bff/infrastructure/realtime/BffWebSocketConfig.java†L1-L26】
+4. **Repoint the frontend:** Update `slotStatusWebSocketUrl` to the notification service domain. Because the topic remains `/topic/slot-status`, the client reconnect logic in `SlotStatusRealtimeService` keeps working as-is.【F:frontend/tennis-time/libs/reservation/src/lib/reservation/realtime/slot-status-realtime.service.ts†L19-L154】
+5. **Retire the bridge:** Once the new service proves stable, delete `ReservationSlotStatusBridge`, the `RealtimeClientConfig` beans, and the old WebSocket endpoint from the BFF. The reservation app continues to emit events via `SlotStatusNotifier`, but they now land on the broker instead of the embedded WebSocket broker.
 
-Request a token by calling the sign-in endpoint with one of the demo accounts, for example `john_doe@example.com`:
-
-```bash
-curl -X POST \
-  http://localhost:8082/api/v1/auth/signin \
-  -H 'Content-Type: application/json' \
-  -d '{
-        "email": "john_doe@example.com",
-        "password": "123",
-        "deviceModel": "local-cli",
-        "os": "linux",
-        "browser": "curl"
-      }'
-```
-
-The response payload contains a `token` field. Store it for the next calls (e.g. `export JWT="<token-value>"`).
-
-## 3. Pick a reservation to pay for
-
-The reservation database is pre-populated; you can fetch the list via the BFF at `GET http://localhost:8083/api/v1/portal/user/reservations`.【F:bff/src/main/java/com/tennistime/bff/application/controller/UserPortalController.java†L25-L34】 Use the JWT from the previous step:
-
-```bash
-curl -H "Authorization: Bearer $JWT" \
-  http://localhost:8083/api/v1/portal/user/reservations | jq '.[0].id'
-```
-
-Choose any reservation `id` from the output for the payment initiation request.
-
-## 4. Initiate a payment via the BFF
-
-Call the BFF initiation endpoint (`POST /portal/user/payments/create`) with the reservation id and amount. In mock mode the reservation service returns a fake token and redirect URL that you can verify immediately.【F:bff/src/main/java/com/tennistime/bff/application/controller/PaymentController.java†L33-L44】【F:reservation/src/main/java/com/tennistime/reservation/application/service/PaymentService.java†L60-L90】
-
-```bash
-curl -X POST \
-  http://localhost:8083/api/v1/portal/user/payments/create \
-  -H 'Content-Type: application/json' \
-  -H "Authorization: Bearer $JWT" \
-  -d '{
-        "reservationId": "<reservation-uuid>",
-        "amount": 150000
-      }'
-```
-
-The JSON response contains:
-- `paymentId`: identifier of the created payment aggregate.
-- `token`: starts with `MOCK-` when the mock gateway is active.
-- `referenceNumber`: needed for the callback simulation.
-- `redirectUrl`: SEP landing page generated from the token.
-
-Export the `paymentId` and `referenceNumber` for the next steps.
-
-## 5. Simulate the SEP callback
-
-When the gateway mock is enabled, any callback that echoes the `resNum` (reference number) immediately marks the payment as verified.【F:bff/src/main/java/com/tennistime/bff/application/controller/PaymentController.java†L46-L54】【F:reservation/src/main/java/com/tennistime/reservation/application/service/PaymentService.java†L111-L139】
-
-```bash
-curl -X POST \
-  http://localhost:8083/api/v1/portal/user/payments/callback \
-  -H 'Content-Type: application/json' \
-  -H "Authorization: Bearer $JWT" \
-  -d '{
-        "state": "OK",
-        "status": "0",
-        "refNum": "<reference-number>",
-        "resNum": "<reference-number>",
-        "rrn": "123456789012",
-        "traceNo": "654321",
-        "amount": 150000,
-        "terminalId": "TENNIS-TIME"
-      }'
-```
-
-The response includes `success: true` and the mock verification message.
-
-## 6. Reverse the payment (optional)
-
-Finally, call the reversal endpoint with the `paymentId`. In mock mode the reservation service immediately marks the payment as reversed and returns a confirmation timestamp.【F:bff/src/main/java/com/tennistime/bff/application/controller/PaymentController.java†L56-L65】【F:reservation/src/main/java/com/tennistime/reservation/application/service/PaymentService.java†L141-L180】
-
-```bash
-curl -X POST \
-  http://localhost:8083/api/v1/portal/user/payments/<paymentId>/reverse \
-  -H "Authorization: Bearer $JWT"
-```
-
-You should receive `{ "reversed": true, "message": "Reverse transaction completed in mock mode", ... }`, confirming the full flow works end-to-end without reaching the real SEP gateway.
+By following this roadmap, you can split realtime delivery into an independent service without rewriting basket logic, reservation flows, or the Angular client.
