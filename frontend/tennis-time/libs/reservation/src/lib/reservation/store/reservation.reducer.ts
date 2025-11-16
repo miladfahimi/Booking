@@ -9,6 +9,7 @@ export interface ReservationState {
   providers: ProviderDTO[] | null;
   loadingStatus: LoadingStatus;
   providersLoadingStatus: LoadingStatus;
+  selectedDate: string | null;
   basket: ReservationBasketItem[];
   basketLoading: boolean;
   checkoutStatus: LoadingStatus;
@@ -23,6 +24,7 @@ export const initialState: ReservationState = {
   providers: null,
   loadingStatus: { loading: false, loaded: false },
   providersLoadingStatus: { loading: false, loaded: false },
+  selectedDate: null,
   basket: [],
   basketLoading: false,
   checkoutStatus: { loading: false, loaded: false },
@@ -37,9 +39,10 @@ export const reservationReducer = createReducer(
   initialState,
 
   // For loading slots
-  on(ReservationActions.loadSlots, (state) => ({
+  on(ReservationActions.loadSlots, (state, { date }) => ({
     ...state,
     loadingStatus: { loading: true, loaded: false },
+    selectedDate: date,
     error: null,
   })),
   // on(ReservationActions.loadSlotsSuccess, (state, { service }) => ({
@@ -206,6 +209,13 @@ export const reservationReducer = createReducer(
   })),
 
   on(ReservationActions.slotStatusUpdated, (state, { notification }) => {
+    if (
+      state.selectedDate &&
+      notification.reservationDate &&
+      notification.reservationDate !== state.selectedDate
+    ) {
+      return state;
+    }
     const slots = state.slotsByService[notification.serviceId];
     if (!slots || !slots.length) {
       return state;

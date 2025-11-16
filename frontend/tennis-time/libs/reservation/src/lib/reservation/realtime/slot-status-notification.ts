@@ -5,4 +5,5 @@ export interface SlotStatusNotification {
   compositeSlotId: string;
   serviceId: string;
   status: ReservationStatus;
+  reservationDate?: string | null;
 }

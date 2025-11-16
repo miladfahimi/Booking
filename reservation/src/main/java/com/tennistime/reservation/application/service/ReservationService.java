@@ -241,6 +241,9 @@ public class ReservationService {
                 .compositeSlotId(reservation.getSlotId())
                 .serviceId(reservation.getServiceId())
                 .status(reservation.getStatus())
+                .reservationDate(reservation.getReservationDate() != null
+                        ? reservation.getReservationDate().toString()
+                        : null)
                 .build();
         slotStatusNotifier.publish(notification);
     }

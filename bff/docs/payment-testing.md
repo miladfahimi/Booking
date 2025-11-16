@@ -41,7 +41,7 @@ Because every state change goes through the same notifier interface, additional 
 
 ## Slot status payload contract
 
-All layers exchange the `SlotStatusNotification` DTO, which carries both the `slotId` and `compositeSlotId`, the owning `serviceId`, and the latest `ReservationStatus`. The composite identifier (service + slot) lets consumers disambiguate identical slot ids served by different services, while `slotId` helps UI components that only know the raw slot key.【F:reservation/src/main/java/com/tennistime/reservation/domain/notification/SlotStatusNotification.java†L12-L25】【F:bff/src/main/java/com/tennistime/bff/domain/realtime/SlotStatusNotification.java†L1-L21】 When migrating to another notifier implementation, keep this payload stable so that the frontend continues to work without recompilation.
+All layers exchange the `SlotStatusNotification` DTO, which carries both the `slotId` and `compositeSlotId`, the owning `serviceId`, the originating `reservationDate`, and the latest `ReservationStatus`. The composite identifier (service + slot) lets consumers disambiguate identical slot ids served by different services, while `reservationDate` keeps clients from applying updates to a different day when time ranges overlap.【F:reservation/src/main/java/com/tennistime/reservation/domain/notification/SlotStatusNotification.java†L12-L26】【F:bff/src/main/java/com/tennistime/bff/domain/realtime/SlotStatusNotification.java†L1-L21】 When migrating to another notifier implementation, keep this payload stable so that the frontend continues to work without recompilation.
 
 ## Configuration
 

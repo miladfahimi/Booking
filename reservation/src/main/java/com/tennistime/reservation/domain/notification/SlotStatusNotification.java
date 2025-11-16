@@ -23,4 +23,5 @@ public class SlotStatusNotification {
     private String compositeSlotId;
     private UUID serviceId;
     private ReservationStatus status;
+    private String reservationDate;
 }

@@ -138,6 +138,9 @@ public class ReservationBasketService {
                 .compositeSlotId(basketItem.getSlotId())
                 .serviceId(basketItem.getServiceId())
                 .status(status)
+                .reservationDate(basketItem.getReservationDate() != null
+                    ? basketItem.getReservationDate().toString()
+                    : null)
                 .build();
         slotStatusNotifier.publish(notification);
     }
