@@ -1,10 +1,12 @@
 package com.tennistime.reservation.infrastructure.persistence;
 
 import com.tennistime.reservation.domain.model.Reservation;
+import com.tennistime.reservation.domain.model.types.ReservationStatus;
 import com.tennistime.reservation.domain.repository.ReservationRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,4 +25,7 @@ public interface ReservationJpaRepository extends ReservationRepository, JpaRepo
      */
     @Override
     List<Reservation> findByUserId(UUID userId);
+
+    @Override
+    List<Reservation> findByStatusAndBookedAtBefore(ReservationStatus status, LocalDateTime bookedAt);
 }

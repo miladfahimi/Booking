@@ -1,7 +1,9 @@
 package com.tennistime.reservation.domain.repository;
 
 import com.tennistime.reservation.domain.model.Reservation;
+import com.tennistime.reservation.domain.model.types.ReservationStatus;
 
+import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -74,4 +76,13 @@ public interface ReservationRepository {
      * @return reservations matching the identifiers.
      */
     List<Reservation> findAllById(Iterable<UUID> ids);
+
+    /**
+     * Locates reservations in a specific status created before the provided timestamp.
+     *
+     * @param status   reservation status to match.
+     * @param bookedAt upper bound timestamp for the booking date.
+     * @return reservations satisfying the criteria.
+     */
+    List<Reservation> findByStatusAndBookedAtBefore(ReservationStatus status, LocalDateTime bookedAt);
 }
