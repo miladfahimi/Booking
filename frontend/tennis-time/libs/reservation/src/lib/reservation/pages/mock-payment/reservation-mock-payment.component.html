@@ -1,4 +1,5 @@
-<div class="mock-payment" *ngIf="session as current">
+@if (session; as current) {
+<div class="mock-payment">
   <div class="topbar">
     <div class="phone">021-84880</div>
     <div class="note">درگاه پرداخت کاملا غیرقانونی است.</div>
@@ -109,20 +110,28 @@
             <button type="button" class="btn btn-cancel">انصراف</button>
             <button type="button" class="btn btn-pay" (click)="onConfirmPayment()"
               [disabled]="(completionLoading$ | async) ?? false">
-              <ng-container *ngIf="(completionLoading$ | async) ?? false; else payText">در حال تایید...</ng-container>
-              <ng-template #payText>پرداخت ✓</ng-template>
+              @if ((completionLoading$ | async) ?? false) {
+              در حال تایید...
+              } @else {
+              پرداخت ✓
+              }
             </button>
           </div>
 
-          <div class="success-line" *ngIf="paymentCompleted">
-            پرداخت با موفقیت انجام شد لطفا اگر تا این <strong>{{countdown}}</strong> ثانیه به فروشگاه منتقل نشدید
+          @if (paymentCompleted) {
+          <div class="success-line">
+            پرداخت با موفقیت انجام شد لطفا اگر تا این <strong>{{ countdown }}</strong> ثانیه به فروشگاه منتقل
+            نشدید
             <a href="" (click)="closeNow($event)">اینجا</a>
             کلیک کنید
           </div>
+          }
 
-          <div class="mock-payment__error" *ngIf="(completionError$ | async) as error">
+          @if (completionError$ | async; as error) {
+          <div class="mock-payment__error">
             پرداخت با خطا روبرو شد. لطفا دوباره تلاش کنید.
           </div>
+          }
         </form>
       </section>
 
@@ -133,7 +142,7 @@
             <div class="mock-payment__summary">
               <div class="mock-payment__row">
                 <span>شناسه پرداخت</span>
-                <strong>current.paymentId | faDigits</strong>
+                <strong>{{ current.paymentId | faDigits }}</strong>
               </div>
               <div class="mock-payment__row">
                 <span>کد مرجع</span>
@@ -146,10 +155,12 @@
             </div>
           </div>
           <div class="mock-payment__items">
-            <div class="mock-payment__item" *ngFor="let item of reservations">
+            @for (item of reservations; track $index) {
+            <div class="mock-payment__item">
               <span>{{ item.reservationDate | faDigits }}</span>
               <span>{{ item.startTime | faDigits }} ~ {{ item.endTime | faDigits }}</span>
             </div>
+            }
           </div>
         </div>
       </section>
@@ -158,3 +169,4 @@
     <div class="spacer"></div>
   </main>
 </div>
+}

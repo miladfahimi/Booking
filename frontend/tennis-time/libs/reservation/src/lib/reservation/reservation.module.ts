@@ -12,7 +12,6 @@ import { reservationReducer } from './store/reservation.reducer';
 import { ReservationEffects } from './store/reservation.effects';
 import { ReservationContainerComponent } from "./pages/reservation/container/reservation-container.component";
 import { ReservationCalendarDesktopComponent } from "./pages/reservation/container/calendar/calendar-desktop/reservation-calendar-desktop.component";
-import { ReservationSlotsTableComponent } from "./pages/reservation/container/table/reservation-slots-table.component";
 import {
   ReservationItemsComponent
 } from "./pages/reservation/container/items/reservation-items.component";
@@ -40,7 +39,6 @@ import { PendingSlotModalModelComponent } from './pages/reservation/container/ti
     ReservationCalendarDesktopComponent,
     ReservationItemsComponent,
     ReservationHoursComponent,
-    ReservationSlotsTableComponent,
     TimelineComponent,
     TimelineSlotModalComponent,
     ReservationBasketComponent,
