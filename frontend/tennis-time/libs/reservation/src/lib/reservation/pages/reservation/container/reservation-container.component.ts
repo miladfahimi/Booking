@@ -7,12 +7,13 @@ import { CoreAuthService } from '@tennis-time/core';
 import { MockPaymentSessionService } from '../../../services/mock/mock-payment-session.service';
 import { MockPaymentNavigationService } from '../../../services/mock/mock-payment-navigation.service';
 
-import { addSlotToBasket, checkoutBasket, loadBasket, loadProvidersWithServices, loadSlots, removeSlotFromBasket } from '../../../store/reservation.actions';
-import { selectBasket, selectBasketTotal, selectCheckoutLoading, selectPaymentResult, selectProviders, selectSlotsByService, selectSlotsLoading } from '../../../store/reservation.selectors';
+import { addSlotToBasket, checkoutBasket, dismissSlotHoldWarning, loadBasket, loadProvidersWithServices, loadSlots, removeSlotFromBasket } from '../../../store/reservation.actions';
+import { selectBasket, selectBasketTotal, selectCheckoutLoading, selectForeignHoldWarning, selectPaymentResult, selectProviders, selectSlotsByService, selectSlotsLoading } from '../../../store/reservation.selectors';
 import { ProviderDTO, ReservationStatus, ServiceDTO, SlotDTO } from '../../../types';
 import { ReservationBasketItem } from '../../../types/reservation-basket.types';
 import { PaymentInitiationResult } from '../../../types/reservation-payment.types';
 import { TimelineSlotDetails } from './timeline/tileline-slot-modal/timeline-slot-modal.component';
+import { SlotStatusNotification } from '../../../realtime/slot-status-notification';
 
 @Component({
   selector: 'app-reservation-container',
@@ -35,6 +36,7 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
   private userId: string | null = null;
   private lastOpenedPaymentId: string | null = null;
+  foreignHoldWarning$: Observable<SlotStatusNotification | null>;
 
   constructor(
     private readonly store: Store,
@@ -47,6 +49,7 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
     this.basketTotal$ = this.store.select(selectBasketTotal);
     this.checkoutLoading$ = this.store.select(selectCheckoutLoading);
     this.paymentResult$ = this.store.select(selectPaymentResult);
+    this.foreignHoldWarning$ = this.store.select(selectForeignHoldWarning);
 
     this.timeSlots$ = combineLatest([
       this.store.select(selectSlotsByService),
@@ -216,6 +219,10 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
   onCheckout(): void {
     const date = this.formatDateToYYYYMMDD(this.selectedDate);
     this.store.dispatch(checkoutBasket({ date }));
+  }
+
+  onDismissForeignHoldWarning(): void {
+    this.store.dispatch(dismissSlotHoldWarning());
   }
 
   private mergeBasketSlots(

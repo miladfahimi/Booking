@@ -242,8 +242,9 @@ public class ReservationService {
                 .serviceId(reservation.getServiceId())
                 .status(reservation.getStatus())
                 .reservationDate(reservation.getReservationDate() != null
-                        ? reservation.getReservationDate().toString()
-                        : null)
+                    ? reservation.getReservationDate().toString()
+                    : null)
+                .userId(reservation.getUserId())
                 .build();
         slotStatusNotifier.publish(notification);
     }

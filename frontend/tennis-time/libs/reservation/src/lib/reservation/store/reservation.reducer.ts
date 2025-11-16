@@ -1,8 +1,9 @@
 import { createReducer, on } from '@ngrx/store';
 import * as ReservationActions from './reservation.actions';
-import { LoadingStatus, ServiceDTO, ProviderDTO, SlotDTO } from '../types';
+import { LoadingStatus, ProviderDTO, ReservationStatus, ServiceDTO, SlotDTO } from '../types';
 import { ReservationBasketItem } from '../types/reservation-basket.types';
 import { PaymentInitiationResult } from '../types/reservation-payment.types';
+import { SlotStatusNotification } from '../realtime/slot-status-notification';
 
 export interface ReservationState {
   slotsByService: Record<string, SlotDTO[]>;
@@ -17,6 +18,7 @@ export interface ReservationState {
   paymentCompletionStatus: LoadingStatus;
   paymentCompletionError: string | null;
   error: any;
+  foreignHoldWarning: SlotStatusNotification | null;
 }
 
 export const initialState: ReservationState = {
@@ -32,6 +34,7 @@ export const initialState: ReservationState = {
   paymentCompletionStatus: { loading: false, loaded: false },
   paymentCompletionError: null,
   error: null,
+  foreignHoldWarning: null,
 };
 
 
@@ -208,7 +211,7 @@ export const reservationReducer = createReducer(
     paymentCompletionError: typeof error === 'string' ? error : 'PAYMENT_FAILED',
   })),
 
-  on(ReservationActions.slotStatusUpdated, (state, { notification }) => {
+  on(ReservationActions.slotStatusUpdated, (state, { notification, currentUserId }) => {
     if (
       state.selectedDate &&
       notification.reservationDate &&
@@ -217,8 +220,33 @@ export const reservationReducer = createReducer(
       return state;
     }
     const slots = state.slotsByService[notification.serviceId];
+    const isForeignBasketUpdate =
+      notification.status === ReservationStatus.IN_BASKET &&
+      (!!notification.userId && !!currentUserId ? notification.userId !== currentUserId : true);
+
+    let foreignHoldWarning = state.foreignHoldWarning;
+    const matchesForeignWarning =
+      !!foreignHoldWarning &&
+      foreignHoldWarning.serviceId === notification.serviceId &&
+      (foreignHoldWarning.slotId === notification.slotId ||
+        foreignHoldWarning.compositeSlotId === notification.compositeSlotId);
+
+    if (matchesForeignWarning && notification.status !== ReservationStatus.IN_BASKET) {
+      foreignHoldWarning = null;
+    }
+
     if (!slots || !slots.length) {
-      return state;
+      return {
+        ...state,
+        foreignHoldWarning,
+      };
+    }
+
+    if (isForeignBasketUpdate) {
+      return {
+        ...state,
+        foreignHoldWarning,
+      };
     }
     let changed = false;
     const updatedSlots = slots.map(slot => {
@@ -232,7 +260,10 @@ export const reservationReducer = createReducer(
       return slot;
     });
     if (!changed) {
-      return state;
+      return {
+        ...state,
+        foreignHoldWarning,
+      };
     }
     return {
       ...state,
@@ -240,6 +271,17 @@ export const reservationReducer = createReducer(
         ...state.slotsByService,
         [notification.serviceId]: updatedSlots,
       },
+      foreignHoldWarning,
     };
-  })
+  }),
+
+  on(ReservationActions.slotHeldByAnotherUser, (state, { notification }) => ({
+    ...state,
+    foreignHoldWarning: notification,
+  })),
+
+  on(ReservationActions.dismissSlotHoldWarning, (state) => ({
+    ...state,
+    foreignHoldWarning: null,
+  }))
 );

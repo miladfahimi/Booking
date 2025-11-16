@@ -6,4 +6,5 @@ export interface SlotStatusNotification {
   serviceId: string;
   status: ReservationStatus;
   reservationDate?: string | null;
+  userId?: string | null;
 }

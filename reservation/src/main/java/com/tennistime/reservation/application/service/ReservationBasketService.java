@@ -141,6 +141,7 @@ public class ReservationBasketService {
                 .reservationDate(basketItem.getReservationDate() != null
                     ? basketItem.getReservationDate().toString()
                     : null)
+                .userId(basketItem.getUserId())
                 .build();
         slotStatusNotifier.publish(notification);
     }

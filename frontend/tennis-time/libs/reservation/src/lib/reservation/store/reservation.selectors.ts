@@ -128,3 +128,8 @@ export const selectPaymentCompletionError = createSelector(
   selectReservationState,
   (state: ReservationState) => state.paymentCompletionError
 );
+
+export const selectForeignHoldWarning = createSelector(
+  selectReservationState,
+  (state: ReservationState) => state.foreignHoldWarning
+);

@@ -11,6 +11,15 @@
       </app-reservation-calendar-desktop>
       }
 
+      <div class="reservation-alert" *ngIf="foreignHoldWarning$ | async">
+        <div class="reservation-alert__message">
+          یک کاربر دیگر در حال افزودن این نوبت به سبد خود است. اگر قصد رزرو دارید سریع‌تر اقدام کنید.
+        </div>
+        <button type="button" class="reservation-alert__dismiss" (click)="onDismissForeignHoldWarning()">
+          باشه
+        </button>
+      </div>
+
       <app-timeline [services]="items" [slotsByService]="(timeSlots$ | async) ?? {}"
         (addToBasket)="onAddSlotToBasket($event)"></app-timeline>
 

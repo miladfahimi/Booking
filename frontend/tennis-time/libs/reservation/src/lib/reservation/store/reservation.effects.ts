@@ -5,12 +5,13 @@ import { from, of } from 'rxjs';
 import { catchError, map, mergeMap, withLatestFrom } from 'rxjs/operators';
 import * as ReservationActions from './reservation.actions';
 import { ReservationService } from '../services/reservation.service';
-import { ServiceDTO, ProviderDTO } from '../types';
+import { ProviderDTO, ReservationStatus, ServiceDTO } from '../types';
 import { selectBasket } from './reservation.selectors';
 import { ReservationCheckoutService } from '../services/reservation-checkout.service';
 import { ReservationBasketApiService } from '../services/reservation-basket-api.service';
 import { MockPaymentSessionService } from '../services/mock/mock-payment-session.service';
 import { SlotStatusRealtimeService } from '../realtime/slot-status-realtime.service';
+import { CoreAuthService } from '@tennis-time/core';
 
 @Injectable()
 export class ReservationEffects {
@@ -21,14 +22,28 @@ export class ReservationEffects {
     private reservationBasketApiService: ReservationBasketApiService,
     private mockPaymentSession: MockPaymentSessionService,
     private store: Store,
-    private slotStatusRealtime: SlotStatusRealtimeService
+    private slotStatusRealtime: SlotStatusRealtimeService,
+    private coreAuthService: CoreAuthService
   ) {
     this.slotStatusRealtime.connect();
   }
 
   slotStatusUpdates$ = createEffect(() =>
     this.slotStatusRealtime.updates$.pipe(
-      map(notification => ReservationActions.slotStatusUpdated({ notification }))
+      mergeMap(notification => {
+        const currentUserId = this.coreAuthService.getUserId();
+        const actions: Action[] = [
+          ReservationActions.slotStatusUpdated({ notification, currentUserId })
+        ];
+        const isForeignBasketUpdate =
+          notification.status === ReservationStatus.IN_BASKET &&
+          notification.userId &&
+          (!currentUserId || notification.userId !== currentUserId);
+        if (isForeignBasketUpdate) {
+          actions.push(ReservationActions.slotHeldByAnotherUser({ notification }));
+        }
+        return from(actions);
+      })
     )
   );
 

@@ -122,5 +122,14 @@ export const completeMockPaymentFailure = createAction(
 
 export const slotStatusUpdated = createAction(
   '[Reservation] Slot Status Updated',
+  props<{ notification: SlotStatusNotification; currentUserId: string | null }>()
+);
+
+export const slotHeldByAnotherUser = createAction(
+  '[Reservation] Slot Held By Another User',
   props<{ notification: SlotStatusNotification }>()
+);
+
+export const dismissSlotHoldWarning = createAction(
+  '[Reservation] Dismiss Slot Hold Warning'
 );
