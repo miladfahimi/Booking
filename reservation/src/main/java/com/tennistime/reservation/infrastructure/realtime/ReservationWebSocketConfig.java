@@ -16,7 +16,7 @@ public class ReservationWebSocketConfig implements WebSocketMessageBrokerConfigu
     /** {@inheritDoc} */
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/api/v1/ws/reservation").setAllowedOriginPatterns("*");
+        registry.addEndpoint("/ws/reservation").setAllowedOriginPatterns("*");
     }
 
     /** {@inheritDoc} */

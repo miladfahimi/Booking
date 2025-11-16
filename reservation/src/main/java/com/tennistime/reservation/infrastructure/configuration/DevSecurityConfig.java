@@ -53,11 +53,11 @@ public class DevSecurityConfig {
                                 "/cache/invalidate",
                                 "/logout",
                                 "/reservations/**",
-                                "/ws/reservation/**"
+                                "/ws/reservation/**",
+                                "/ws/reservation",
+                                "/api/v1/ws/reservation/**",
+                                "/api/v1/ws/reservation"
                         ).permitAll()
-                        // Allowing eas
-                        // Allowing easy testing for authenticated endpoints
-                        // Ensure that only authorized roles can access specific endpoints
                         .requestMatchers("/reservations/test/admin/**").hasRole("ADMIN")
                         .requestMatchers("/reservations/test/public/**").hasAnyRole("ADMIN","PROVIDER_OWNER","USER")
                         .requestMatchers("/reservations/**").hasAnyRole("ADMIN","PROVIDER_OWNER","USER")
