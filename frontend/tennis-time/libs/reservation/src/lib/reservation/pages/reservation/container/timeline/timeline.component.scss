@@ -166,6 +166,37 @@ padding-bottom: 44px;
   white-space: nowrap;
 }
 
+.timeline-slot__hold-indicator {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  animation: holdBlink 1.2s ease-in-out infinite;
+}
+
+.timeline-slot__hold-indicator svg {
+  width: 100%;
+  height: 100%;
+  color: #065f46;
+}
+
+@keyframes holdBlink {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.35;
+    transform: scale(0.9);
+  }
+}
+
 .timeline-slot--available {
   background-color: #dcfce7;   /* green-100 */
   border-left-color: #22c55e;  /* green-500 */

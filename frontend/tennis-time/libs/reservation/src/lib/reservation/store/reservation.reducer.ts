@@ -242,12 +242,6 @@ export const reservationReducer = createReducer(
       };
     }
 
-    if (isForeignBasketUpdate) {
-      return {
-        ...state,
-        foreignHoldWarning,
-      };
-    }
     let changed = false;
     const updatedSlots = slots.map(slot => {
       if (slot.slotId === notification.slotId || slot.slotId === notification.compositeSlotId) {

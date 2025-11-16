@@ -380,6 +380,30 @@ export class TimelineComponent implements OnChanges {
     };
   }
 
+  getSlotLabel(slot: TimelineSlot): string {
+    if (this.isMyBookedSlot(slot)) {
+      return 'رزرو شده توسط شما';
+    }
+
+    if (this.isMyBasketSlot(slot)) {
+      return 'در سبد پرداخت شما';
+    }
+
+    if (slot.status === ReservationStatus.IN_BASKET) {
+      return 'در دسترس';
+    }
+
+    return slot.label;
+  }
+
+  isMyBasketSlot(slot: TimelineSlot): boolean {
+    return (
+      slot.status === ReservationStatus.IN_BASKET &&
+      !!this.currentUserId &&
+      slot.original.reservedBy === this.currentUserId
+    );
+  }
+
 
   isMyBookedSlot(slot: TimelineSlot): boolean {
     return (

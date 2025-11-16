@@ -40,38 +40,6 @@
   padding: 50px;
 }
 
-.reservation-alert {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  background-color: #fff4e5;
-  border: 1px solid #f0c987;
-  border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 24px;
-  color: #8a4d00;
-  gap: 16px;
-}
-
-.reservation-alert__message {
-  flex: 1;
-  line-height: 1.8;
-}
-
-.reservation-alert__dismiss {
-  border: none;
-  background-color: #f0c987;
-  color: #4a2c00;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.reservation-alert__dismiss:hover {
-  background-color: #e3b96d;
-}
-
 .calendar-header {
   display: flex;
   justify-content: space-between;
