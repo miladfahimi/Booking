@@ -123,7 +123,6 @@ export class ReservationEffects {
 
         return this.reservationCheckoutService.checkout(basket).pipe(
           mergeMap(result => {
-            const userId = basket[0]?.userId;
             const totalAmount = basket.reduce((total, item) => total + (item.price || 0), 0);
             let payment = result.payment;
 
@@ -135,16 +134,10 @@ export class ReservationEffects {
               });
             }
 
-            const followUpActions: Action[] = [
+            return [
               ReservationActions.checkoutBasketSuccess({ reservations: result.reservations, payment }),
               ReservationActions.loadSlots({ date: action.date })
             ];
-
-            if (userId) {
-              followUpActions.push(ReservationActions.clearBasket({ userId }));
-            }
-
-            return followUpActions;
           }),
           catchError(error =>
             of(ReservationActions.checkoutBasketFailure({ error }))

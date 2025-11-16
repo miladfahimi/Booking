@@ -47,6 +47,9 @@ public class Reservation {
     private ReservationStatus status = ReservationStatus.PENDING;
     private String paymentStatus;
 
+    @Column(name = "slot_id")
+    private String slotId;
+
     private String externalId;
     private String thirdPartyBookingId;
 

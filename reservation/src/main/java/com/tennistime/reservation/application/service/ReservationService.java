@@ -3,8 +3,11 @@ package com.tennistime.reservation.application.service;
 import com.github.mfathi91.time.PersianDate;
 import com.tennistime.reservation.application.dto.ReservationDTO;
 import com.tennistime.reservation.application.mapper.ReservationMapper;
+import com.tennistime.reservation.application.notification.SlotStatusNotifier;
 import com.tennistime.reservation.domain.model.Reservation;
 import com.tennistime.reservation.domain.model.types.ReservationStatus;
+import com.tennistime.reservation.domain.notification.SlotStatusNotification;
+import com.tennistime.reservation.domain.repository.ReservationBasketItemRepository;
 import com.tennistime.reservation.domain.repository.ReservationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,14 +32,20 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationMapper reservationMapper;
     private final UserBookingHistoryUpdater userBookingHistoryUpdater;
+    private final SlotStatusNotifier slotStatusNotifier;
+    private final ReservationBasketItemRepository basketItemRepository;
 
     @Autowired
     public ReservationService(ReservationRepository reservationRepository,
                               ReservationMapper reservationMapper,
-                              UserBookingHistoryUpdater userBookingHistoryUpdater) {
+                              UserBookingHistoryUpdater userBookingHistoryUpdater,
+                              SlotStatusNotifier slotStatusNotifier,
+                              ReservationBasketItemRepository basketItemRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationMapper = reservationMapper;
         this.userBookingHistoryUpdater = userBookingHistoryUpdater;
+        this.slotStatusNotifier = slotStatusNotifier;
+        this.basketItemRepository = basketItemRepository;
     }
 
     /**
@@ -71,6 +80,7 @@ public class ReservationService {
         Reservation savedReservation = reservationRepository.save(reservation);
 
         userBookingHistoryUpdater.updateUserBookingHistory(savedReservation);
+        notifyStatusChange(savedReservation);
 
         return convertToDTO(savedReservation);
     }
@@ -87,10 +97,17 @@ public class ReservationService {
         if (reservationDTOs == null || reservationDTOs.isEmpty()) {
             return List.of();
         }
-        return reservationDTOs.stream()
+        List<Reservation> savedReservations = reservationDTOs.stream()
                 .map(this::convertToEntity)
                 .map(reservationRepository::save)
                 .peek(userBookingHistoryUpdater::updateUserBookingHistory)
+                .peek(this::notifyStatusChange)
+                .collect(Collectors.toList());
+
+        savedReservations.forEach(reservation ->
+                removeBasketEntry(reservation.getUserId(), reservation.getSlotId()));
+
+        return savedReservations.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
@@ -109,6 +126,7 @@ public class ReservationService {
                     updateReservationDetails(existingReservation, reservationDTO);
                     Reservation updatedReservation = reservationRepository.save(existingReservation);
                     userBookingHistoryUpdater.updateUserBookingHistory(updatedReservation);
+                    notifyStatusChange(updatedReservation);
                     return convertToDTO(updatedReservation);
                 })
                 .orElse(null);
@@ -128,6 +146,7 @@ public class ReservationService {
                     existingReservation.setStatus(status);
                     Reservation updatedReservation = reservationRepository.save(existingReservation);
                     userBookingHistoryUpdater.updateUserBookingHistory(updatedReservation);
+                    notifyStatusChange(updatedReservation);
                     return convertToDTO(updatedReservation);
                 })
                 .orElse(null);
@@ -255,6 +274,9 @@ public class ReservationService {
         }
         existingReservation.setUserId(reservationDTO.getUserId());
         existingReservation.setServiceId(reservationDTO.getServiceId());
+        if (reservationDTO.getSlotId() != null) {
+            existingReservation.setSlotId(reservationDTO.getSlotId());
+        }
     }
 
     /**
@@ -280,5 +302,54 @@ public class ReservationService {
         reservation.setReservationDatePersian(PersianDate.parse(reservationDTO.getReservationDatePersian()));
         reservation.setStatus(ReservationStatus.PENDING);
         return reservation;
+    }
+
+    /**
+     * Emits a real-time notification reflecting the reservation slot's latest status.
+     *
+     * @param reservation reservation containing slot metadata.
+     */
+    private void notifyStatusChange(Reservation reservation) {
+        if (reservation.getSlotId() == null || reservation.getServiceId() == null || reservation.getStatus() == null) {
+            return;
+        }
+        SlotStatusNotification notification = SlotStatusNotification.builder()
+                .slotId(extractRawSlotId(reservation.getSlotId()))
+                .compositeSlotId(reservation.getSlotId())
+                .serviceId(reservation.getServiceId())
+                .status(reservation.getStatus())
+                .build();
+        slotStatusNotifier.publish(notification);
+    }
+
+    /**
+     * Removes the service prefix from the composite slot identifier.
+     *
+     * @param compositeSlotId combined service and slot identifier.
+     * @return slot identifier without the service prefix.
+     */
+    private String extractRawSlotId(String compositeSlotId) {
+        int separatorIndex = compositeSlotId.indexOf(':');
+        if (separatorIndex < 0) {
+            return compositeSlotId;
+        }
+        return compositeSlotId.substring(separatorIndex + 1);
+    }
+
+    /**
+     * Removes the basket entry associated with the provided identifiers without emitting slot notifications.
+     *
+     * @param userId identifier of the reservation owner
+     * @param slotId slot identifier stored in the reservation
+     */
+    private void removeBasketEntry(UUID userId, String slotId) {
+        if (userId == null || slotId == null) {
+            return;
+        }
+        try {
+            basketItemRepository.deleteByUserIdAndSlotId(userId, slotId);
+        } catch (Exception exception) {
+            logger.warn("Unable to delete basket entry for user {} and slot {} while finalizing reservations.", userId, slotId, exception);
+        }
     }
 }

@@ -81,4 +81,8 @@ public class ReservationDTO {
     /** Identifier of the service being reserved. */
     @Schema(example = "d290f1ee-6c54-4b01-90e6-d70173333331", description = "Service ID.")
     private UUID serviceId;
+
+    /** Composite slot identifier combining service and slot references. */
+    @Schema(example = "f91a8bcd-7959-4f48-86a2-025bc0ef1e28:slot-3", description = "Composite slot identifier.")
+    private String slotId;
 }

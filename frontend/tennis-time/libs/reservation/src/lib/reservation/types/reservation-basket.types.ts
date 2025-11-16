@@ -25,6 +25,7 @@ export interface ReservationBulkRequestItem {
   userId: string;
   providerId: string;
   serviceId: string;
+  slotId: string;
 }
 
 export interface ReservationSummary {
@@ -37,4 +38,5 @@ export interface ReservationSummary {
   userId: string;
   providerId: string;
   serviceId: string;
+  slotId: string;
 }

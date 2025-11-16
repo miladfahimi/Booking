@@ -44,7 +44,8 @@ export class ReservationCheckoutService {
       status: ReservationStatus.PENDING,
       userId: item.userId,
       providerId: item.providerId,
-      serviceId: item.serviceId
+      serviceId: item.serviceId,
+      slotId: item.slotId
     }));
   }
 

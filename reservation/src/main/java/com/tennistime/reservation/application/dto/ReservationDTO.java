@@ -41,4 +41,7 @@ public class ReservationDTO {
 
     @Schema(example = "d290f1ee-6c54-4b01-90e6-d70173333331")
     private UUID serviceId;
+
+    @Schema(example = "f91a8bcd-7959-4f48-86a2-025bc0ef1e28:slot-3")
+    private String slotId;
 }
