@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-timeline-slot-basket',
@@ -6,5 +6,9 @@ import { Component } from '@angular/core';
   styleUrls: ['./timeline-slot-basket.component.scss'],
 })
 export class TimelineSlotBasketComponent {
-
+  @Input({ required: true }) label!: string;
+  @Input({ required: true }) start!: string;
+  @Input({ required: true }) end!: string;
+  @Input({ required: true }) durationMinutes!: number;
+  @Input() showHoldIndicator = false;
 }

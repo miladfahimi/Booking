@@ -20,6 +20,13 @@ import {
   ReservationCalendarMobileComponent
 } from "./pages/reservation/container/calendar/calendar-mobile/reservation-calendar-mobile.component";
 import { TimelineComponent } from './pages/reservation/container/timeline/timeline.component';
+import { TimelineSlotAvailableComponent } from './pages/reservation/container/timeline/timeline-slots/timeline-slot-available/timeline-slot-avalilable.component';
+import { TimelineSlotBasketComponent } from './pages/reservation/container/timeline/timeline-slots/basket-slot/timeline-slot-basket.component';
+import { TimelineSlotBasketMineComponent } from './pages/reservation/container/timeline/timeline-slots/basket-mine-slot/timeline-slot-basket-mine.component';
+import { TimelineSlotBookedComponent } from './pages/reservation/container/timeline/timeline-slots/booked-slot/timeline-slot-booked.component';
+import { TimelineSlotBookedMineComponent } from './pages/reservation/container/timeline/timeline-slots/booked-mine-slot/timeline-slot-booked-mine.component';
+import { TimelineSlotPendingComponent } from './pages/reservation/container/timeline/timeline-slots/pending-slot/timeline-slot-pending.component';
+import { TimelineSlotMaintenanceComponent } from './pages/reservation/container/timeline/timeline-slots/maintenance-slot/timeline-slot-maintenance.component';
 import { TimelineSlotModalComponent } from './pages/reservation/container/timeline/tileline-slot-modals/timeline-slot-modals.component';
 import { ReservationBasketComponent } from './pages/reservation/container/basket/reservation-basket.component';
 import { ReservationMockPaymentComponent } from './pages/mock-payment/reservation-mock-payment.component';
@@ -40,6 +47,13 @@ import { PendingSlotModalModelComponent } from './pages/reservation/container/ti
     ReservationItemsComponent,
     ReservationHoursComponent,
     TimelineComponent,
+    TimelineSlotAvailableComponent,
+    TimelineSlotBasketComponent,
+    TimelineSlotBasketMineComponent,
+    TimelineSlotBookedComponent,
+    TimelineSlotBookedMineComponent,
+    TimelineSlotPendingComponent,
+    TimelineSlotMaintenanceComponent,
     TimelineSlotModalComponent,
     ReservationBasketComponent,
     ReservationMockPaymentComponent,

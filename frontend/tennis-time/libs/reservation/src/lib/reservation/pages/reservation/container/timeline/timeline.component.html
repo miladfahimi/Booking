@@ -29,24 +29,30 @@
               [class.timeline-slot--maintenance]="slot.status === ReservationStatusEnum.MAINTENANCE"
               [class.timeline-slot--mine]="isMyBookedSlot(slot)" [style.top.px]="getSlotOffset(slot)"
               [style.height.px]="getSlotHeight(slot)">
-              <span class="timeline-slot__label">
-                {{ getSlotLabel(slot) | faDigits }}
-              </span>
-              <span class="timeline-slot__time">
-                {{ slot.start | faDigits }} ~ {{ slot.end | faDigits }}
-              </span>
-              <span class="timeline-slot__time">
-                {{ slot.durationMinutes | faDigits }} دقیقه
-              </span>
-              <span class="timeline-slot__hold-indicator"
-                *ngIf="slot.status === ReservationStatusEnum.IN_BASKET && !isMyBasketSlot(slot)">
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                  <circle cx="12" cy="12" r="8.5" fill="none" stroke-width="2" stroke="currentColor" />
-                  <path d="M12 7v5l3 2" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    stroke="currentColor" />
-                  <path d="M15 4 16.5 5.5" fill="none" stroke-width="2" stroke-linecap="round" stroke="currentColor" />
-                </svg>
-              </span>
+              @if (isMyBookedSlot(slot)) {
+              <app-timeline-slot-booked-mine [label]="getSlotLabel(slot)" [start]="slot.start" [end]="slot.end"
+                [durationMinutes]="slot.durationMinutes"></app-timeline-slot-booked-mine>
+              } @else if (isMyBasketSlot(slot)) {
+              <app-timeline-slot-basket-mine [label]="getSlotLabel(slot)" [start]="slot.start" [end]="slot.end"
+                [durationMinutes]="slot.durationMinutes"></app-timeline-slot-basket-mine>
+              } @else if (slot.status === ReservationStatusEnum.CONFIRMED) {
+              <app-timeline-slot-booked [label]="getSlotLabel(slot)" [start]="slot.start" [end]="slot.end"
+                [durationMinutes]="slot.durationMinutes"></app-timeline-slot-booked>
+              } @else if (slot.status === ReservationStatusEnum.PENDING) {
+              <app-timeline-slot-pending [label]="getSlotLabel(slot)" [start]="slot.start" [end]="slot.end"
+                [durationMinutes]="slot.durationMinutes"></app-timeline-slot-pending>
+              } @else if (slot.status === ReservationStatusEnum.MAINTENANCE) {
+              <app-timeline-slot-maintenance [label]="getSlotLabel(slot)" [start]="slot.start" [end]="slot.end"
+                [durationMinutes]="slot.durationMinutes"></app-timeline-slot-maintenance>
+              } @else if (slot.status === ReservationStatusEnum.IN_BASKET) {
+              <app-timeline-slot-basket [label]="getSlotLabel(slot)" [start]="slot.start" [end]="slot.end"
+                [durationMinutes]="slot.durationMinutes"
+                [showHoldIndicator]="slot.status === ReservationStatusEnum.IN_BASKET && !isMyBasketSlot(slot)">
+              </app-timeline-slot-basket>
+              } @else {
+              <app-timeline-slot-available [label]="getSlotLabel(slot)" [start]="slot.start" [end]="slot.end"
+                [durationMinutes]="slot.durationMinutes"></app-timeline-slot-available>
+              }
             </div>
             }
           </div>

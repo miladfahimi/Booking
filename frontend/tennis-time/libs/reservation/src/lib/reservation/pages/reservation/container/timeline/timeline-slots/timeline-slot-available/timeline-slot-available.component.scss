@@ -1,4 +1,4 @@
-.timeline-slot {
+:host {
   position: absolute;
   left: 0;
   right: 0;
@@ -8,10 +8,10 @@
   flex-direction: column;
   gap: 1px;
   font-size: 8px;
-  background-color: #f3f4f6;
+  background-color: #dcfce7;
   color: #1f2933;
   border: none;
-  border-left: 3px solid #9ca3af;
+  border-left: 3px solid #22c55e;
   border-bottom: 1px solid #cfcfcfa3;
   box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08);
 }
@@ -26,80 +26,4 @@
   font-weight: 700;
   font-size: 9px;
   white-space: nowrap;
-}
-
-.timeline-slot__hold-indicator {
-  position: absolute;
-  bottom: 4px;
-  left: 4px;
-  width: 16px;
-  height: 16px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  animation: holdBlink 1.2s ease-in-out infinite;
-}
-
-.timeline-slot__hold-indicator svg {
-  width: 100%;
-  height: 100%;
-  color: #065f46;
-}
-
-@keyframes holdBlink {
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  50% {
-    opacity: 0.35;
-    transform: scale(0.9);
-  }
-}
-
-.timeline-slot--available {
-  background-color: #dcfce7;
-  border-left-color: #22c55e;
-}
-
-.timeline-slot--booked {
-  background-color: #efbd73;
-  border-left-color: #e27303;
-}
-
-.timeline-slot--pending {
-  border-left: 3px solid #bc9602;
-  background: repeating-linear-gradient(
-    45deg,
-    #e3da79 0 6px,
-    #fef08a 6px 12px
-  );
-  animation: moveStripes 5s linear infinite;
-}
-
-.timeline-slot--basket {
-  border-left: 3px solid #22c55e;
-  background: repeating-linear-gradient(
-    45deg,
-    #b7f5af 0 6px,
-    #dcfce7 6px 12px
-  );
-  animation: moveStripes 5s linear infinite;
-}
-
-@keyframes moveStripes {
-  from { background-position: 0 0; }
-  to { background-position: 60px 0; }
-}
-
-.timeline-slot--maintenance {
-  background-color: #e5e7eb;
-  border-left-color: #9ca3af;
-}
-
-.timeline-slot--mine {
-  background-color: #dbeafe;
-  border-left-color: #3b82f6;
 }
