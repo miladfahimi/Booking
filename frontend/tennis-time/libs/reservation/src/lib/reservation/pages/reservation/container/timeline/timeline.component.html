@@ -21,36 +21,35 @@
 
           <div class="timeline__column-body" [style.height.px]="timelineHeight">
             @for (slot of column.slots; track trackSlotById) {
-            <div class="timeline-slot" (click)="onSlotClick(slot, column)"
-              [class.timeline-slot--booked]="slot.status === ReservationStatusEnum.CONFIRMED && !isMyBookedSlot(slot)"
-              [class.timeline-slot--available]="slot.status === ReservationStatusEnum.AVAILABLE || (slot.status === ReservationStatusEnum.IN_BASKET && !isMyBasketSlot(slot))"
-              [class.timeline-slot--pending]="slot.status === ReservationStatusEnum.PENDING"
-              [class.timeline-slot--basket]="isMyBasketSlot(slot)"
-              [class.timeline-slot--maintenance]="slot.status === ReservationStatusEnum.MAINTENANCE"
-              [class.timeline-slot--mine]="isMyBookedSlot(slot)" [style.top.px]="getSlotOffset(slot)"
+            <div class="timeline-slot" (click)="onSlotClick(slot, column)" [style.top.px]="getSlotOffset(slot)"
               [style.height.px]="getSlotHeight(slot)">
               @if (isMyBookedSlot(slot)) {
-              <app-timeline-slot-booked-mine [label]="getSlotLabel(slot)" [start]="slot.start" [end]="slot.end"
+              <app-timeline-slot-booked-mine [height]="getSlotHeight(slot)" [label]="getSlotLabel(slot)"
+                [start]="slot.start" [end]="slot.end"
                 [durationMinutes]="slot.durationMinutes"></app-timeline-slot-booked-mine>
               } @else if (isMyBasketSlot(slot)) {
-              <app-timeline-slot-basket-mine [label]="getSlotLabel(slot)" [start]="slot.start" [end]="slot.end"
+              <app-timeline-slot-basket-mine [height]="getSlotHeight(slot)" [label]="getSlotLabel(slot)"
+                [start]="slot.start" [end]="slot.end"
                 [durationMinutes]="slot.durationMinutes"></app-timeline-slot-basket-mine>
               } @else if (slot.status === ReservationStatusEnum.CONFIRMED) {
-              <app-timeline-slot-booked [label]="getSlotLabel(slot)" [start]="slot.start" [end]="slot.end"
-                [durationMinutes]="slot.durationMinutes"></app-timeline-slot-booked>
+              <app-timeline-slot-booked [height]="getSlotHeight(slot)" [label]="getSlotLabel(slot)" [start]="slot.start"
+                [end]="slot.end" [durationMinutes]="slot.durationMinutes"></app-timeline-slot-booked>
               } @else if (slot.status === ReservationStatusEnum.PENDING) {
-              <app-timeline-slot-pending [label]="getSlotLabel(slot)" [start]="slot.start" [end]="slot.end"
+              <app-timeline-slot-pending [height]="getSlotHeight(slot)" [label]="getSlotLabel(slot)"
+                [start]="slot.start" [end]="slot.end"
                 [durationMinutes]="slot.durationMinutes"></app-timeline-slot-pending>
               } @else if (slot.status === ReservationStatusEnum.MAINTENANCE) {
-              <app-timeline-slot-maintenance [label]="getSlotLabel(slot)" [start]="slot.start" [end]="slot.end"
+              <app-timeline-slot-maintenance [height]="getSlotHeight(slot)" [label]="getSlotLabel(slot)"
+                [start]="slot.start" [end]="slot.end"
                 [durationMinutes]="slot.durationMinutes"></app-timeline-slot-maintenance>
               } @else if (slot.status === ReservationStatusEnum.IN_BASKET) {
-              <app-timeline-slot-basket [label]="getSlotLabel(slot)" [start]="slot.start" [end]="slot.end"
-                [durationMinutes]="slot.durationMinutes"
+              <app-timeline-slot-basket [height]="getSlotHeight(slot)" [label]="getSlotLabel(slot)" [start]="slot.start"
+                [end]="slot.end" [durationMinutes]="slot.durationMinutes"
                 [showHoldIndicator]="slot.status === ReservationStatusEnum.IN_BASKET && !isMyBasketSlot(slot)">
               </app-timeline-slot-basket>
               } @else {
-              <app-timeline-slot-available [label]="getSlotLabel(slot)" [start]="slot.start" [end]="slot.end"
+              <app-timeline-slot-available [height]="getSlotHeight(slot)" [label]="getSlotLabel(slot)"
+                [start]="slot.start" [end]="slot.end"
                 [durationMinutes]="slot.durationMinutes"></app-timeline-slot-available>
               }
             </div>

@@ -1,4 +1,5 @@
-:host {
+
+.timeline-slot {
   position: absolute;
   left: 0;
   right: 0;
@@ -8,12 +9,17 @@
   flex-direction: column;
   gap: 1px;
   font-size: 8px;
-  background-color: #dbeafe;
   color: #1f2933;
   border: none;
-  border-left: 3px solid #3b82f6;
+  border-left: 3px solid #179503;
   border-bottom: 1px solid #cfcfcfa3;
   box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08);
+  background: repeating-linear-gradient(
+    45deg,
+    #79e395 0 6px,
+    #9dffad 6px 12px
+  );
+  animation: moveStripes 5s linear infinite;
 }
 
 .timeline-slot__label {
@@ -26,4 +32,14 @@
   font-weight: 700;
   font-size: 9px;
   white-space: nowrap;
+}
+
+@keyframes moveStripes {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 60px 0;
+  }
 }
