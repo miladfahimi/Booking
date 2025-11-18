@@ -386,7 +386,7 @@ public class ReservationAggregationService {
         LocalTime endTime = serviceDTO.getEndTime();
         int slotDuration = serviceDTO.getSlotDuration();
         int slotGapDuration = serviceDTO.getSlotGapDuration() != null ? serviceDTO.getSlotGapDuration() : 0;
-        int effectiveSlotUsage = Math.max(slotDuration - slotGapDuration, 0);
+        int slotInterval = slotDuration + slotGapDuration;
         BigDecimal price = serviceDTO.getPrice();
 
         List<SlotDTO> slots = new ArrayList<>();
@@ -397,7 +397,7 @@ public class ReservationAggregationService {
             SlotDTO slot = new SlotDTO();
             slot.setSlotId("slot-" + slotIndex);
             slot.setTime(currentTime.toString());
-            LocalTime slotEndTime = effectiveSlotUsage == 0 ? currentTime : currentTime.plusMinutes(effectiveSlotUsage);
+            LocalTime slotEndTime = currentTime.plusMinutes(slotDuration);
             slot.setEndTime(slotEndTime.toString());
             slot.setStatus(ReservationStatus.AVAILABLE);
             slot.setPrice(price);
@@ -406,7 +406,7 @@ public class ReservationAggregationService {
             slot.setBasketState(new SlotBasketStateDTO(false, false, 0));
 
             slots.add(slot);
-            currentTime = currentTime.plusMinutes(slotDuration);
+            currentTime = currentTime.plusMinutes(slotInterval);
             slotIndex++;
         }
         return slots;
