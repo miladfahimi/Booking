@@ -11,4 +11,5 @@ export class TimelineSlotBasketMineComponent {
   @Input({ required: true }) end!: string;
   @Input({ required: true }) durationMinutes!: number;
   @Input({ required: true }) height!: number;
+  @Input() showHoldIndicator = false;
 }

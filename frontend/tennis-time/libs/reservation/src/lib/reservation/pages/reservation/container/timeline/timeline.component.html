@@ -29,8 +29,9 @@
                 [durationMinutes]="slot.durationMinutes"></app-timeline-slot-booked-mine>
               } @else if (isMyBasketSlot(slot)) {
               <app-timeline-slot-basket-mine [height]="getSlotHeight(slot)" [label]="getSlotLabel(slot)"
-                [start]="slot.start" [end]="slot.end"
-                [durationMinutes]="slot.durationMinutes"></app-timeline-slot-basket-mine>
+                [start]="slot.start" [end]="slot.end" [durationMinutes]="slot.durationMinutes"
+                [showHoldIndicator]="hasForeignBasketHold(slot)">
+              </app-timeline-slot-basket-mine>
               } @else if (slot.status === ReservationStatusEnum.CONFIRMED) {
               <app-timeline-slot-booked [height]="getSlotHeight(slot)" [label]="getSlotLabel(slot)" [start]="slot.start"
                 [end]="slot.end" [durationMinutes]="slot.durationMinutes"></app-timeline-slot-booked>
@@ -45,7 +46,7 @@
               } @else if (slot.status === ReservationStatusEnum.IN_BASKET) {
               <app-timeline-slot-basket [height]="getSlotHeight(slot)" [label]="getSlotLabel(slot)" [start]="slot.start"
                 [end]="slot.end" [durationMinutes]="slot.durationMinutes"
-                [showHoldIndicator]="slot.status === ReservationStatusEnum.IN_BASKET && !isMyBasketSlot(slot)">
+                [showHoldIndicator]="hasForeignBasketHold(slot)">
               </app-timeline-slot-basket>
               } @else {
               <app-timeline-slot-available [height]="getSlotHeight(slot)" [label]="getSlotLabel(slot)"
