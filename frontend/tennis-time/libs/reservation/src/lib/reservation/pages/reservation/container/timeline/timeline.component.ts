@@ -138,7 +138,7 @@ export class TimelineComponent implements OnChanges {
       return null;
     }
 
-    const status = this.normalizeStatus(slot.status);
+    const status = this.resolveSlotStatus(slot);
 
     return {
       id: slot.slotId || `${service.id}-${start}`,
@@ -149,6 +149,13 @@ export class TimelineComponent implements OnChanges {
       status,
       original: slot
     };
+  }
+
+  private resolveSlotStatus(slot: SlotDTO): ReservationStatus {
+    if ((slot.basketState?.totalBasketUsers ?? 0) > 0) {
+      return ReservationStatus.IN_BASKET;
+    }
+    return this.normalizeStatus(slot.status);
   }
 
   private calculateDurationMinutes(start: string, end: string | null, fallbackDuration?: number | null): number {
@@ -390,7 +397,7 @@ export class TimelineComponent implements OnChanges {
     }
 
     if (this.hasAnyBasketHold(slot)) {
-      return 'در دسترس';
+      return this.getStatusLabel(ReservationStatus.IN_BASKET);
     }
 
     return slot.label;
