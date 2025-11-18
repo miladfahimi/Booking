@@ -1,4 +1,6 @@
-import { ReservationStatus } from '../types';
+import { ReservationStatus, SlotBasketState } from '../types';
+
+export type SlotBasketStateNotification = Partial<SlotBasketState>;
 
 export interface SlotStatusNotification {
   slotId: string;
@@ -7,4 +9,5 @@ export interface SlotStatusNotification {
   status: ReservationStatus;
   reservationDate?: string | null;
   userId?: string | null;
+  basketState?: SlotBasketStateNotification | null;
 }

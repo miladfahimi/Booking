@@ -1,9 +1,45 @@
 import { createReducer, on } from '@ngrx/store';
 import * as ReservationActions from './reservation.actions';
-import { LoadingStatus, ProviderDTO, ReservationStatus, ServiceDTO, SlotDTO } from '../types';
+import { LoadingStatus, ProviderDTO, ReservationStatus, ServiceDTO, SlotBasketState, SlotDTO } from '../types';
 import { ReservationBasketItem } from '../types/reservation-basket.types';
 import { PaymentInitiationResult } from '../types/reservation-payment.types';
 import { SlotStatusNotification } from '../realtime/slot-status-notification';
+
+const EMPTY_BASKET_STATE: SlotBasketState = {
+  inBasketByCurrentUser: false,
+  inBasketByOtherUsers: false,
+  totalBasketUsers: 0
+};
+
+function normalizeSlot(slot: SlotDTO): SlotDTO {
+  return {
+    ...slot,
+    basketState: slot.basketState ? { ...slot.basketState } : { ...EMPTY_BASKET_STATE }
+  };
+}
+
+function basketStatesEqual(a: SlotBasketState, b: SlotBasketState): boolean {
+  return (
+    a.inBasketByCurrentUser === b.inBasketByCurrentUser &&
+    a.inBasketByOtherUsers === b.inBasketByOtherUsers &&
+    a.totalBasketUsers === b.totalBasketUsers
+  );
+}
+
+function updateBasketStateWithNotification(
+  state: SlotBasketState,
+  notification: SlotStatusNotification
+): SlotBasketState {
+  const payload = notification.basketState;
+  if (!payload) {
+    return state;
+  }
+  return {
+    inBasketByCurrentUser: payload.inBasketByCurrentUser ?? state.inBasketByCurrentUser,
+    inBasketByOtherUsers: payload.inBasketByOtherUsers ?? state.inBasketByOtherUsers,
+    totalBasketUsers: payload.totalBasketUsers ?? state.totalBasketUsers
+  };
+}
 
 export interface ReservationState {
   slotsByService: Record<string, SlotDTO[]>;
@@ -57,7 +93,7 @@ export const reservationReducer = createReducer(
   on(ReservationActions.loadSlotsSuccess, (state, { services }) => ({
     ...state,
     slotsByService: services.reduce<Record<string, SlotDTO[]>>((acc, service) => {
-      acc[service.id] = service.slots ?? [];
+      acc[service.id] = (service.slots ?? []).map(normalizeSlot);
       return acc;
     }, {}),
     loadingStatus: { loading: false, loaded: true },
@@ -220,8 +256,9 @@ export const reservationReducer = createReducer(
       return state;
     }
     const slots = state.slotsByService[notification.serviceId];
+    const inBasketByOtherUsers = notification.basketState?.inBasketByOtherUsers ?? false;
     const isForeignBasketUpdate =
-      notification.status === ReservationStatus.IN_BASKET &&
+      inBasketByOtherUsers &&
       (!!notification.userId && !!currentUserId ? notification.userId !== currentUserId : true);
 
     let foreignHoldWarning = state.foreignHoldWarning;
@@ -231,7 +268,8 @@ export const reservationReducer = createReducer(
       (foreignHoldWarning.slotId === notification.slotId ||
         foreignHoldWarning.compositeSlotId === notification.compositeSlotId);
 
-    if (matchesForeignWarning && notification.status !== ReservationStatus.IN_BASKET) {
+    const remainingHolds = (notification.basketState?.totalBasketUsers ?? 0) > 0;
+    if (matchesForeignWarning && !remainingHolds) {
       foreignHoldWarning = null;
     }
 
@@ -245,11 +283,19 @@ export const reservationReducer = createReducer(
     let changed = false;
     const updatedSlots = slots.map(slot => {
       if (slot.slotId === notification.slotId || slot.slotId === notification.compositeSlotId) {
-        if (slot.status === notification.status) {
-          return slot;
+        let nextSlot = slot;
+        const shouldUpdateStatus = notification.status !== ReservationStatus.IN_BASKET;
+        if (shouldUpdateStatus && slot.status !== notification.status) {
+          nextSlot = { ...nextSlot, status: notification.status };
+          changed = true;
         }
-        changed = true;
-        return { ...slot, status: notification.status };
+        const currentBasketState = nextSlot.basketState ?? { ...EMPTY_BASKET_STATE };
+        const updatedBasketState = updateBasketStateWithNotification(currentBasketState, notification);
+        if (!basketStatesEqual(currentBasketState, updatedBasketState)) {
+          nextSlot = { ...nextSlot, basketState: updatedBasketState };
+          changed = true;
+        }
+        return nextSlot;
       }
       return slot;
     });

@@ -21,6 +21,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -78,6 +79,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String username = (String) tokenInfo.get("username");
                 String email = (String) tokenInfo.get("email");
                 List<String> roles = (List<String>) tokenInfo.get("roles");
+                UUID userId = extractUserId(tokenInfo.get("userId"));
 
                 // Ensure roles are prefixed with "ROLE_"
                 roles = roles.stream()
@@ -88,8 +90,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
+                AuthenticatedUser authenticatedUser = new AuthenticatedUser(userId, username, email, roles);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        username, null, authorities);
+                        authenticatedUser, null, authorities);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -122,5 +125,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             logger.error("\033[1;31m----------------------------\033[0m");
             return null;
         }
+    }
+
+    private UUID extractUserId(Object userIdValue) {
+        if (userIdValue instanceof String userIdString && !userIdString.isBlank()) {
+            try {
+                return UUID.fromString(userIdString);
+            } catch (IllegalArgumentException ignored) {
+                logger.warn("\033[1;33m[JwtAuthenticationFilter] Unable to parse userId from token.\033[0m");
+            }
+        }
+        return null;
     }
 }

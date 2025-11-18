@@ -5,6 +5,7 @@ import com.tennistime.reservation.application.mapper.ReservationBasketItemMapper
 import com.tennistime.reservation.application.notification.SlotStatusNotifier;
 import com.tennistime.reservation.domain.model.basket.ReservationBasketItem;
 import com.tennistime.reservation.domain.model.types.ReservationStatus;
+import com.tennistime.reservation.domain.notification.SlotBasketStateNotification;
 import com.tennistime.reservation.domain.repository.ReservationBasketItemRepository;
 import com.tennistime.reservation.domain.notification.SlotStatusNotification;
 import lombok.RequiredArgsConstructor;
@@ -46,10 +47,10 @@ public class ReservationBasketService {
                 .collect(Collectors.toList());
     }
 
-        /**
+    /**
      * Retrieves basket items for a specific service and date.
      *
-     * @param serviceId identifier of the service
+     * @param serviceId       identifier of the service
      * @param reservationDate reservation date
      * @return basket items mapped to DTOs
      */
@@ -156,11 +157,62 @@ public class ReservationBasketService {
                 .serviceId(basketItem.getServiceId())
                 .status(status)
                 .reservationDate(basketItem.getReservationDate() != null
-                    ? basketItem.getReservationDate().toString()
-                    : null)
+                        ? basketItem.getReservationDate().toString()
+                        : null)
                 .userId(basketItem.getUserId())
+                .basketState(describeBasketState(basketItem))
                 .build();
         slotStatusNotifier.publish(notification);
+    }
+
+    /**
+     * Computes the basket composition for the slot associated with the provided basket item,
+     * including how many entries belong to the current user and to other users.
+     *
+     * @param basketItem reference basket entry
+     * @return aggregated basket state for the slot
+     */
+    private SlotBasketStateNotification describeBasketState(ReservationBasketItem basketItem) {
+        if (basketItem.getServiceId() == null
+                || basketItem.getReservationDate() == null
+                || basketItem.getSlotId() == null) {
+            return SlotBasketStateNotification.builder()
+                    .inBasketByCurrentUser(0)
+                    .inBasketByOtherUsers(0)
+                    .totalBasketUsers(0)
+                    .build();
+        }
+        String targetSlotId = extractRawSlotId(basketItem.getSlotId());
+        if (targetSlotId == null) {
+            return SlotBasketStateNotification.builder()
+                    .inBasketByCurrentUser(0)
+                    .inBasketByOtherUsers(0)
+                    .totalBasketUsers(0)
+                    .build();
+        }
+        List<ReservationBasketItem> items = basketItemRepository.findByServiceIdAndReservationDate(
+                basketItem.getServiceId(),
+                basketItem.getReservationDate()
+        );
+        int inBasketByCurrentUser = 0;
+        int inBasketByOtherUsers = 0;
+        UUID currentUserId = basketItem.getUserId();
+        for (ReservationBasketItem item : items) {
+            if (!targetSlotId.equals(extractRawSlotId(item.getSlotId()))) {
+                continue;
+            }
+            if (currentUserId != null && currentUserId.equals(item.getUserId())) {
+                inBasketByCurrentUser++;
+            } else {
+                inBasketByOtherUsers++;
+            }
+        }
+        int totalBasketUsers = inBasketByCurrentUser + inBasketByOtherUsers;
+        return SlotBasketStateNotification.builder()
+                .inBasketByCurrentUser(inBasketByCurrentUser)
+                .inBasketByOtherUsers(inBasketByOtherUsers)
+                .totalBasketUsers(totalBasketUsers)
+                .build();
     }
 
     /**

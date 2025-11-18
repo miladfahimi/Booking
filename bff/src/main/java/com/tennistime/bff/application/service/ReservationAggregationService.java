@@ -1,6 +1,7 @@
 package com.tennistime.bff.application.service;
 
 import com.tennistime.bff.application.dto.*;
+import com.tennistime.bff.application.util.CurrentUserProvider;
 import com.tennistime.bff.domain.model.types.ReservationStatus;
 import com.tennistime.bff.exceptions.ExternalServiceException;
 import com.tennistime.bff.exceptions.ReservationNotFoundException;
@@ -38,6 +39,7 @@ public class ReservationAggregationService {
     private final ServiceServiceClient serviceServiceClient;
     private final FeedbackServiceClient feedbackServiceClient;
     private final UserProfileServiceClient userProfileServiceClient;
+    private final CurrentUserProvider currentUserProvider;
 
     /**
      * Aggregates the details of a reservation including associated provider, service, user profile, and feedbacks.
@@ -318,7 +320,7 @@ public class ReservationAggregationService {
     }
 
     /**
-     * Calculates and updates the availability slots for a service based on existing reservations.
+     * Calculates and updates the availability slots for a service based on existing reservations and basket entries.
      *
      * @param serviceId the UUID of the service
      * @param date      the date for which the slots should be checked
@@ -326,20 +328,9 @@ public class ReservationAggregationService {
      * @throws ServiceNotFoundException if the service is not found
      */
     public ServiceDTO calculateAndUpdateSlots(UUID serviceId, LocalDate date) {
-        return calculateAndUpdateSlots(serviceId, date, null);
-    }
-
-    /**
-     * Calculates and updates the availability slots for a service based on existing reservations and basket entries.
-     *
-     * @param serviceId the UUID of the service
-     * @param date      the date for which the slots should be checked
-     * @param currentUserId identifier of the current user when available
-     * @return a ServiceDTO populated with slots information and slot count
-     * @throws ServiceNotFoundException if the service is not found
-     */
-    public ServiceDTO calculateAndUpdateSlots(UUID serviceId, LocalDate date, UUID currentUserId) {
         logger.info("Calculating and updating slots for service ID: {} on date: {}", serviceId, date);
+
+        UUID currentUserId = currentUserProvider.getCurrentUserId().orElse(null);
 
         ServiceDTO serviceDTO = serviceServiceClient.getServiceById(serviceId);
         if (serviceDTO == null) {
@@ -362,13 +353,13 @@ public class ReservationAggregationService {
      *
      * @param type the service type to filter by; if {@code null}, blank, or representing "all", no type filter is applied
      * @param date the target date for which the slot availability should be calculated
-     * @param currentUserId identifier of the current user when available
      * @return a list of {@link ServiceDTO} instances enriched with slot information
      */
-    public List<ServiceDTO> getServiceSlotsByTypeAndDate(String type, LocalDate date, UUID currentUserId) {
+    public List<ServiceDTO> getServiceSlotsByTypeAndDate(String type, LocalDate date) {
         logger.info("Fetching slots for services filtered by type: {} on date: {}", type, date);
 
         String normalizedType = normalizeTypeFilter(type);
+        UUID currentUserId = currentUserProvider.getCurrentUserId().orElse(null);
 
         List<ServiceDTO> services;
         try {

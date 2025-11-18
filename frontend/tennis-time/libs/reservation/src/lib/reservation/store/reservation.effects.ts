@@ -35,10 +35,10 @@ export class ReservationEffects {
         const actions: Action[] = [
           ReservationActions.slotStatusUpdated({ notification, currentUserId })
         ];
+        const inBasketByOtherUsers = notification.basketState?.inBasketByOtherUsers ?? false;
         const isForeignBasketUpdate =
-          notification.status === ReservationStatus.IN_BASKET &&
-          notification.userId &&
-          (!currentUserId || notification.userId !== currentUserId);
+          inBasketByOtherUsers &&
+          (!!notification.userId && !!currentUserId ? notification.userId !== currentUserId : true);
         if (isForeignBasketUpdate) {
           actions.push(ReservationActions.slotHeldByAnotherUser({ notification }));
         }
@@ -51,8 +51,7 @@ export class ReservationEffects {
     this.actions$.pipe(
       ofType(ReservationActions.loadSlots),
       mergeMap(action => {
-        const currentUserId = this.coreAuthService.getUserId();
-        return this.reservationService.getSlotsByDate(action.date, currentUserId).pipe(
+        return this.reservationService.getSlotsByDate(action.date).pipe(
           map((services: ServiceDTO[]) =>
             ReservationActions.loadSlotsSuccess({ services })
           ),

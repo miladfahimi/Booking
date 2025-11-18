@@ -25,4 +25,5 @@ public class SlotStatusNotification {
     private ReservationStatus status;
     private String reservationDate;
     private UUID userId;
+    private SlotBasketStateNotification basketState;
 }

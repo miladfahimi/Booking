@@ -64,7 +64,15 @@ export interface SlotDTO {
   capacity: number;
   reservedBy?: string | null;
   selected?: boolean;
+  basketState?: SlotBasketState | null;
 }
+
+export interface SlotBasketState {
+  inBasketByCurrentUser: boolean;
+  inBasketByOtherUsers: boolean;
+  totalBasketUsers: number;
+}
+
 
 export interface ServiceDTO {
   id: string;

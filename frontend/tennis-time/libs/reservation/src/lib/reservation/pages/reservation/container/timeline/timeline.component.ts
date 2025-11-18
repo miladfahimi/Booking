@@ -389,7 +389,7 @@ export class TimelineComponent implements OnChanges {
       return 'در سبد پرداخت شما';
     }
 
-    if (slot.status === ReservationStatus.IN_BASKET) {
+    if (this.hasAnyBasketHold(slot)) {
       return 'در دسترس';
     }
 
@@ -397,11 +397,15 @@ export class TimelineComponent implements OnChanges {
   }
 
   isMyBasketSlot(slot: TimelineSlot): boolean {
-    return (
-      slot.status === ReservationStatus.IN_BASKET &&
-      !!this.currentUserId &&
-      slot.original.reservedBy === this.currentUserId
-    );
+    return Boolean(slot.original.basketState?.inBasketByCurrentUser);
+  }
+
+  hasAnyBasketHold(slot: TimelineSlot): boolean {
+    return (slot.original.basketState?.totalBasketUsers ?? 0) > 0;
+  }
+
+  hasForeignBasketHold(slot: TimelineSlot): boolean {
+    return Boolean(slot.original.basketState?.inBasketByOtherUsers);
   }
 
 

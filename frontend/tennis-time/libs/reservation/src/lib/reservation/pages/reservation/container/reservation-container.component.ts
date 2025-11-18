@@ -9,7 +9,7 @@ import { MockPaymentNavigationService } from '../../../services/mock/mock-paymen
 
 import { addSlotToBasket, checkoutBasket, loadBasket, loadProvidersWithServices, loadSlots, removeSlotFromBasket } from '../../../store/reservation.actions';
 import { selectBasket, selectBasketTotal, selectCheckoutLoading, selectPaymentResult, selectProviders, selectSlotsByService, selectSlotsLoading } from '../../../store/reservation.selectors';
-import { ProviderDTO, ReservationStatus, ServiceDTO, SlotDTO } from '../../../types';
+import { ProviderDTO, ReservationStatus, ServiceDTO, SlotBasketState, SlotDTO } from '../../../types';
 import { ReservationBasketItem } from '../../../types/reservation-basket.types';
 import { PaymentInitiationResult } from '../../../types/reservation-payment.types';
 import { TimelineSlotDetails } from './timeline/tileline-slot-modals/timeline-slot-modals.component';
@@ -226,7 +226,7 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
 
     const currentDate = this.formatDateToYYYYMMDD(this.selectedDate);
     const basketKeys = new Set(
-      basket
+      (basket ?? [])
         .filter(item => item.reservationDate === currentDate)
         .map(item => item.slotId.includes(':') ? item.slotId : `${item.serviceId}:${item.slotId}`)
     );
@@ -235,20 +235,49 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
 
     Object.keys(slotsByService).forEach(serviceId => {
       next[serviceId] = (slotsByService[serviceId] ?? []).map(slot => {
-        const key = `${serviceId}:${slot.slotId}`;
+        const normalizedSlot = this.ensureSlotBasketState(slot);
+        const key = `${serviceId}:${normalizedSlot.slotId}`;
         if (!basketKeys.has(key)) {
-          return slot;
+          return normalizedSlot;
         }
 
         return {
-          ...slot,
-          status: ReservationStatus.IN_BASKET,
-          reservedBy: slot.reservedBy ?? this.userId ?? null
+          ...normalizedSlot,
+          basketState: this.applyCurrentUserBasketHold(normalizedSlot.basketState)
         };
       });
     });
 
     return next;
+  }
+
+  private ensureSlotBasketState(slot: SlotDTO): SlotDTO {
+    if (slot.basketState) {
+      return slot;
+    }
+    return {
+      ...slot,
+      basketState: this.createEmptyBasketState()
+    };
+  }
+
+  private applyCurrentUserBasketHold(state?: SlotBasketState | null): SlotBasketState {
+    const current = state ?? this.createEmptyBasketState();
+    const otherUsersCount = Math.max(current.totalBasketUsers - (current.inBasketByCurrentUser ? 1 : 0), 0);
+    const totalBasketUsers = Math.max(otherUsersCount + 1, current.totalBasketUsers);
+    return {
+      inBasketByCurrentUser: true,
+      inBasketByOtherUsers: otherUsersCount > 0,
+      totalBasketUsers
+    };
+  }
+
+  private createEmptyBasketState(): SlotBasketState {
+    return {
+      inBasketByCurrentUser: false,
+      inBasketByOtherUsers: false,
+      totalBasketUsers: 0
+    };
   }
 
   @HostListener('window:resize', ['$event'])
