@@ -16,7 +16,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -324,6 +326,19 @@ public class ReservationAggregationService {
      * @throws ServiceNotFoundException if the service is not found
      */
     public ServiceDTO calculateAndUpdateSlots(UUID serviceId, LocalDate date) {
+        return calculateAndUpdateSlots(serviceId, date, null);
+    }
+
+    /**
+     * Calculates and updates the availability slots for a service based on existing reservations and basket entries.
+     *
+     * @param serviceId the UUID of the service
+     * @param date      the date for which the slots should be checked
+     * @param currentUserId identifier of the current user when available
+     * @return a ServiceDTO populated with slots information and slot count
+     * @throws ServiceNotFoundException if the service is not found
+     */
+    public ServiceDTO calculateAndUpdateSlots(UUID serviceId, LocalDate date, UUID currentUserId) {
         logger.info("Calculating and updating slots for service ID: {} on date: {}", serviceId, date);
 
         ServiceDTO serviceDTO = serviceServiceClient.getServiceById(serviceId);
@@ -335,8 +350,9 @@ public class ReservationAggregationService {
         List<ReservationDTO> reservations = fetchReservationsByServiceAndDate(serviceId, date);
 
         updateSlotsWithReservations(slots, serviceDTO, reservations);
+        applyBasketInformation(slots, serviceDTO.getId(), date, currentUserId);
         serviceDTO.setSlots(slots);
-        serviceDTO.setSlotCount(slots.size());  // Set the slot count
+        serviceDTO.setSlotCount(slots.size());
 
         return serviceDTO;
     }
@@ -346,9 +362,10 @@ public class ReservationAggregationService {
      *
      * @param type the service type to filter by; if {@code null}, blank, or representing "all", no type filter is applied
      * @param date the target date for which the slot availability should be calculated
+     * @param currentUserId identifier of the current user when available
      * @return a list of {@link ServiceDTO} instances enriched with slot information
      */
-    public List<ServiceDTO> getServiceSlotsByTypeAndDate(String type, LocalDate date) {
+    public List<ServiceDTO> getServiceSlotsByTypeAndDate(String type, LocalDate date, UUID currentUserId) {
         logger.info("Fetching slots for services filtered by type: {} on date: {}", type, date);
 
         String normalizedType = normalizeTypeFilter(type);
@@ -363,7 +380,7 @@ public class ReservationAggregationService {
 
         return services.stream()
                 .filter(service -> matchesType(normalizedType, service.getType()))
-                .map(service -> enrichServiceWithSlots(service, date))
+                .map(service -> enrichServiceWithSlots(service, date, currentUserId))
                 .collect(Collectors.toList());
     }
 
@@ -395,6 +412,7 @@ public class ReservationAggregationService {
             slot.setPrice(price);
             slot.setCapacity(serviceDTO.getMaxCapacity());
             slot.setReservedBy(null);
+            slot.setBasketState(new SlotBasketStateDTO(false, false, 0));
 
             slots.add(slot);
             currentTime = currentTime.plusMinutes(slotDuration);
@@ -445,15 +463,17 @@ public class ReservationAggregationService {
      *
      * @param serviceDTO the service whose slots should be enriched
      * @param date       the date used to calculate availability
+     * @param currentUserId identifier of the current user when available
      * @return a new {@link ServiceDTO} instance containing slot information
      */
-    private ServiceDTO enrichServiceWithSlots(ServiceDTO serviceDTO, LocalDate date) {
+    private ServiceDTO enrichServiceWithSlots(ServiceDTO serviceDTO, LocalDate date, UUID currentUserId) {
         ServiceDTO enrichedService = cloneService(serviceDTO);
 
         List<SlotDTO> slots = generateSlots(enrichedService);
         List<ReservationDTO> reservations = fetchReservationsByServiceAndDate(enrichedService.getId(), date);
 
         updateSlotsWithReservations(slots, enrichedService, reservations);
+        applyBasketInformation(slots, enrichedService.getId(), date, currentUserId);
         enrichedService.setSlots(slots);
         enrichedService.setSlotCount(slots.size());
 
@@ -547,5 +567,74 @@ public class ReservationAggregationService {
                 }
             }
         }
+    }
+
+    /**
+     * Enriches slots with basket activity for the provided service and date.
+     *
+     * @param slots slots to update
+     * @param serviceId identifier of the service
+     * @param date reservation date
+     * @param currentUserId current user identifier when available
+     */
+    private void applyBasketInformation(List<SlotDTO> slots, UUID serviceId, LocalDate date, UUID currentUserId) {
+        List<ReservationBasketItemDTO> basketItems = fetchBasketItemsByServiceAndDate(serviceId, date);
+        Map<String, List<ReservationBasketItemDTO>> itemsBySlot = basketItems.stream()
+                .collect(Collectors.groupingBy(item -> extractRawSlotId(item.getSlotId())));
+
+        for (SlotDTO slot : slots) {
+            List<ReservationBasketItemDTO> slotItems = itemsBySlot.getOrDefault(slot.getSlotId(), Collections.emptyList());
+            slot.setBasketState(buildBasketState(slotItems, currentUserId));
+        }
+    }
+
+    /**
+     * Fetches basket entries for a service and date.
+     *
+     * @param serviceId identifier of the service
+     * @param date reservation date
+     * @return basket entries
+     */
+    private List<ReservationBasketItemDTO> fetchBasketItemsByServiceAndDate(UUID serviceId, LocalDate date) {
+        try {
+            logger.info("Fetching basket entries for service {} on {}", serviceId, date);
+            return reservationServiceClient.getBasketItemsByServiceAndDate(serviceId, date);
+        } catch (FeignException e) {
+            logger.error("Error occurred while fetching basket entries for service ID {} on date {}: {}", serviceId, date, e.getMessage());
+            throw new ExternalServiceException("An error occurred while fetching basket entries.", e);
+        }
+    }
+
+    /**
+     * Builds the basket state description for a slot.
+     *
+     * @param items basket entries assigned to the slot
+     * @param currentUserId identifier of the current user when available
+     * @return computed state representation
+     */
+    private SlotBasketStateDTO buildBasketState(List<ReservationBasketItemDTO> items, UUID currentUserId) {
+        boolean inBasketByCurrentUser = currentUserId != null && items.stream()
+                .anyMatch(item -> currentUserId.equals(item.getUserId()));
+        boolean inBasketByOtherUsers = items.stream()
+                .anyMatch(item -> currentUserId == null || !currentUserId.equals(item.getUserId()));
+        int totalBasketUsers = items.size();
+        return new SlotBasketStateDTO(inBasketByCurrentUser, inBasketByOtherUsers, totalBasketUsers);
+    }
+
+    /**
+     * Extracts the raw slot identifier from the composite value persisted alongside the service identifier.
+     *
+     * @param compositeSlotId stored slot identifier
+     * @return slot identifier without the service prefix
+     */
+    private String extractRawSlotId(String compositeSlotId) {
+        if (compositeSlotId == null) {
+            return null;
+        }
+        int separatorIndex = compositeSlotId.indexOf(':');
+        if (separatorIndex < 0) {
+            return compositeSlotId;
+        }
+        return compositeSlotId.substring(separatorIndex + 1);
     }
 }

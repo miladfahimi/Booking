@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ProviderDTO, ServiceDTO } from '../types';
 
@@ -12,11 +12,21 @@ export class ReservationService {
 
   constructor(private http: HttpClient) { }
 
-  getSlotsByServiceAndDate(serviceId: string, date: string): Observable<ServiceDTO> {
-    return this.http.get<ServiceDTO>(`${this.baseUrl}/portal/user/services/${serviceId}/slots/${date}`);
+  getSlotsByServiceAndDate(serviceId: string, date: string, currentUserId?: string | null): Observable<ServiceDTO> {
+    const params = this.buildUserParam(currentUserId);
+    return this.http.get<ServiceDTO>(`${this.baseUrl}/portal/user/services/${serviceId}/slots/${date}`, { params });
   }
-  getSlotsByDate(date: string): Observable<ServiceDTO[]> {
-    return this.http.get<ServiceDTO[]>(`${this.baseUrl}/portal/user/services/slots/${date}`);
+
+  getSlotsByDate(date: string, currentUserId?: string | null): Observable<ServiceDTO[]> {
+    const params = this.buildUserParam(currentUserId);
+    return this.http.get<ServiceDTO[]>(`${this.baseUrl}/portal/user/services/slots/${date}`, { params });
+  }
+
+  private buildUserParam(currentUserId?: string | null): HttpParams | undefined {
+    if (!currentUserId) {
+      return undefined;
+    }
+    return new HttpParams().set('currentUserId', currentUserId);
   }
   getProvidersWithServices(): Observable<ProviderDTO[]> {
     return this.http.get<ProviderDTO[]>(`${this.baseUrl}/portal/user/providers-with-services`);

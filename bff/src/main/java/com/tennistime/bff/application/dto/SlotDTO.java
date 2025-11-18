@@ -50,4 +50,9 @@ public class SlotDTO {
      * The ID of the user who reserved this slot, or null if the slot is not booked.
      */
     private String reservedBy;
+
+    /**
+     * Basket activity details describing which users have selected the slot.
+     */
+    private SlotBasketStateDTO basketState;
 }

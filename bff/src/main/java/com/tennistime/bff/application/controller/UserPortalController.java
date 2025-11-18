@@ -126,11 +126,15 @@ public class UserPortalController {
      *
      * @param serviceId the UUID of the service
      * @param date      the date for which the slots should be checked
+     * @param currentUserId optional identifier of the current user to personalize basket data
      * @return a ResponseEntity containing the updated ServiceDTO with slots information
      */
     @GetMapping("/services/{serviceId}/slots/{date}")
-    public ResponseEntity<ServiceDTO> getServiceSlotsWithReservations(@PathVariable UUID serviceId, @PathVariable LocalDate date) {
-        ServiceDTO serviceWithSlots = reservationAggregationService.calculateAndUpdateSlots(serviceId, date);
+    public ResponseEntity<ServiceDTO> getServiceSlotsWithReservations(
+            @PathVariable UUID serviceId,
+            @PathVariable LocalDate date,
+            @RequestParam(value = "currentUserId", required = false) UUID currentUserId) {
+        ServiceDTO serviceWithSlots = reservationAggregationService.calculateAndUpdateSlots(serviceId, date, currentUserId);
         return ResponseEntity.ok(serviceWithSlots);
     }
 
@@ -139,14 +143,16 @@ public class UserPortalController {
      *
      * @param type the service type to filter by; if null, blank, "all", "null", or "undefined", all types are included
      * @param date the date for which slot availability should be calculated
+     * @param currentUserId optional identifier of the current user to personalize basket data
      * @return a ResponseEntity containing the list of services with their corresponding slots
      */
     // @GetMapping({"/services/{type}/slots/{date}", "/services/slots/{date}"})  ---->>>>> this does not work as it same shape as the other endpoint
     @GetMapping({"/services/slots/{date}"})
     public ResponseEntity<List<ServiceDTO>> getServiceSlotsByTypeAndDate(
             @PathVariable(value = "type", required = false) String type,
-            @PathVariable LocalDate date) {
-        List<ServiceDTO> servicesWithSlots = reservationAggregationService.getServiceSlotsByTypeAndDate(type, date);
+            @PathVariable LocalDate date,
+            @RequestParam(value = "currentUserId", required = false) UUID currentUserId) {
+        List<ServiceDTO> servicesWithSlots = reservationAggregationService.getServiceSlotsByTypeAndDate(type, date, currentUserId);
         return ResponseEntity.ok(servicesWithSlots);
     }
 

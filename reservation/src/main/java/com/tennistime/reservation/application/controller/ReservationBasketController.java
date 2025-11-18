@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -43,6 +45,22 @@ public class ReservationBasketController {
     public ResponseEntity<List<ReservationBasketItemDTO>> getBasket(
             @Parameter(description = "Identifier of the user", required = true) @PathVariable UUID userId) {
         return ResponseEntity.ok(reservationBasketService.getBasket(userId));
+    }
+
+    /**
+     * Lists basket entries for a service and reservation date combination.
+     *
+     * @param serviceId        service identifier
+     * @param reservationDate  target date
+     * @return collection of basket entries for the service on the specified date
+     */
+    @GetMapping("/service/{serviceId}")
+    @Operation(summary = "Retrieve service basket entries", description = "Fetch basket items for a service on a specific date")
+    public ResponseEntity<List<ReservationBasketItemDTO>> getBasketByServiceAndDate(
+            @Parameter(description = "Identifier of the service", required = true) @PathVariable UUID serviceId,
+            @Parameter(description = "Reservation date", required = true)
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate reservationDate) {
+        return ResponseEntity.ok(reservationBasketService.getBasketByServiceAndDate(serviceId, reservationDate));
     }
 
     /**

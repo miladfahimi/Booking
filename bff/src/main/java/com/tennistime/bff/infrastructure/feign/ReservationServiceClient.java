@@ -43,6 +43,12 @@ public interface ReservationServiceClient {
     @PostMapping("/reservations/basket")
     ReservationBasketItemDTO addBasketItem(@RequestBody ReservationBasketItemDTO basketItemDTO);
 
+    @GetMapping("/reservations/basket/service/{serviceId}")
+    List<ReservationBasketItemDTO> getBasketItemsByServiceAndDate(
+            @PathVariable("serviceId") UUID serviceId,
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate reservationDate
+    );
+
     @DeleteMapping("/reservations/basket/{userId}/{slotId}")
     void removeBasketItem(@PathVariable("userId") UUID userId, @PathVariable("slotId") String slotId);
 

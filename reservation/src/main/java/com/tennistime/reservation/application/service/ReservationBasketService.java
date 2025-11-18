@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -41,6 +42,22 @@ public class ReservationBasketService {
     public List<ReservationBasketItemDTO> getBasket(UUID userId) {
         logger.info("Fetching basket items for user {}", userId);
         return basketItemRepository.findByUserId(userId).stream()
+                .map(basketItemMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+        /**
+     * Retrieves basket items for a specific service and date.
+     *
+     * @param serviceId identifier of the service
+     * @param reservationDate reservation date
+     * @return basket items mapped to DTOs
+     */
+    public List<ReservationBasketItemDTO> getBasketByServiceAndDate(UUID serviceId, LocalDate reservationDate) {
+        Objects.requireNonNull(serviceId, "Service identifier is required");
+        Objects.requireNonNull(reservationDate, "Reservation date is required");
+        logger.info("Fetching basket items for service {} on {}", serviceId, reservationDate);
+        return basketItemRepository.findByServiceIdAndReservationDate(serviceId, reservationDate).stream()
                 .map(basketItemMapper::toDTO)
                 .collect(Collectors.toList());
     }

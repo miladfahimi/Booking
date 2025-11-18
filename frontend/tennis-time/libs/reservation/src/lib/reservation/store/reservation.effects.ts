@@ -50,16 +50,17 @@ export class ReservationEffects {
   loadSlots$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ReservationActions.loadSlots),
-      mergeMap(action =>
-        this.reservationService.getSlotsByDate(action.date).pipe(
+      mergeMap(action => {
+        const currentUserId = this.coreAuthService.getUserId();
+        return this.reservationService.getSlotsByDate(action.date, currentUserId).pipe(
           map((services: ServiceDTO[]) =>
             ReservationActions.loadSlotsSuccess({ services })
           ),
           catchError(error =>
             of(ReservationActions.loadSlotsFailure({ error }))
           )
-        )
-      )
+        );
+      })
     )
   );
 

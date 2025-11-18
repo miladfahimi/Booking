@@ -3,6 +3,7 @@ package com.tennistime.reservation.domain.repository;
 import com.tennistime.reservation.domain.model.basket.ReservationBasketItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -43,4 +44,14 @@ public interface ReservationBasketItemRepository extends JpaRepository<Reservati
      * @param userId identifier of the customer
      */
     void deleteByUserId(UUID userId);
+
+    
+    /**
+     * Retrieves every basket entry for a specific service and date.
+     *
+     * @param serviceId identifier of the service
+     * @param reservationDate reservation date to filter by
+     * @return collection of basket entries for the provided service and date
+     */
+    List<ReservationBasketItem> findByServiceIdAndReservationDate(UUID serviceId, LocalDate reservationDate);
 }
