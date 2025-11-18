@@ -26,18 +26,65 @@ function basketStatesEqual(a: SlotBasketState, b: SlotBasketState): boolean {
   );
 }
 
+function toCount(value?: number | boolean | null): number {
+  if (typeof value === 'number') {
+    return value;
+  }
+  if (typeof value === 'boolean') {
+    return value ? 1 : 0;
+  }
+  return 0;
+}
+
 function updateBasketStateWithNotification(
   state: SlotBasketState,
-  notification: SlotStatusNotification
+  notification: SlotStatusNotification,
+  currentUserId: string | null
 ): SlotBasketState {
   const payload = notification.basketState;
   if (!payload) {
     return state;
   }
+
+  const eventBelongsToCurrentUser = Boolean(
+    currentUserId && notification.userId && notification.userId === currentUserId
+  );
+  const currentCount = toCount(payload.inBasketByCurrentUser);
+  const otherCount = toCount(payload.inBasketByOtherUsers);
+  const totalFromPayload =
+    typeof payload.totalBasketUsers === 'number' ? payload.totalBasketUsers : null;
+  const total = totalFromPayload ?? state.totalBasketUsers;
+  const hasAnyHold = total > 0 || currentCount > 0 || otherCount > 0;
+
+  let inBasketByCurrentUser = state.inBasketByCurrentUser;
+  if (eventBelongsToCurrentUser) {
+    inBasketByCurrentUser = currentCount > 0;
+  } else if (!hasAnyHold) {
+    inBasketByCurrentUser = false;
+  }
+
+  let foreignCount: number;
+  if (eventBelongsToCurrentUser) {
+    foreignCount = otherCount;
+  } else if (totalFromPayload !== null) {
+    const myContribution = inBasketByCurrentUser ? 1 : 0;
+    foreignCount = Math.max(totalFromPayload - myContribution, 0);
+  } else if (currentCount > 0) {
+    foreignCount = 1;
+  } else if (otherCount > 0 && !inBasketByCurrentUser) {
+    foreignCount = 1;
+  } else {
+    foreignCount = state.inBasketByOtherUsers ? 1 : 0;
+  }
+
+  const inBasketByOtherUsers = foreignCount > 0;
+  const totalBasketUsers =
+    totalFromPayload !== null ? totalFromPayload : foreignCount + (inBasketByCurrentUser ? 1 : 0);
+
   return {
-    inBasketByCurrentUser: payload.inBasketByCurrentUser ?? state.inBasketByCurrentUser,
-    inBasketByOtherUsers: payload.inBasketByOtherUsers ?? state.inBasketByOtherUsers,
-    totalBasketUsers: payload.totalBasketUsers ?? state.totalBasketUsers
+    inBasketByCurrentUser,
+    inBasketByOtherUsers,
+    totalBasketUsers
   };
 }
 
@@ -290,7 +337,11 @@ export const reservationReducer = createReducer(
           changed = true;
         }
         const currentBasketState = nextSlot.basketState ?? { ...EMPTY_BASKET_STATE };
-        const updatedBasketState = updateBasketStateWithNotification(currentBasketState, notification);
+        const updatedBasketState = updateBasketStateWithNotification(
+          currentBasketState,
+          notification,
+          currentUserId
+        );
         if (!basketStatesEqual(currentBasketState, updatedBasketState)) {
           nextSlot = { ...nextSlot, basketState: updatedBasketState };
           changed = true;
