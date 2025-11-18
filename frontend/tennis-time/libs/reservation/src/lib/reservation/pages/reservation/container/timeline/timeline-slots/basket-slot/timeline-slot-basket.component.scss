@@ -13,12 +13,7 @@
   border-left: 3px solid #22c55e;
   border-bottom: 1px solid #cfcfcfa3;
   box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08);
-  background: repeating-linear-gradient(
-    45deg,
-    #b7f5af 0 6px,
-    #dcfce7 6px 12px
-  );
-  animation: moveStripes 5s linear infinite;
+  background-color: #dcfce7;
 }
 
 .timeline-slot__label {
@@ -61,15 +56,5 @@
   50% {
     opacity: 0.35;
     transform: scale(0.9);
-  }
-}
-
-@keyframes moveStripes {
-  from {
-    background-position: 0 0;
-  }
-
-  to {
-    background-position: 60px 0;
   }
 }
