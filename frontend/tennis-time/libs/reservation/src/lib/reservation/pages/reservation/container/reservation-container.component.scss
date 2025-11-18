@@ -151,6 +151,40 @@
   background-color: #e0e0e0;
 }
 
+.basket-fab {
+  position: fixed;
+  left: 20px;
+  bottom: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background-color: #64c271;
+  color: #ffffff;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  z-index: 900;
+  font-size: 22px;
+}
+
+.basket-fab__count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #1f7a8c;
+  border-radius: 999px;
+  padding: 0 6px;
+  font-size: 12px;
+}
+
+.basket-fab__icon {
+  width: 24px;
+  height: 24px;
+}
+
 /* Mobile-specific styles */
 @media (max-width: 768px) {
   .limiter{
@@ -194,5 +228,9 @@
 
   .calendar-buttons {
     margin-top: 10px;
+  }
+
+  .basket-fab {
+    display: inline-flex;
   }
 }

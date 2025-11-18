@@ -19,19 +19,16 @@
       </li>
     </ul>
 
-    <div class="basket__summary">
-      <span>جمع کل</span>
-      <strong>{{ total | number:'1.0-0' | faDigits }} تومان</strong>
-    </div>
+    <div class="basket__footer">
+      <div class="basket__summary">
+        <span>جمع کل</span>
+        <strong>{{ total | number:'1.0-0' | faDigits }} تومان</strong>
+      </div>
 
-    <button type="button" class="basket__checkout" [disabled]="loading || !items.length" (click)="onCheckout()">
-      <ng-container *ngIf="loading; else checkoutLabel">در حال پردازش...</ng-container>
-    </button>
-    <ng-template #checkoutLabel>تایید و پرداخت</ng-template>
-
-    <div class="basket__payment" *ngIf="payment as result">
-      <span>شماره پرداخت: {{ result.paymentId | faDigits }}</span>
-      <span *ngIf="result.referenceNumber">کد پیگیری: {{ result.referenceNumber | faDigits }}</span>
+      <div class="basket__payment" *ngIf="payment as result">
+        <span>شماره پرداخت: {{ result.paymentId | faDigits }}</span>
+        <span *ngIf="result.referenceNumber">کد پیگیری: {{ result.referenceNumber | faDigits }}</span>
+      </div>
     </div>
   </ng-container>
 

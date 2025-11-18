@@ -38,6 +38,7 @@ import { MineSlotModalModelComponent } from './pages/reservation/container/timel
 import { AvailableSlotModalModelComponent } from './pages/reservation/container/timeline/tileline-slot-modals/available-slot-modal/available-slot-modal.model.component';
 import { BookedSlotModalModelComponent } from './pages/reservation/container/timeline/tileline-slot-modals/booked-slot-modal/booked-slot-modal.model.component';
 import { PendingSlotModalModelComponent } from './pages/reservation/container/timeline/tileline-slot-modals/pending-slot-modal/pending-slot-modal.model.component';
+import { ReservationBasketModalComponent } from './pages/reservation/container/basket/reservation-basket-modal.component';
 
 @NgModule({
   declarations: [
@@ -56,6 +57,7 @@ import { PendingSlotModalModelComponent } from './pages/reservation/container/ti
     TimelineSlotMaintenanceComponent,
     TimelineSlotModalComponent,
     ReservationBasketComponent,
+    ReservationBasketModalComponent,
     ReservationMockPaymentComponent,
     MineSlotModalModelComponent,
     AvailableSlotModalModelComponent,

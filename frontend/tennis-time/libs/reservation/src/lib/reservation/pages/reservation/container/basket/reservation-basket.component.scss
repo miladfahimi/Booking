@@ -10,7 +10,6 @@
   padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
 }
 
 .basket__header {
@@ -69,7 +68,6 @@
 .basket__meta {
   display: flex;
   align-items: center;
-  gap: 16px;
 }
 
 .basket__price {
@@ -89,6 +87,12 @@
   align-items: center;
   justify-content: space-between;
   font-size: 16px;
+}
+
+.basket__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .basket__checkout {
@@ -135,4 +139,38 @@
     width: 100%;
     justify-content: space-between;
   }
+}
+
+
+:host-context(app-reservation-basket-modal) {
+  margin-top: 0;
+  height: 100%;
+}
+
+:host-context(app-reservation-basket-modal) .basket {
+  height: 100%;
+  max-height: 100%;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+:host-context(app-reservation-basket-modal) .basket__list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+:host-context(app-reservation-basket-modal) .basket__footer {
+  margin-top: auto;
+  position: sticky;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.85) 0%, #ffffff 40%);
+  padding-top: 10px;
+}
+
+:host-context(app-reservation-basket-modal) .basket__checkout {
+  border-radius: 999px;
+  padding: 14px;
+  font-size: 17px;
 }

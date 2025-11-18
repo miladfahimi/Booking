@@ -30,6 +30,7 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
   items: ServiceDTO[] = [];
   selectedService: ServiceDTO | null = null;
   selectedDate: Date = new Date();
+  basketModalOpen = false;
 
   private readonly providerId = '11111111-1111-1111-1111-111111111111';
   private readonly destroy$ = new Subject<void>();
@@ -283,6 +284,17 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
   @HostListener('window:resize', ['$event'])
   onResize(event: any): void {
     this.isMobileView = event.target.innerWidth <= 768;
+    if (!this.isMobileView) {
+      this.basketModalOpen = false;
+    }
+  }
+
+  openBasketModal(): void {
+    this.basketModalOpen = true;
+  }
+
+  closeBasketModal(): void {
+    this.basketModalOpen = false;
   }
 
   ngOnDestroy(): void {
