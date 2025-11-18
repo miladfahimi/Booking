@@ -5,7 +5,7 @@
       <div class="timeline__hours">
         <div class="timeline__guides" aria-hidden="true"></div>
 
-        @for (hour of hourLabels; track trackHourByValue) {
+        @for (hour of hourLabels; track hour) {
         <div class="timeline__hour" [style.height.px]="hourHeight">
           <span class="timeline__hour-label">{{ hour | faDigits }}</span>
         </div>
@@ -15,12 +15,12 @@
       <div class="timeline__columns">
         <div class="timeline__guides" aria-hidden="true"></div>
 
-        @for (column of columns; track trackColumnById) {
+        @for (column of columns; track column.id) {
         <div class="timeline__column">
           <div class="timeline__column-header">{{ column.label }}</div>
 
           <div class="timeline__column-body" [style.height.px]="timelineHeight">
-            @for (slot of column.slots; track trackSlotById) {
+            @for (slot of column.slots; track slot.id ) {
             <div class="timeline-slot" (click)="onSlotClick(slot, column)" [style.top.px]="getSlotOffset(slot)"
               [style.height.px]="getSlotHeight(slot)">
               @if (isMyBookedSlot(slot)) {

@@ -1,9 +1,15 @@
-// timeline.component.ts
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import { ReservationStatus, ServiceDTO, SlotDTO } from '../../../../types';
 import { TimelineSlotDetails } from './tileline-slot-modals/timeline-slot-modals.component';
 import { AuthFacadeService } from 'libs/shared/src/lib/shared/auth/auth-facade-service';
-import { ConditionalExpr } from '@angular/compiler';
 
 type SlotsByService = Record<string, SlotDTO[]>;
 
@@ -45,9 +51,35 @@ export class TimelineComponent implements OnChanges {
   private currentUserId: string | null = null;
   private selectedSlotDetailsSnapshot: TimelineSlotDetails | null = null;
 
+  /**
+   * فقط اسلات‌هایی که روی‌شان کلیک شده را لاگ می‌کنیم.
+   */
+  private debugSlotIds = new Set<string>();
+
+  /**
+   * آخرین snapshot از وضعیت نمایشی هر اسلات برای مقایسه و لاگ فقط در صورت تغییر.
+   */
+  private debugSnapshots = new Map<
+    string,
+    {
+      status: ReservationStatus;
+      label: string;
+      inBasketByCurrentUser?: boolean | null;
+      inBasketByOtherUsers?: boolean | null;
+      totalBasketUsers?: number | null;
+      isMyBasketSlot: boolean;
+      hasAnyBasketHold: boolean;
+      hasForeignBasketHold: boolean;
+      isMyBookedSlot: boolean;
+    }
+  >();
 
   constructor(private auth: AuthFacadeService) {
-    this.auth.userId$.subscribe(id => (this.currentUserId = id));
+    this.auth.userId$.subscribe(id => {
+      this.currentUserId = id;
+      // اگر خواستی، می‌تونی این لاگ را هم موقتاً فعال کنی:
+      // console.log('[Timeline][Auth] currentUserId updated', { currentUserId: this.currentUserId });
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -96,6 +128,71 @@ export class TimelineComponent implements OnChanges {
     return hour;
   }
 
+  // ---------------------------
+  // Helper برای لاگ *فقط وقتی چیزی عوض شده*
+  // ---------------------------
+
+  private logSlotIfChanged(
+    context: string,
+    slot: TimelineSlot,
+    snapshot: {
+      status: ReservationStatus;
+      label: string;
+      inBasketByCurrentUser?: boolean | null;
+      inBasketByOtherUsers?: boolean | null;
+      totalBasketUsers?: number | null;
+      isMyBasketSlot: boolean;
+      hasAnyBasketHold: boolean;
+      hasForeignBasketHold: boolean;
+      isMyBookedSlot: boolean;
+    }
+  ): void {
+    if (!this.debugSlotIds.has(slot.id)) {
+      return;
+    }
+
+    const prev = this.debugSnapshots.get(slot.id);
+    const changed =
+      !prev ||
+      prev.status !== snapshot.status ||
+      prev.label !== snapshot.label ||
+      prev.inBasketByCurrentUser !== snapshot.inBasketByCurrentUser ||
+      prev.inBasketByOtherUsers !== snapshot.inBasketByOtherUsers ||
+      prev.totalBasketUsers !== snapshot.totalBasketUsers ||
+      prev.isMyBasketSlot !== snapshot.isMyBasketSlot ||
+      prev.hasAnyBasketHold !== snapshot.hasAnyBasketHold ||
+      prev.hasForeignBasketHold !== snapshot.hasForeignBasketHold ||
+      prev.isMyBookedSlot !== snapshot.isMyBookedSlot;
+
+    if (!changed) {
+      return;
+    }
+
+    this.debugSnapshots.set(slot.id, snapshot);
+
+    console.log('[Timeline][' + context + ']', {
+      slotId: slot.id,
+      originalSlotId: slot.original?.slotId,
+      start: slot.start,
+      end: slot.end,
+      durationMinutes: slot.durationMinutes,
+      status: snapshot.status,
+      label: snapshot.label,
+      basketState: slot.original?.basketState,
+      inBasketByCurrentUser: snapshot.inBasketByCurrentUser,
+      inBasketByOtherUsers: snapshot.inBasketByOtherUsers,
+      totalBasketUsers: snapshot.totalBasketUsers,
+      isMyBasketSlot: snapshot.isMyBasketSlot,
+      hasAnyBasketHold: snapshot.hasAnyBasketHold,
+      hasForeignBasketHold: snapshot.hasForeignBasketHold,
+      isMyBookedSlot: snapshot.isMyBookedSlot
+    });
+  }
+
+  // ---------------------------
+  // Building columns & slots
+  // ---------------------------
+
   private buildColumns(): TimelineColumn[] {
     if (!Array.isArray(this.services) || this.services.length === 0) {
       return [];
@@ -140,7 +237,7 @@ export class TimelineComponent implements OnChanges {
 
     const status = this.resolveSlotStatus(slot);
 
-    return {
+    const timelineSlot: TimelineSlot = {
       id: slot.slotId || `${service.id}-${start}`,
       label: this.getStatusLabel(status),
       start,
@@ -149,13 +246,35 @@ export class TimelineComponent implements OnChanges {
       status,
       original: slot
     };
+
+    return timelineSlot;
   }
 
+  // ---------------------------
+  // Status resolution
+  // ---------------------------
+
   private resolveSlotStatus(slot: SlotDTO): ReservationStatus {
-    if ((slot.basketState?.totalBasketUsers ?? 0) > 0) {
-      return ReservationStatus.IN_BASKET;
+    const normalizedStatus = this.normalizeStatus(slot.status);
+    const basketState = slot.basketState;
+
+    let finalStatus: ReservationStatus;
+
+    if (normalizedStatus === ReservationStatus.CONFIRMED) {
+      finalStatus = ReservationStatus.CONFIRMED;
+    } else if (normalizedStatus === ReservationStatus.PENDING) {
+      finalStatus = ReservationStatus.PENDING;
+    } else if (normalizedStatus === ReservationStatus.MAINTENANCE) {
+      finalStatus = ReservationStatus.MAINTENANCE;
+    } else if (normalizedStatus === ReservationStatus.IN_BASKET) {
+      finalStatus = ReservationStatus.IN_BASKET;
+    } else if ((basketState?.totalBasketUsers ?? 0) > 0) {
+      finalStatus = ReservationStatus.IN_BASKET;
+    } else {
+      finalStatus = normalizedStatus;
     }
-    return this.normalizeStatus(slot.status);
+
+    return finalStatus;
   }
 
   private calculateDurationMinutes(start: string, end: string | null, fallbackDuration?: number | null): number {
@@ -237,6 +356,9 @@ export class TimelineComponent implements OnChanges {
     }
   }
 
+  // ---------------------------
+  // Time helpers
+  // ---------------------------
 
   private toHHmm(value?: string | null): string | null {
     if (!value) {
@@ -266,7 +388,7 @@ export class TimelineComponent implements OnChanges {
       return 0;
     }
 
-    return Math.max((eh * 60 + em) - (sh * 60 + sm), 0);
+    return Math.max(eh * 60 + em - (sh * 60 + sm), 0);
   }
 
   private allStartTimesHHmm(): string[] {
@@ -367,14 +489,105 @@ export class TimelineComponent implements OnChanges {
     return typeof value === 'string' && value.length > 0;
   }
 
+  // ---------------------------
+  // Basket / ownership helpers
+  // ---------------------------
+
+  getSlotLabel(slot: TimelineSlot): string {
+    const isMineBooked = this.isMyBookedSlot(slot);
+    const isMineBasket = this.isMyBasketSlot(slot);
+    const anyHold = this.hasAnyBasketHold(slot);
+    const foreignHold = this.hasForeignBasketHold(slot);
+
+    let label: string;
+    if (isMineBooked) {
+      label = 'رزرو شده توسط شما';
+    } else if (isMineBasket) {
+      label = 'در سبد پرداخت شما';
+    } else if (anyHold) {
+      label = this.getStatusLabel(ReservationStatus.IN_BASKET);
+    } else {
+      label = slot.label;
+    }
+
+    this.logSlotIfChanged('getSlotLabel', slot, {
+      status: slot.status,
+      label,
+      inBasketByCurrentUser: slot.original.basketState?.inBasketByCurrentUser,
+      inBasketByOtherUsers: slot.original.basketState?.inBasketByOtherUsers,
+      totalBasketUsers: slot.original.basketState?.totalBasketUsers,
+      isMyBasketSlot: isMineBasket,
+      hasAnyBasketHold: anyHold,
+      hasForeignBasketHold: foreignHold,
+      isMyBookedSlot: isMineBooked
+    });
+
+    return label;
+  }
+
+  isMyBasketSlot(slot: TimelineSlot): boolean {
+    return (
+      slot.status === ReservationStatus.IN_BASKET &&
+      Boolean(slot.original.basketState?.inBasketByCurrentUser)
+    );
+  }
+
+  hasAnyBasketHold(slot: TimelineSlot): boolean {
+    return (
+      slot.status === ReservationStatus.IN_BASKET &&
+      (slot.original.basketState?.totalBasketUsers ?? 0) > 0
+    );
+  }
+
+  hasForeignBasketHold(slot: TimelineSlot): boolean {
+    return (
+      slot.status === ReservationStatus.IN_BASKET &&
+      Boolean(slot.original.basketState?.inBasketByOtherUsers)
+    );
+  }
+
+  isMyBookedSlot(slot: TimelineSlot): boolean {
+    return (
+      slot.status === ReservationStatus.CONFIRMED &&
+      !!this.currentUserId &&
+      slot.original.reservedBy === this.currentUserId
+    );
+  }
+
+  // ---------------------------
+  // UI events
+  // ---------------------------
+
   onSlotClick(slot: TimelineSlot, column: TimelineColumn): void {
+    // از این لحظه این اسلات تحت نظر است
+    this.debugSlotIds.add(slot.id);
+
     const isMine = this.isMyBookedSlot(slot);
+    const isMineBasket = this.isMyBasketSlot(slot);
+    const anyHold = this.hasAnyBasketHold(slot);
+    const foreignHold = this.hasForeignBasketHold(slot);
+
+    console.log('[Timeline][onSlotClick]', {
+      slotId: slot.id,
+      originalSlotId: slot.original?.slotId,
+      columnId: column.id,
+      columnLabel: column.label,
+      status: slot.status,
+      start: slot.start,
+      end: slot.end,
+      basketState: slot.original?.basketState,
+      isMyBookedSlot: isMine,
+      isMyBasketSlot: isMineBasket,
+      hasAnyBasketHold: anyHold,
+      hasForeignBasketHold: foreignHold
+    });
+
     this.selectedSlotDetailsSnapshot = {
       slotId: slot.original.slotId || slot.id,
       serviceId: column.service.id,
       providerId: column.service.providerId,
       serviceName: column.label,
-      label: isMine ? 'رزرو شده توسط شما' : slot.label,
+      label: isMine ? 'رزرو شده توسط شما' : this.getSlotLabel(slot),
       start: slot.start,
       end: slot.end,
       startTime: slot.original.time ?? slot.start,
@@ -387,48 +600,12 @@ export class TimelineComponent implements OnChanges {
     };
   }
 
-  getSlotLabel(slot: TimelineSlot): string {
-    if (this.isMyBookedSlot(slot)) {
-      return 'رزرو شده توسط شما';
-    }
-
-    if (this.isMyBasketSlot(slot)) {
-      return 'در سبد پرداخت شما';
-    }
-
-    if (this.hasAnyBasketHold(slot)) {
-      return this.getStatusLabel(ReservationStatus.IN_BASKET);
-    }
-
-    return slot.label;
-  }
-
-  isMyBasketSlot(slot: TimelineSlot): boolean {
-    return Boolean(slot.original.basketState?.inBasketByCurrentUser);
-  }
-
-  hasAnyBasketHold(slot: TimelineSlot): boolean {
-    return (slot.original.basketState?.totalBasketUsers ?? 0) > 0;
-  }
-
-  hasForeignBasketHold(slot: TimelineSlot): boolean {
-    return Boolean(slot.original.basketState?.inBasketByOtherUsers);
-  }
-
-
-  isMyBookedSlot(slot: TimelineSlot): boolean {
-    return (
-      slot.status === ReservationStatus.CONFIRMED &&
-      !!this.currentUserId &&
-      slot.original.reservedBy === this.currentUserId
-    );
-  }
-
   onModalClose(): void {
     this.selectedSlotDetailsSnapshot = null;
   }
 
   onAddToBasket(details: TimelineSlotDetails): void {
+    console.log('[Timeline][onAddToBasket] emitting addToBasket', details);
     this.addToBasket.emit(details);
     this.onModalClose();
   }
