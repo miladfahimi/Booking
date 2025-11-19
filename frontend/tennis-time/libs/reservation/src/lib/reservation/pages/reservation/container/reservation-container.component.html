@@ -41,6 +41,10 @@
         (checkout)="onCheckout()"></app-reservation-basket>
       }
 
+      @if (isMobileView) {
+      <app-reservation-footer-menu-mobile></app-reservation-footer-menu-mobile>
+      }
+
     </div>
   </div>
 </div>

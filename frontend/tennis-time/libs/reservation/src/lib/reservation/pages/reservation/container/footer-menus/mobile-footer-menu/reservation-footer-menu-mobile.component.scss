@@ -1,0 +1,105 @@
+:host {
+  position: fixed;
+  left: 13px;
+  right: 13px;
+  bottom: 13px;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 950;
+}
+
+.footer-menu {
+  width: min(420px, 100%);
+  padding: 14px 24px;
+  border-radius: 5px;
+  background: linear-gradient(
+    120deg,
+    rgba(15, 23, 42, 0.333),
+    rgba(50, 254, 77, 0.224),
+    rgba(59, 131, 246, 0.223)
+  );
+  // border: 1px solid rgba(148, 163, 184, 0.8);
+  backdrop-filter: blur(3px) saturate(50%);
+  -webkit-backdrop-filter: blur(3px) saturate(50%);
+  box-shadow: 0 1px 20px rgba(15, 23, 42, 0.331);
+  pointer-events: auto;
+}
+
+.footer-menu__items {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  gap: 18px;
+}
+
+.footer-menu__item {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.footer-menu__button {
+  border: none;
+  background: transparent;
+  color: rgba(0, 63, 10, 0.9);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  font-family: inherit;
+  font-size: 12px;
+  transition: color 0.25s ease;
+}
+
+.footer-menu__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  transition: border-color 0.25s ease, background-color 0.25s ease;
+}
+
+.footer-menu__icon svg {
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+}
+
+.footer-menu__label {
+  font-size: 11px;
+  white-space: nowrap;
+  color: rgba(226, 232, 240, 0.85);
+}
+
+.footer-menu__button--active {
+  color: #ffffff;
+}
+
+.footer-menu__button--active .footer-menu__icon {
+  border-color: rgba(191, 219, 254, 0.95);
+  background-color: rgba(15, 23, 42, 0.35);
+}
+
+.footer-menu__button--active .footer-menu__label {
+  color: #ffffff;
+}
+
+.footer-menu__button:not(.footer-menu__button--active):hover .footer-menu__icon {
+  border-color: rgba(148, 163, 184, 0.6);
+  background-color: rgba(15, 23, 42, 0.25);
+}
+
+@media (min-width: 769px) {
+  :host {
+    display: none;
+  }
+}

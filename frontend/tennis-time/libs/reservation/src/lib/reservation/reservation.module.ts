@@ -39,6 +39,7 @@ import { AvailableSlotModalModelComponent } from './pages/reservation/container/
 import { BookedSlotModalModelComponent } from './pages/reservation/container/timeline/tileline-slot-modals/booked-slot-modal/booked-slot-modal.model.component';
 import { PendingSlotModalModelComponent } from './pages/reservation/container/timeline/tileline-slot-modals/pending-slot-modal/pending-slot-modal.model.component';
 import { ReservationBasketModalComponent } from './pages/reservation/container/basket/reservation-basket-modal.component';
+import { ReservationFooterMenuMobileComponent } from './pages/reservation/container/footer-menus/mobile-footer-menu/reservation-footer-menu-mobile.component';
 
 @NgModule({
   declarations: [
@@ -63,6 +64,7 @@ import { ReservationBasketModalComponent } from './pages/reservation/container/b
     AvailableSlotModalModelComponent,
     BookedSlotModalModelComponent,
     PendingSlotModalModelComponent,
+    ReservationFooterMenuMobileComponent
   ],
   imports: [
     FormsModule,
