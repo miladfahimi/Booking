@@ -21,14 +21,6 @@
       @if (isMobileView) {
       <app-timeline [services]="items" [slotsByService]="(timeSlots$ | async) ?? {}"
         (addToBasket)="onAddSlotToBasket($event)"></app-timeline>
-      <button type="button" class="basket-fab" aria-label="سبد رزرو" [attr.aria-expanded]="basketModalOpen"
-        (click)="openBasketModal()">
-        <svg class="basket-fab__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M6 9h12l-1 11H7L6 9Z" fill="none" stroke="currentColor" stroke-width="1.5" />
-          <path d="M9 9l3-4 3 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-        </svg>
-        <span class="basket-fab__count" *ngIf="basketItems.length">{{ basketItems.length | faDigits }}</span>
-      </button>
 
       @if (basketModalOpen) {
       <app-reservation-basket-modal [items]="basketItems" [total]="basketTotal" [loading]="checkoutLoading"
@@ -42,7 +34,8 @@
       }
 
       @if (isMobileView) {
-      <app-reservation-footer-menu-mobile></app-reservation-footer-menu-mobile>
+      <app-reservation-footer-menu-mobile [basketCount]="basketItems.length" [basketActive]="basketModalOpen"
+        (basketSelected)="openBasketModal()"></app-reservation-footer-menu-mobile>
       }
 
     </div>

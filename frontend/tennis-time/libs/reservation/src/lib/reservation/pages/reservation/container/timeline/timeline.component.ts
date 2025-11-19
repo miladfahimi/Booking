@@ -35,7 +35,7 @@ export class TimelineComponent implements OnChanges {
   @Output() addToBasket = new EventEmitter<TimelineSlotDetails>();
 
   readonly pixelsPerMinute = 2;
-  readonly defaultStartHour = 8;
+  readonly defaultStartHour = 1;
   readonly defaultEndHour = 21;
   readonly hourHeight = this.pixelsPerMinute * 60;
   readonly ReservationStatusEnum = ReservationStatus;

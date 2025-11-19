@@ -63,32 +63,7 @@
     </div>
   </div>
 
-  <div class="timeline__legend" aria-hidden="true" role="note">
-    <div class="legend">
-      <div class="legend-item mine">
-        <span></span> من
-      </div>
-      <div class="legend-item available">
-        <span></span>
-        در دسترس
-      </div>
-      <div class="legend-item booked">
-        <span></span>
-        رزرو شده
-      </div>
-      <div class="legend-item pending">
-        <span></span>
-        در انتظار پرداخت
-      </div>
-      <div class="legend-item maintenance">
-        <span></span>
-        در حال تعمیر
-      </div>
-    </div>
-  </div>
-</div>
-
-@if (selectedSlotDetails; as slotDetails) {
-<app-timeline-slot-modals [slot]="slotDetails" (close)="onModalClose()" (addToBasket)="onAddToBasket($event)">
-</app-timeline-slot-modals>
-}
+  @if (selectedSlotDetails; as slotDetails) {
+  <app-timeline-slot-modals [slot]="slotDetails" (close)="onModalClose()" (addToBasket)="onAddToBasket($event)">
+  </app-timeline-slot-modals>
+  }

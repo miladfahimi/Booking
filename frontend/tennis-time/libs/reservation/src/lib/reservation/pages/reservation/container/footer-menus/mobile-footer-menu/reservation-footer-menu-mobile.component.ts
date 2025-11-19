@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-type FooterMenuIcon = 'home' | 'profile' | 'chat' | 'settings' | 'camera';
+type FooterMenuIcon = 'home' | 'profile' | 'chat' | 'settings' | 'basket';
 
 interface FooterMenuItem {
   id: string;
@@ -14,18 +14,33 @@ interface FooterMenuItem {
   styleUrls: ['./reservation-footer-menu-mobile.component.scss']
 })
 export class ReservationFooterMenuMobileComponent {
+  @Input() basketCount = 0;
+  @Input() basketActive = false;
+  @Output() basketSelected = new EventEmitter<void>();
+
   readonly menuItems: FooterMenuItem[] = [
     { id: 'home', label: 'خانه', icon: 'home' },
-    { id: 'profile', label: 'پروفایل', icon: 'profile' },
+    { id: 'basket', label: 'سبد رزرو', icon: 'basket' },
     { id: 'chat', label: 'پیام‌ها', icon: 'chat' },
-    { id: 'camera', label: 'Photos', icon: 'camera' },
+    { id: 'profile', label: 'پروفایل', icon: 'profile' },
     { id: 'settings', label: 'تنظیمات', icon: 'settings' }
   ];
 
   activeItemId: string = this.menuItems[0]?.id ?? '';
 
   setActiveMenu(itemId: string): void {
+    if (itemId === 'basket') {
+      this.basketSelected.emit();
+      return;
+    }
     this.activeItemId = itemId;
+  }
+
+  isItemActive(itemId: string): boolean {
+    if (itemId === 'basket') {
+      return this.basketActive;
+    }
+    return itemId === this.activeItemId;
   }
 
   trackByMenuId(_: number, item: FooterMenuItem): string {
