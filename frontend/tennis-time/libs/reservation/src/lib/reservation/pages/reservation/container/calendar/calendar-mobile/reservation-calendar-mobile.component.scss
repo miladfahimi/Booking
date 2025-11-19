@@ -1,13 +1,28 @@
 .calendar-container {
   display: flex;
   flex-direction: column;
+  border-radius: 5px;
+  // background: linear-gradient(
+  //   120deg,
+  //   #0f172a7a,
+  //   rgba(55, 70, 57, 0.394),
+  //   #0f172a7a,
+  //   rgba(47, 67, 100, 0.223)
+  // );
+  background: rgba(255, 255, 255, 0.735);
+  // border: 1px solid rgba(148, 163, 184, 0.8);
+  backdrop-filter: blur(3px) saturate(50%);
+  -webkit-backdrop-filter: blur(3px) saturate(50%);
+  box-shadow: 0 1px 20px rgba(15, 23, 42, 0.331);
+  pointer-events: auto;
+  padding : 12px;
 }
 
 .calendar-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  // margin-bottom: 20px;
 }
 
 .nav-button {

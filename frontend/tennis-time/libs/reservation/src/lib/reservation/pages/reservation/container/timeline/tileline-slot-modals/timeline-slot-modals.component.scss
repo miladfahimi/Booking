@@ -22,9 +22,9 @@
 
 .slot-modal__content {
   position: absolute;
-  inset: 78% auto auto 50%;
-  transform: translate(-50%, -50%);
-  width: min(420px, calc(100% - 32px));
+  left: 13px;
+  right: 13px;
+  bottom: 93px;
   background-color: #ffffff5e;
   box-shadow: 0 20px 40px rgba(15, 23, 42, 0.18);
   display: flex;

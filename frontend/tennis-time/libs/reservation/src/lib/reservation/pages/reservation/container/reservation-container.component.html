@@ -3,10 +3,7 @@
     <div class="wrap-calendar">
       <!-- Load Mobile or Desktop Calendar Component -->
       @let isMobileView = true;
-      @if (isMobileView) {
-      <app-reservation-calendar-mobile [isMobile]="isMobileView" (selectDay)="onDaySelected($event)">
-      </app-reservation-calendar-mobile>
-      } @else {
+      @if (!isMobileView) {
       <app-reservation-calendar-desktop [isMobile]="isMobileView" (selectDay)="onDaySelected($event)">
       </app-reservation-calendar-desktop>
       }
@@ -19,14 +16,21 @@
 
 
       @if (isMobileView) {
-      <app-timeline [services]="items" [slotsByService]="(timeSlots$ | async) ?? {}"
-        (addToBasket)="onAddSlotToBasket($event)"></app-timeline>
+      <div class="mobile-calendar-layer">
+        <app-reservation-calendar-mobile [isMobile]="isMobileView" (selectDay)="onDaySelected($event)">
+        </app-reservation-calendar-mobile>
+      </div>
 
-      @if (basketModalOpen) {
-      <app-reservation-basket-modal [items]="basketItems" [total]="basketTotal" [loading]="checkoutLoading"
-        [payment]="paymentResult" (remove)="onRemoveFromBasket($event)" (checkout)="onCheckout()"
-        (close)="closeBasketModal()"></app-reservation-basket-modal>
-      }
+      <div class="mobile-timeline-layer">
+        <app-timeline [services]="items" [slotsByService]="(timeSlots$ | async) ?? {}"
+          (addToBasket)="onAddSlotToBasket($event)"></app-timeline>
+
+        @if (basketModalOpen) {
+        <app-reservation-basket-modal [items]="basketItems" [total]="basketTotal" [loading]="checkoutLoading"
+          [payment]="paymentResult" (remove)="onRemoveFromBasket($event)" (checkout)="onCheckout()"
+          (close)="closeBasketModal()"></app-reservation-basket-modal>
+        }
+      </div>
       } @else {
       <app-reservation-basket [items]="basketItems" [total]="basketTotal" [loading]="checkoutLoading"
         [payment]="paymentResult" (remove)="onRemoveFromBasket($event)"
@@ -40,4 +44,3 @@
 
     </div>
   </div>
-</div>

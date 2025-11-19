@@ -190,14 +190,16 @@
   .limiter{
     padding: 0;
   }
+
   .wrap-calendar {
     margin-top: 0;
-    width: 100%; /* Expand to full screen width */
-    max-width: none; /* Set a maximum width for the form */
-    border-radius: 0; /* Remove rounded corners */
-    box-shadow: none; /* Remove the box shadow */
-    min-height: 100vh; /* Ensure the background covers the full height */
-    padding: 30px;
+    width: 100%;
+    max-width: none;
+    border-radius: 0;
+    box-shadow: none;
+    min-height: 100vh;
+    padding: 0;
+    background: transparent;
   }
 
   .container-calendar {
@@ -232,5 +234,31 @@
 
   .basket-fab {
     display: inline-flex;
+  }
+
+  .limiter {
+    align-items: flex-start;
+    justify-content: stretch;
+  }
+
+  .mobile-calendar-layer {
+    position: fixed;
+    top: 40px;
+    left: 13px;
+    right: 13px;
+    z-index: 30;
+  }
+
+  .mobile-timeline-layer {
+    position: fixed;
+    inset: 0;
+    background: #ffffff;
+    z-index: 10;
+    box-sizing: border-box;
+  }
+
+  .mobile-timeline-layer app-timeline {
+    display: block;
+    height: 100%;
   }
 }
