@@ -1,25 +1,38 @@
-<div class="basket-modal" role="dialog" aria-modal="true">
-  <div class="basket-modal__backdrop" (click)="onClose()"></div>
+<div class="slot-modal" role="dialog" aria-modal="true">
+  <div class="slot-modal__backdrop" (click)="onClose()"></div>
 
-  <div class="basket-modal__content" role="document">
-    <header class="basket-modal__header">
-      <button type="button" class="basket-modal__close" (click)="onClose()" aria-label="بستن">
+  <div class="slot-modal__content" role="document">
+    <header class="slot-modal__header">
+      <button type="button" class="slot-modal__close" (click)="onClose()" aria-label="بستن">
         &times;
       </button>
     </header>
 
-    <div class="basket-modal__body">
-      <div class="basket-modal__items">
-        <app-reservation-basket [items]="items" [total]="total" [loading]="loading" [payment]="payment"
-          (remove)="onRemove($event)"></app-reservation-basket>
-      </div>
+    <div class="slot-modal__body slot-modal__body--narrative">
+      <p class="slot-modal__intro">
+        برای بررسی نوبت‌های انتخاب شده، خلاصه سبد زیر را مشاهده کنید.
 
-      <footer class="basket-modal__footer">
-        <button type="button" class="basket-modal__button basket-modal__button--primary" (click)="onCheckout()"
-          [disabled]="loading || !items?.length">
-          ادامه و پرداخت
-        </button>
-      </footer>
+        <span class="slot-modal__status slot-modal__status--available">
+          @if (items?.length) {
+          {{ items.length | faDigits }} مورد
+          } @else {
+          خالی
+          }
+        </span>
+      </p>
+
     </div>
+
+    <div class="slot-modal__items">
+      <app-reservation-basket [items]="items" [total]="total" [loading]="loading" [payment]="payment"
+        (remove)="onRemove($event)"></app-reservation-basket>
+    </div>
+
+    <footer class="slot-modal__footer">
+      <button type="button" class="slot-modal__button slot-modal__button--primary" (click)="onCheckout()"
+        [disabled]="loading || !items?.length">
+        ادامه و پرداخت
+      </button>
+    </footer>
   </div>
 </div>

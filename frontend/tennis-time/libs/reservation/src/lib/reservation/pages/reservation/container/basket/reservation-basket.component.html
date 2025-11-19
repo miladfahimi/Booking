@@ -1,16 +1,20 @@
 <div class="basket">
-  <div class="basket__header">
-    <h2 class="basket__title">سبد رزرو</h2>
-    <span class="basket__count" *ngIf="items.length">{{ items.length | faDigits }}</span>
-  </div>
+
 
   <ng-container *ngIf="items.length; else emptyBasket">
     <ul class="basket__list">
+      <div class="basket__summary">
+        <span>جمع کل</span>
+        <strong>{{ total | number:'1.0-0' | faDigits }} تومان</strong>
+      </div>
       <li class="basket__item" *ngFor="let item of items; trackBy: trackBySlotId">
         <div class="basket__details">
-          <span class="basket__service">{{ item.serviceName | faDigits }}</span>
-          <span class="basket__time">{{ item.startTime | faDigits }} ~ {{ item.endTime | faDigits }}</span>
-          <span class="basket__date">{{ item.reservationDate | faDigits }}</span>
+          <div class="basket__row">
+            <span class="basket__service">{{ item.serviceName | faDigits }}</span>
+            <span class="basket__chip basket__chip--time">{{ item.startTime | faDigits }} ~ {{ item.endTime | faDigits
+              }}</span>
+            <span class="basket__chip basket__chip--date">{{ item.reservationDate | faDigits }}</span>
+          </div>
         </div>
         <div class="basket__meta">
           <span class="basket__price">{{ item.price | number:'1.0-0' | faDigits }} تومان</span>
@@ -19,17 +23,6 @@
       </li>
     </ul>
 
-    <div class="basket__footer">
-      <div class="basket__summary">
-        <span>جمع کل</span>
-        <strong>{{ total | number:'1.0-0' | faDigits }} تومان</strong>
-      </div>
-
-      <div class="basket__payment" *ngIf="payment as result">
-        <span>شماره پرداخت: {{ result.paymentId | faDigits }}</span>
-        <span *ngIf="result.referenceNumber">کد پیگیری: {{ result.referenceNumber | faDigits }}</span>
-      </div>
-    </div>
   </ng-container>
 
   <ng-template #emptyBasket>
