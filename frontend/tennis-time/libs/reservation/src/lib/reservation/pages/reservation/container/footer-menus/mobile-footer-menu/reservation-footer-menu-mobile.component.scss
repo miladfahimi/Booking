@@ -12,7 +12,6 @@
 .footer-menu {
   width: min(420px, 100%);
   padding: 14px 24px;
-  border-radius: 5px;
   // background: linear-gradient(
   //   120deg,
   //   rgba(15, 23, 42, 0.333),
@@ -25,6 +24,22 @@
   -webkit-backdrop-filter: blur(3px) saturate(50%);
   box-shadow: 0 1px 20px rgba(15, 23, 42, 0.331);
   pointer-events: auto;
+}
+
+/* Show only when running as PWA (standalone/app mode) */
+@media (display-mode: standalone) {
+
+  :host {
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+}
+  .footer-menu {
+    border-bottom-left-radius: 40px;
+    border-bottom-right-radius: 40px;
+    height: 75px;
+  }
 }
 
 .footer-menu__items {
