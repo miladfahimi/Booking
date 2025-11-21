@@ -70,3 +70,13 @@ deploy:
   only:
     - main
     - iranzamin-MVP-1
+
+cleanup:
+  stage: cleanup
+  image: docker:20.10.16
+  tags:
+    - booking_app
+  script:
+    - docker system prune -f || true
+  when: always
+
