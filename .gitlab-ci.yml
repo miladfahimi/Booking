@@ -59,34 +59,14 @@ deploy:
   stage: deploy
   tags:
     - booking_app
-  image: ubuntu:latest
+  image: docker:20.10.16
   before_script:
-    - apt-get update && apt-get install -y openssh-client git docker-compose
-    - eval $(ssh-agent -s)
-    - mkdir -p ~/.ssh
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/gitlab_ci_deploy_key
-    - chmod 600 ~/.ssh/gitlab_ci_deploy_key
-    - ssh-add ~/.ssh/gitlab_ci_deploy_key
-    - ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
-    - chmod 644 ~/.ssh/known_hosts
+    - apk update && apk add --no-cache docker-compose
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
   script:
-    - ssh -i ~/.ssh/gitlab_ci_deploy_key -o StrictHostKeyChecking=no root@46.62.151.135 "
-      if [ -d /home/TennisTime/tennistime/.git ]; then
-      echo 'Valid Git repository found. Pulling latest changes...';
-      cd /home/TennisTime/tennistime && git fetch origin && git reset --hard origin/main && git clean -fd;
-      else
-      echo 'Cleaning up and re-cloning the repository...';
-      rm -rf /home/TennisTime/tennistime;
-      mkdir -p /home/TennisTime;
-      git clone git@gitlab.com:miladfahimi2012/tennistime.git /home/TennisTime;
-      fi;
-
-      cd /home/TennisTime/tennistime/devops &&
-      docker-compose -f docker-compose.test.yml pull &&
-      docker-compose -f docker-compose.test.yml down &&
-      docker-compose -f docker-compose.test.yml up -d --remove-orphans
-      "
+    - docker-compose -f devops/docker-compose.staging.yml pull
+    - docker-compose -f devops/docker-compose.staging.yml down
+    - docker-compose -f devops/docker-compose.staging.yml up -d --remove-orphans
   only:
     - main
     - iranzamin-MVP-1

@@ -1,0 +1,189 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: tennistime_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: tennistime_test
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    container_name: tennistime_redis
+    networks:
+      - app_network
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  smtp:
+    image: mailhog/mailhog
+    container_name: tennistime_smtp
+    networks:
+      - app_network
+    ports:
+      - "8025:8025"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:8025"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  provider:
+    image: registry.gitlab.com/miladfahimi2012/tennistime/provider:latest
+    container_name: tennistime_provider
+    networks:
+      - app_network
+    ports:
+      - "8086:8086"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_HOST: postgres
+      DB_PORT: 5432
+      jwt.secret: Dy64nBQfRKEQtLTRDV42R8/H3XsxVFFk+zrXb2l+PQz8j+p5vR+RYAkfLK+jXdhmRrx3gU8yU9TcvKjL43FUYw==
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:8086/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  authentication:
+    image: registry.gitlab.com/miladfahimi2012/tennistime/authentication:latest
+    container_name: tennistime_authentication
+    networks:
+      - app_network
+    ports:
+      - "8082:8082"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_HOST: postgres
+      DB_PORT: 5432
+      jwt.secret: Dy64nBQfRKEQtLTRDV42R8/H3XsxVFFk+zrXb2l+PQz8j+p5vR+RYAkfLK+jXdhmRrx3gU8yU9TcvKjL43FUYw==
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:8082/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  bff:
+    image: registry.gitlab.com/miladfahimi2012/tennistime/bff:latest
+    container_name: tennistime_bff
+    networks:
+      - app_network
+    ports:
+      - "8083:8083"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_HOST: postgres
+      DB_PORT: 5432
+      jwt.secret: Dy64nBQfRKEQtLTRDV42R8/H3XsxVFFk+zrXb2l+PQz8j+p5vR+RYAkfLK+jXdhmRrx3gU8yU9TcvKjL43FUYw==
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:8083/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  profile:
+    image: registry.gitlab.com/miladfahimi2012/tennistime/profile:latest
+    container_name: tennistime_profile
+    networks:
+      - app_network
+    ports:
+      - "8084:8084"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_HOST: postgres
+      DB_PORT: 5432
+      jwt.secret: Dy64nBQfRKEQtLTRDV42R8/H3XsxVFFk+zrXb2l+PQz8j+p5vR+RYAkfLK+jXdhmRrx3gU8yU9TcvKjL43FUYw==
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:8084/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  reservation:
+    image: registry.gitlab.com/miladfahimi2012/tennistime/reservation:latest
+    container_name: tennistime_reservation
+    networks:
+      - app_network
+    ports:
+      - "8085:8085"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_HOST: postgres
+      DB_PORT: 5432
+      jwt.secret: Dy64nBQfRKEQtLTRDV42R8/H3XsxVFFk+zrXb2l+PQz8j+p5vR+RYAkfLK+jXdhmRrx3gU8yU9TcvKjL43FUYw==
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:8085/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    image: registry.gitlab.com/miladfahimi2012/tennistime/frontend:latest
+    container_name: tennistime_nginx
+    # اگر nginx.conf رو از بیرون می‌خوای override کنی این خط رو نگه دار
+    # وگرنه می‌تونی کلاً volumes رو حذف کنی و فقط همونی که تو image هست استفاده بشه
+    volumes:
+      - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - app_network
+    ports:
+      - "8080:80"
+    depends_on:
+      - provider
+      - authentication
+      - bff
+      - profile
+      - reservation
+    environment:
+      - NODE_ENV=production
+
+networks:
+  app_network:
+    name: app_network
+
+volumes:
+  postgres_data:
