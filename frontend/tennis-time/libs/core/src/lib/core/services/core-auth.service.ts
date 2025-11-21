@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { SignUpReq } from '@tennis-time/auth';
@@ -11,17 +11,17 @@ import { SignUpReq } from '@tennis-time/auth';
 export class CoreAuthService {
   private host = window.location.hostname;
   private baseUrl = `http://${this.host}:8082/api/v1/auth`;
-  private tokenKey = 'authToken';  // Key to store the JWT token in local storage
-  private userIdKey = 'userId';    // Key to store the userId in local storage
+  private tokenKey = 'authToken';
+  private userIdKey = 'userId';
+  private refreshTokenKey = 'refreshToken';
 
   constructor(private http: HttpClient, private router: Router) { }
 
   signIn(email: string, password: string, deviceModel: string, os: string, browser: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/signin`, { email, password, deviceModel, os, browser }).pipe(
       tap((response: any) => {
-        console.log('Sign-in successful, redirecting to book page...', response);  // Debugging
-        this.storeToken(response.token);  // Store the received JWT token
-        this.storeUserId(response.id);     // Store the received userId (note: response.id)
+        this.storeTokens(response.token, response.refreshToken);
+        this.storeUserId(response.id);
         this.router.navigate(['/profile/welcome']).then(() => {
           console.log('Navigation to book page complete.');
         });
@@ -32,7 +32,7 @@ export class CoreAuthService {
   signUp(signUpReq: SignUpReq): Observable<any> {
     return this.http.post(`${this.baseUrl}/signup`, signUpReq).pipe(
       tap((response: any) => {
-        this.storeToken(response.token);
+        this.storeTokens(response.token, response.refreshToken);
         this.storeUserId(response.id);
       })
     );
@@ -41,6 +41,7 @@ export class CoreAuthService {
   signOut(): Observable<void> {
     this.removeToken();
     this.removeUserId();
+    this.removeRefreshToken();
 
     this.router.navigate(['/auth/signin'])
       .then(success => {
@@ -54,7 +55,7 @@ export class CoreAuthService {
         console.error('Navigation error:', err);
       });
 
-    return of();  // Return an observable of void
+    return of();
   }
 
   sendOtpSms(phone: string) {
@@ -66,16 +67,28 @@ export class CoreAuthService {
     const otpBase = `http://${this.host}:8082/api/v1/otp`;
     return this.http.post(`${otpBase}/login-sms?phone=${encodeURIComponent(phone)}&otp=${encodeURIComponent(otp)}`, { deviceModel, os, browser }).pipe(
       tap((response: any) => {
-        this.storeToken(response.token);
+        this.storeTokens(response.token, response.refreshToken);
         this.storeUserId(response.id);
         this.router.navigate(['/profile/welcome']);
       })
     );
   }
 
+  refreshTokens(): Observable<{ accessToken: string; refreshToken: string }> {
+    const refreshToken = this.getRefreshToken();
+    if (!refreshToken) {
+      return throwError(() => new Error('No refresh token available'));
+    }
+    return this.http.post<{ accessToken: string; refreshToken: string }>(`${this.baseUrl}/refresh`, { refreshToken }).pipe(
+      tap(response => this.storeTokens(response.accessToken, response.refreshToken))
+    );
+  }
 
-  private storeToken(token: string): void {
+  private storeTokens(token: string, refreshToken?: string): void {
     localStorage.setItem(this.tokenKey, token);
+    if (refreshToken) {
+      localStorage.setItem(this.refreshTokenKey, refreshToken);
+    }
   }
 
   private storeUserId(userId: string): void {
@@ -86,12 +99,20 @@ export class CoreAuthService {
     return localStorage.getItem(this.tokenKey);
   }
 
+  getRefreshToken(): string | null {
+    return localStorage.getItem(this.refreshTokenKey);
+  }
+
   getUserId(): string | null {
     return localStorage.getItem(this.userIdKey);
   }
 
   private removeToken(): void {
     localStorage.removeItem(this.tokenKey);
+  }
+
+  private removeRefreshToken(): void {
+    localStorage.removeItem(this.refreshTokenKey);
   }
 
   private removeUserId(): void {

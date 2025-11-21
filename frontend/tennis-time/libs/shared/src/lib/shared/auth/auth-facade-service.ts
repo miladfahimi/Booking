@@ -24,6 +24,7 @@ export class AuthFacadeService {
 
   constructor(private core: CoreAuthService, private zone: NgZone) {
     this.loadFromStorage();
+    this.tryRefreshOnInit();
 
     this.zone.runOutsideAngular(() => {
       fromEvent<StorageEvent>(window, 'storage').pipe(startWith(null as any)).subscribe(evt => {
@@ -36,6 +37,25 @@ export class AuthFacadeService {
     const token = this.core.getToken();
     const decoded = token ? this.safeDecodeJwt(token) : null;
     this.decodedToken$.next(decoded);
+  }
+
+  private tryRefreshOnInit(): void {
+    const token = this.core.getToken();
+    const refreshToken = this.core.getRefreshToken();
+    const decoded = token ? this.safeDecodeJwt(token) : null;
+
+    if (!refreshToken) {
+      return;
+    }
+
+    if (token && decoded && !this.isExpired(decoded)) {
+      return;
+    }
+
+    this.core.refreshTokens().subscribe({
+      next: () => this.loadFromStorage(),
+      error: () => this.core.signOut().subscribe()
+    });
   }
 
   hasRole(required: string | string[]) {
