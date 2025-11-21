@@ -13,7 +13,12 @@ variables:
   CI_REGISTRY_PASSWORD: "$CI_REGISTRY_PASSWORD"
 
 before_script:
-  - apt-get update && apt-get install -y curl bash
+  - |
+    if command -v apt-get >/dev/null 2>&1; then
+      apt-get update && apt-get install -y curl bash
+    else
+      apk update && apk add --no-cache curl bash
+    fi
   - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
 
 build:
