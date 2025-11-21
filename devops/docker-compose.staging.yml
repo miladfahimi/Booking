@@ -161,21 +161,21 @@ services:
       timeout: 10s
       retries: 3
 
-frontend:
-  image: registry.gitlab.com/miladfahimi2012/tennistime/frontend:latest
-  container_name: tennistime_nginx
-  networks:
-    - app_network
-  ports:
-    - "8080:80"
-  depends_on:
-    - provider
-    - authentication
-    - bff
-    - profile
-    - reservation
-  environment:
-    - NODE_ENV=production
+  frontend:
+    image: registry.gitlab.com/miladfahimi2012/tennistime/frontend:latest
+    container_name: tennistime_nginx
+    networks:
+      - app_network
+    ports:
+      - "8080:80"
+    depends_on:
+      - provider
+      - authentication
+      - bff
+      - profile
+      - reservation
+    environment:
+      - NODE_ENV=production
 
 networks:
   app_network:
