@@ -1,6 +1,7 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- Create app_user table with OTP fields and additional columns for device and OS info
+DROP TABLE IF EXISTS refresh_token CASCADE;
 DROP TABLE IF EXISTS app_user CASCADE;
 CREATE TABLE IF NOT EXISTS app_user (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -28,6 +29,20 @@ CREATE TABLE IF NOT EXISTS verification_token (
     token VARCHAR(255) NOT NULL UNIQUE,
     expiry_date TIMESTAMP NOT NULL,
     used BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    consumed_at TIMESTAMP,
     user_id UUID NOT NULL,
     CONSTRAINT fk_verification_token_user FOREIGN KEY (user_id) REFERENCES app_user (id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS refresh_token (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    token VARCHAR(512) NOT NULL UNIQUE,
+    expiry_date TIMESTAMP NOT NULL,
+    revoked BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_id UUID NOT NULL,
+    CONSTRAINT fk_refresh_token_user FOREIGN KEY (user_id) REFERENCES app_user (id) ON DELETE CASCADE
 );

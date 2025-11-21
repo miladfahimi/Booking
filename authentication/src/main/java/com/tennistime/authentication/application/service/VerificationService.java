@@ -89,7 +89,8 @@ public class VerificationService {
         User user = verificationToken.getUser();
         String role = user.getRole();
         user.setRole("VERIFIED_" + role);
-        verificationTokenRepository.delete(verificationToken);
+        verificationToken.markUsed();
+        verificationTokenRepository.save(verificationToken);
 
         // Logging
         System.out.println("\033[1;32m----------------------------\033[0m");
@@ -104,11 +105,11 @@ public class VerificationService {
      */
     @Transactional
     public void regenerateAndSendVerificationToken(User user) {
-        VerificationToken existingToken = verificationTokenRepository.findByUser(user)
+        VerificationToken existingToken = verificationTokenRepository.findByUserAndUsedFalse(user)
                 .orElseThrow(() -> new IllegalArgumentException("No verification token found for user"));
 
-        // Remove the existing token
-        verificationTokenRepository.delete(existingToken);
+        existingToken.markUsed();
+        verificationTokenRepository.save(existingToken);
 
         // Create and save a new token
         String newToken = UUID.randomUUID().toString();
@@ -159,11 +160,11 @@ public class VerificationService {
      * @param user the user to send the SMS to
      */
     public void regenerateAndSendVerificationSms(User user) {
-        VerificationToken existingToken = verificationTokenRepository.findByUser(user)
+        VerificationToken existingToken = verificationTokenRepository.findByUserAndUsedFalse(user)
                 .orElseThrow(() -> new IllegalArgumentException("No verification token found for user"));
 
-        // Remove the existing token
-        verificationTokenRepository.delete(existingToken);
+        existingToken.markUsed();
+        verificationTokenRepository.save(existingToken);
 
         // Create and save a new token
         String newToken = UUID.randomUUID().toString();

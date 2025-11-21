@@ -70,6 +70,7 @@ public class DevSecurityConfig {
                                 "/otp/invalidate",
                                 "/auth/signup",
                                 "/auth/signin",
+                                "/auth/refresh",
                                 "/auth/logout",
                                 "/verify/email",
                                 "/service/test",

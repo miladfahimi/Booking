@@ -27,7 +27,7 @@ public class VerificationInitializationService {
         // Fetch all users who don't have a verification token
         Iterable<User> users = userRepository.findAll();
         for (User user : users) {
-            if (!verificationTokenRepository.findByUser(user).isPresent()) {
+            if (verificationTokenRepository.findByUserAndUsedFalse(user).isEmpty()) {
                 // Create a new verification token for the user
                 String token = UUID.randomUUID().toString();
                 VerificationToken verificationToken = new VerificationToken(token, user);

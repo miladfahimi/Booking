@@ -32,6 +32,8 @@ public class UserDTO {
     @Schema(hidden = true)
     private String token;
     @Schema(hidden = true)
+    private String refreshToken;
+    @Schema(hidden = true)
     private String deviceModel;
     @Schema(hidden = true)
     private String os;

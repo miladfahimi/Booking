@@ -1,10 +1,12 @@
 package com.tennistime.authentication.application.service;
 
+import com.tennistime.authentication.application.dto.TokenResponse;
 import com.tennistime.authentication.application.dto.UserDTO;
 import com.tennistime.authentication.application.mapper.AppUserMapper;
 import com.tennistime.authentication.domain.model.User;
 import com.tennistime.authentication.domain.repository.UserRepository;
 import com.tennistime.authentication.infrastructure.security.JwtUtil;
+import com.tennistime.authentication.domain.model.RefreshToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -48,6 +50,9 @@ public class UserService {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    @Autowired
+    private RefreshTokenService refreshTokenService;
+
     public UserDTO signup(UserDTO userDTO, String ip, String deviceModel, String os, String browser) {
         if (userRepository.findByEmail(userDTO.getEmail()).isPresent()) {
             logger.error("\033[1;35mSignup attempt with already registered email: {}\033[0m", userDTO.getEmail());
@@ -90,6 +95,8 @@ public class UserService {
                 }
                 UserDTO userDTO = appUserMapper.toDTO(user);
                 userDTO.setToken(token);
+                RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
+                userDTO.setRefreshToken(refreshToken.getToken());
 
                 user.updateLoginInfo(ip, deviceModel, os, browser);  // Update login info
                 userRepository.save(user);
@@ -153,6 +160,8 @@ public class UserService {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
                 String token = jwtUtil.generateToken(userDetails);
                 userDTO.setToken(token);
+                RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
+                userDTO.setRefreshToken(refreshToken.getToken());
 
                 user.setLastLogin(LocalDateTime.now());  // Update last_login
                 userRepository.save(user);
@@ -180,6 +189,23 @@ public class UserService {
         }
         otpService.invalidateOtp(user);
 
+        refreshTokenService.revokeTokens(user);
+
         logger.info("\033[1;31mLogout successful for user: {} ({})\033[0m", user.getId(), user.getEmail());
+    }
+
+    /**
+     * Issues a new access token using a valid refresh token and rotates the refresh token.
+     *
+     * @param refreshTokenValue the provided refresh token value
+     * @return a pair containing the new access and refresh tokens
+     */
+    public TokenResponse refreshAccessToken(String refreshTokenValue) {
+        RefreshToken rotatedToken = refreshTokenService.rotateRefreshToken(refreshTokenValue);
+        User user = rotatedToken.getUser();
+        String identifier = user.getEmail() != null ? user.getEmail() : (user.getPhone() != null ? user.getPhone() : user.getUsername());
+        UserDetails userDetails = userDetailsService.loadUserByUsername(identifier);
+        String accessToken = jwtUtil.generateToken(userDetails);
+        return new TokenResponse(accessToken, rotatedToken.getToken());
     }
 }

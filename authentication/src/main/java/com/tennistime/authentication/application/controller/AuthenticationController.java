@@ -1,6 +1,8 @@
 package com.tennistime.authentication.application.controller;
 
+import com.tennistime.authentication.application.dto.RefreshTokenRequest;
 import com.tennistime.authentication.application.dto.SignInRequest;
+import com.tennistime.authentication.application.dto.TokenResponse;
 import com.tennistime.authentication.application.dto.UserDTO;
 import com.tennistime.authentication.application.service.UserService;
 import com.tennistime.authentication.infrastructure.security.JwtUtil;
@@ -95,6 +97,19 @@ public class AuthenticationController {
             System.out.println("\033[1;31m----------------------------\033[0m");
         }
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Exchanges a valid refresh token for a new access token and rotated refresh token.
+     *
+     * @param request the request containing the refresh token
+     * @return the refreshed token pair
+     */
+    @PostMapping("/refresh")
+    @Operation(summary = "Refresh access token")
+    public ResponseEntity<TokenResponse> refresh(@RequestBody RefreshTokenRequest request) {
+        TokenResponse tokenResponse = userService.refreshAccessToken(request.getRefreshToken());
+        return ResponseEntity.ok(tokenResponse);
     }
 
     // Utility methods to extract device, OS, and browser from the User-Agent string

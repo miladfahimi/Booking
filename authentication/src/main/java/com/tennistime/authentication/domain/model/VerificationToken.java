@@ -26,11 +26,43 @@ public class VerificationToken {
 
     private LocalDateTime expiryDate;
     private boolean used;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime consumedAt;
 
     public VerificationToken(String token, User user) {
         this.token = token;
         this.user = user;
-        this.expiryDate = LocalDateTime.now().plusMinutes(10); // Valid for 10 minutes
+        this.expiryDate = LocalDateTime.now().plusMinutes(10);
         this.used = false;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * Mark the verification token as consumed and update audit timestamps.
+     */
+    public void markUsed() {
+        this.used = true;
+        this.consumedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * Set audit timestamps before persisting a new verification token.
+     */
+    @PrePersist
+    protected void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+        this.createdAt = now;
+        this.updatedAt = now;
+    }
+
+    /**
+     * Update the audit timestamp before updating an existing verification token.
+     */
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 }

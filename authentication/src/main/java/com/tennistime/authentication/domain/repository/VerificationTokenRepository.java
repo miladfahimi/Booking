@@ -9,6 +9,7 @@ import java.util.UUID;
 public interface VerificationTokenRepository {
     Optional<VerificationToken> findByToken(String token);
     void delete(VerificationToken verificationToken);
-    VerificationToken save(VerificationToken verificationToken); // Add the save method
-    Optional<VerificationToken> findByUser(User user); // Add method to find by user
+    VerificationToken save(VerificationToken verificationToken);
+    Optional<VerificationToken> findByUser(User user);
+    Optional<VerificationToken> findByUserAndUsedFalse(User user);
 }
