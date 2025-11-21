@@ -89,3 +89,4 @@ deploy:
       "
   only:
     - main
+    - iranzamin-MVP-1
