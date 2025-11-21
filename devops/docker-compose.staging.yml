@@ -164,10 +164,8 @@ services:
   frontend:
     image: registry.gitlab.com/miladfahimi2012/tennistime/frontend:latest
     container_name: tennistime_nginx
-    # اگر nginx.conf رو از بیرون می‌خوای override کنی این خط رو نگه دار
-    # وگرنه می‌تونی کلاً volumes رو حذف کنی و فقط همونی که تو image هست استفاده بشه
     volumes:
-      - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ../frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     networks:
       - app_network
     ports:
