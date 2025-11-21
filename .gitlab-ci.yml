@@ -64,7 +64,7 @@ deploy:
     - chmod 644 ~/.ssh/known_hosts
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
   script:
-    - ssh -i ~/.ssh/gitlab_ci_deploy_key -o StrictHostKeyChecking=no root@49.12.109.90 "
+    - ssh -i ~/.ssh/gitlab_ci_deploy_key -o StrictHostKeyChecking=no root@46.62.151.135 "
       if [ -d /home/TennisTime/tennistime/.git ]; then
       echo 'Valid Git repository found. Pulling latest changes...';
       cd /home/TennisTime/tennistime && git fetch origin && git reset --hard origin/main && git clean -fd;
