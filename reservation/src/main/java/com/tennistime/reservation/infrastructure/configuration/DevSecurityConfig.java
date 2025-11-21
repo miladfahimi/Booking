@@ -18,7 +18,7 @@ import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
-@Profile({"dev", "test"})
+@Profile({"dev", "docker"})
 public class DevSecurityConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(DevSecurityConfig.class);
@@ -85,7 +85,7 @@ public class DevSecurityConfig {
         corsConfiguration.addAllowedOrigin("http://frontend:80");
         corsConfiguration.addAllowedOrigin("http://frontend");
         corsConfiguration.addAllowedOrigin("http://49.12.109.90");
-        corsConfiguration.addAllowedOrigin("http://49.12.109.90:80");
+        corsConfiguration.addAllowedOrigin("http://46.62.151.135:8082");
         corsConfiguration.addAllowedOriginPattern("*");
 
         corsConfiguration.addAllowedMethod("*");
