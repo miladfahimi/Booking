@@ -45,13 +45,15 @@ test:
   stage: test
   tags:
     - booking_app
+  image: maven:3.9.8-amazoncorretto-17-al2023
+  before_script: []
   script:
-    # Run Maven tests using Docker
-    - docker run --rm -v "$PWD:/workspace" -w /workspace maven:3.9.8-amazoncorretto-17-al2023 mvn clean test -f authentication/pom.xml
-    - docker run --rm -v "$PWD:/workspace" -w /workspace maven:3.9.8-amazoncorretto-17-al2023 mvn clean test -f provider/pom.xml
-    - docker run --rm -v "$PWD:/workspace" -w /workspace maven:3.9.8-amazoncorretto-17-al2023 mvn clean test -f bff/pom.xml
-    - docker run --rm -v "$PWD:/workspace" -w /workspace maven:3.9.8-amazoncorretto-17-al2023 mvn clean test -f profile/pom.xml
-    - docker run --rm -v "$PWD:/workspace" -w /workspace maven:3.9.8-amazoncorretto-17-al2023 mvn clean test -f reservation/pom.xml
+    # Run Maven tests directly inside the Maven image
+    - mvn clean test -f authentication/pom.xml
+    - mvn clean test -f provider/pom.xml
+    - mvn clean test -f bff/pom.xml
+    - mvn clean test -f profile/pom.xml
+    - mvn clean test -f reservation/pom.xml
 
 deploy:
   stage: deploy
