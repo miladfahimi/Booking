@@ -17,8 +17,11 @@ public class RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
 
-    @Value("${jwt.refreshExpirationMs:2592000000}")
-    private long refreshExpirationMs;
+    @Value("${jwt.refreshExpirationMs.standard:43200000}")
+    private long standardRefreshExpirationMs;
+
+    @Value("${jwt.refreshExpirationMs.rememberMe:1209600000}")
+    private long rememberMeRefreshExpirationMs;
 
     public RefreshTokenService(RefreshTokenRepository refreshTokenRepository) {
         this.refreshTokenRepository = refreshTokenRepository;
@@ -30,13 +33,15 @@ public class RefreshTokenService {
      * @param user the authenticated user
      * @return the persisted refresh token instance
      */
-    public RefreshToken createRefreshToken(User user) {
+    public RefreshToken createRefreshToken(User user, boolean rememberMe) {
         LocalDateTime now = LocalDateTime.now();
+        long expiration = rememberMe ? rememberMeRefreshExpirationMs : standardRefreshExpirationMs;
         RefreshToken refreshToken = RefreshToken.builder()
                 .token(generateSecureToken())
                 .user(user)
-                .expiryDate(now.plus(Duration.ofMillis(refreshExpirationMs)))
+                .expiryDate(now.plus(Duration.ofMillis(expiration)))
                 .revoked(Boolean.FALSE)
+                .rememberMe(rememberMe)
                 .createdAt(now)
                 .updatedAt(now)
                 .build();
@@ -65,8 +70,8 @@ public class RefreshTokenService {
         existingToken.setRevoked(Boolean.TRUE);
         existingToken.setUpdatedAt(now);
         refreshTokenRepository.save(existingToken);
-        return createRefreshToken(existingToken.getUser());
-    }
+        return createRefreshToken(existingToken.getUser(), Boolean.TRUE.equals(existingToken.getRememberMe()));
+        }
 
     /**
      * Revokes all refresh tokens associated with the provided user.

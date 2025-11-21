@@ -14,4 +14,5 @@ public class SignInRequest {
     private String deviceModel;
     private String os;
     private String browser;
+    private boolean rememberMe;
 }

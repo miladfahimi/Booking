@@ -10,14 +10,14 @@ export class AuthEffects {
   constructor(
     private actions$: Actions,
     private coreAuthService: CoreAuthService
-  ) {}
+  ) { }
 
   signIn$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.signIn),
       exhaustMap((action) =>
         this.coreAuthService
-          .signIn(action.email, action.password, action.deviceModel, action.os, action.browser)
+          .signIn(action.email, action.password, action.deviceModel, action.os, action.browser, action.rememberMe)
           .pipe(
             map((user) => AuthActions.signInSuccess({ user })),
             catchError((error) =>

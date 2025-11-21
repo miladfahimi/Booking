@@ -44,12 +44,20 @@
           }
         </div>
 
+
         <!-- Submit Button -->
         <div class="container-login100-form-btn">
           <button type="submit" class="login100-form-btn"
             [disabled]="signInForm.invalid || (loadingStatus$ | async)?.loading">
             ورود
           </button>
+        </div>
+
+        <div class="remember-me">
+          <label>
+            <input type="checkbox" formControlName="rememberMe">
+            مرا به خاطر بسپار
+          </label>
         </div>
 
         <!-- Error Message Display -->

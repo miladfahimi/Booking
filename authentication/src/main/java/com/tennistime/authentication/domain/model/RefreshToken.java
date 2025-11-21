@@ -41,6 +41,9 @@ public class RefreshToken {
 
     @Column(nullable = false)
     private Boolean revoked;
+    
+    @Column(nullable = false)
+    private Boolean rememberMe;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

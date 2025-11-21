@@ -78,10 +78,10 @@ public class UserService {
 
         logger.info("\033[1;35mSignup successful for user: {}\033[0m", user.getEmail());
 
-        return signin(userDTO.getEmail(), rawPassword, ip, deviceModel, os, browser);
+        return signin(userDTO.getEmail(), rawPassword, ip, deviceModel, os, browser, false);
     }
 
-    public UserDTO signin(String emailOrPhone, String password, String ip, String deviceModel, String os, String browser) {
+    public UserDTO signin(String emailOrPhone, String password, String ip, String deviceModel, String os, String browser, boolean rememberMe) {
         Optional<User> appUserOptional = userRepository.findByEmail(emailOrPhone)
                 .or(() -> userRepository.findByPhone(emailOrPhone));
 
@@ -95,7 +95,7 @@ public class UserService {
                 }
                 UserDTO userDTO = appUserMapper.toDTO(user);
                 userDTO.setToken(token);
-                RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
+                RefreshToken refreshToken = refreshTokenService.createRefreshToken(user, rememberMe);
                 userDTO.setRefreshToken(refreshToken.getToken());
 
                 user.updateLoginInfo(ip, deviceModel, os, browser);  // Update login info
@@ -160,7 +160,7 @@ public class UserService {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
                 String token = jwtUtil.generateToken(userDetails);
                 userDTO.setToken(token);
-                RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
+                RefreshToken refreshToken = refreshTokenService.createRefreshToken(user, false);
                 userDTO.setRefreshToken(refreshToken.getToken());
 
                 user.setLastLogin(LocalDateTime.now());  // Update last_login

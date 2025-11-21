@@ -21,10 +21,10 @@ SELECT uuid_generate_v4(), 'verify-jane-token', NOW() + INTERVAL '2 days', FALSE
 FROM app_user WHERE username = 'jane_smith';
 
 -- Seed refresh tokens with long-lived expirations and active status
-INSERT INTO refresh_token (id, token, expiry_date, revoked, created_at, updated_at, user_id)
-SELECT uuid_generate_v4(), 'refresh-john-token', NOW() + INTERVAL '30 days', FALSE, NOW(), NOW(), id
+INSERT INTO refresh_token (id, token, expiry_date, revoked, remember_me, created_at, updated_at, user_id)
+SELECT uuid_generate_v4(), 'refresh-john-token', NOW() + INTERVAL '30 days', FALSE, FALSE, NOW(), NOW(), id
 FROM app_user WHERE username = 'john_doe';
 
-INSERT INTO refresh_token (id, token, expiry_date, revoked, created_at, updated_at, user_id)
-SELECT uuid_generate_v4(), 'refresh-admin-token', NOW() + INTERVAL '30 days', FALSE, NOW(), NOW(), id
+INSERT INTO refresh_token (id, token, expiry_date, revoked, remember_me, created_at, updated_at, user_id)
+SELECT uuid_generate_v4(), 'refresh-admin-token', NOW() + INTERVAL '30 days', FALSE, FALSE, NOW(), NOW(), id
 FROM app_user WHERE username = 'admin';

@@ -21,7 +21,8 @@ export class SignInComponent implements OnInit {
   constructor(private fb: FormBuilder, private store: Store<AuthState>) {
     this.signInForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(3)]]
+      password: ['', [Validators.required, Validators.minLength(3)]],
+      rememberMe: [false]
     });
 
     this.errorMessage$ = this.store.pipe(select(selectAuthError));
@@ -33,7 +34,7 @@ export class SignInComponent implements OnInit {
 
   onSubmit() {
     if (this.signInForm.valid) {
-      const { email, password } = this.signInForm.value;
+      const { email, password, rememberMe } = this.signInForm.value;
 
       const parser = new UAParser();
       const uaResult = parser.getResult();
@@ -41,7 +42,7 @@ export class SignInComponent implements OnInit {
       const os = uaResult.os.name || 'unknown OS';
       const browser = uaResult.browser.name || 'unknown browser';
 
-      this.store.dispatch(signIn({ email, password, deviceModel, os, browser }));
+      this.store.dispatch(signIn({ email, password, deviceModel, os, browser, rememberMe }));
     }
   }
 
@@ -52,4 +53,4 @@ export class SignInComponent implements OnInit {
       (document.querySelector('[formControlName="password"]') as HTMLInputElement).type = this.showPassword ? 'text' : 'password';
     }
   }
-}
+} 

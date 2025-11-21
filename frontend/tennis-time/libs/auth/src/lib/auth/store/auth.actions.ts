@@ -3,7 +3,7 @@ import { SignUpReq } from './auth.models';
 
 export const signIn = createAction(
   '[Auth] Sign In',
-  props<{ email: string; password: string; deviceModel: string; os: string; browser: string }>()
+  props<{ email: string; password: string; deviceModel: string; os: string; browser: string; rememberMe: boolean }>()
 );
 
 export const signInSuccess = createAction(

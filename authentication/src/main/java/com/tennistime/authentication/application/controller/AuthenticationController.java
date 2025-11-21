@@ -70,8 +70,9 @@ public class AuthenticationController {
         String deviceModel = signInRequest.getDeviceModel();
         String os = signInRequest.getOs();
         String browser = signInRequest.getBrowser();
+        boolean rememberMe = signInRequest.isRememberMe();
 
-        UserDTO signedInUser = userService.signin(email, password, ip, deviceModel, os, browser);
+        UserDTO signedInUser = userService.signin(email, password, ip, deviceModel, os, browser, rememberMe);
 
         // Logging the new data
         System.out.println("\033[1;32m----------------------------\033[0m");
