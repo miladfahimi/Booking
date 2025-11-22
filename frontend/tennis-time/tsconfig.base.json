@@ -16,11 +16,14 @@
     "baseUrl": ".",
     "paths": {
       "@tennis-time/auth": ["libs/auth/src/index.ts"],
+      "@tennis-time/basket": ["libs/basket/src/index.ts"],
       "@tennis-time/core": ["libs/core/src/index.ts"],
+      "@tennis-time/environment": [
+        "apps/frontend/src/environments/environment.ts"
+      ],
       "@tennis-time/profile": ["libs/profile/src/index.ts"],
       "@tennis-time/reservation": ["libs/reservation/src/index.ts"],
-      "@tennis-time/shared": ["libs/shared/src/index.ts"],
-      "@tennis-time/environment": ["apps/frontend/src/environments/environment.ts"]
+      "@tennis-time/shared": ["libs/shared/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
