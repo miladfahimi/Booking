@@ -2,7 +2,7 @@ import { createReducer, on } from '@ngrx/store';
 import * as ReservationActions from './reservation.actions';
 import { LoadingStatus, ProviderDTO, ReservationStatus, ServiceDTO, SlotBasketState, SlotDTO } from '../types';
 import { ReservationBasketItem } from '../types/reservation-basket.types';
-import { PaymentInitiationResult } from '../types/reservation-payment.types';
+import { PaymentInitiationResult } from '@tennis-time/payment';
 import { SlotStatusNotification } from '../realtime/slot-status-notification';
 
 const EMPTY_BASKET_STATE: SlotBasketState = {

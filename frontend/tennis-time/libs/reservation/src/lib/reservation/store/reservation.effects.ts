@@ -9,7 +9,7 @@ import { ProviderDTO, ReservationStatus, ServiceDTO } from '../types';
 import { selectBasket } from './reservation.selectors';
 import { ReservationCheckoutService } from '../services/reservation-checkout.service';
 import { ReservationBasketApiService } from '../services/reservation-basket-api.service';
-import { MockPaymentSessionService } from '../services/mock/mock-payment-session.service';
+import { MockPaymentSessionService } from '@tennis-time/payment';
 import { SlotStatusRealtimeService } from '../realtime/slot-status-realtime.service';
 import { CoreAuthService } from '@tennis-time/core';
 
@@ -142,9 +142,15 @@ export class ReservationEffects {
             let payment = result.payment;
 
             if (this.mockPaymentSession.isEnabled()) {
+              const sessionReservations = result.reservations.map(reservation => ({
+                id: reservation.id,
+                reservationDate: reservation.reservationDate,
+                startTime: reservation.startTime,
+                endTime: reservation.endTime
+              }));
               payment = this.mockPaymentSession.beginSession({
                 payment,
-                reservations: result.reservations,
+                reservations: sessionReservations,
                 total: totalAmount
               });
             }

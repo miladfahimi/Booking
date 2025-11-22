@@ -1,11 +1,10 @@
 import { Inject, Injectable, Optional } from '@angular/core';
 import { forkJoin, map, Observable, of, switchMap } from 'rxjs';
 import { ReservationCreationService } from './reservation-creation.service';
-import { ReservationPaymentService } from './reservation-payment.service';
 import { ReservationStatus } from '../types';
 import { ReservationBasketItem, ReservationBulkRequestItem, ReservationSummary } from '../types/reservation-basket.types';
-import { PaymentInitiationPayload, PaymentInitiationResult } from '../types/reservation-payment.types';
 import { RESERVATION_FEATURE_CONFIG, ReservationFeatureConfig, defaultReservationFeatureConfig } from '../config/reservation-feature-config.token';
+import { PaymentInitiationPayload, PaymentInitiationResult, PaymentSessionReservation, PaymentService } from '@tennis-time/payment';
 
 export interface ReservationCheckoutResult {
   reservations: ReservationSummary[];
@@ -18,7 +17,7 @@ export class ReservationCheckoutService {
 
   constructor(
     private readonly reservationCreationService: ReservationCreationService,
-    private readonly reservationPaymentService: ReservationPaymentService,
+    private readonly paymentService: PaymentService,
     @Optional() @Inject(RESERVATION_FEATURE_CONFIG) featureConfig?: ReservationFeatureConfig
   ) {
     this.featureConfig = featureConfig ?? defaultReservationFeatureConfig;
@@ -61,7 +60,7 @@ export class ReservationCheckoutService {
       amount
     };
 
-    return this.reservationPaymentService.initiatePayment(paymentPayload).pipe(
+    return this.paymentService.initiatePayment(paymentPayload).pipe(
       switchMap(payment => {
         if (this.featureConfig.useMockPaymentGateway) {
           return of({ reservations, payment });
@@ -78,11 +77,11 @@ export class ReservationCheckoutService {
     return items.reduce((total, item) => total + (item.price || 0), 0);
   }
 
-  finalizeReservations(reservations: ReservationSummary[]): Observable<ReservationSummary[]> {
+  finalizeReservations(reservations: PaymentSessionReservation[]): Observable<ReservationSummary[]> {
     return this.confirmReservations(reservations);
   }
 
-  private confirmReservations(reservations: ReservationSummary[]): Observable<ReservationSummary[]> {
+  private confirmReservations(reservations: PaymentSessionReservation[]): Observable<ReservationSummary[]> {
     if (!reservations.length) {
       return of([]);
     }

@@ -29,16 +29,15 @@ import { TimelineSlotPendingComponent } from './pages/reservation/container/time
 import { TimelineSlotMaintenanceComponent } from './pages/reservation/container/timeline/timeline-slots/maintenance-slot/timeline-slot-maintenance.component';
 import { TimelineSlotModalComponent } from './pages/reservation/container/timeline/tileline-slot-modals/timeline-slot-modals.component';
 import { ReservationBasketComponent } from './pages/reservation/container/basket/reservation-basket.component';
-import { ReservationMockPaymentComponent } from './pages/mock-payment/reservation-mock-payment.component';
 import { environment } from '@tennis-time/environment';
 import { RESERVATION_FEATURE_CONFIG } from './config/reservation-feature-config.token';
-import { MockPaymentSessionService } from './services/mock/mock-payment-session.service';
 import { ReservationCheckoutService } from './services/reservation-checkout.service';
 import { MineSlotModalModelComponent } from './pages/reservation/container/timeline/tileline-slot-modals/mine-slot-modal/mine-slot-modal.model.component';
 import { AvailableSlotModalModelComponent } from './pages/reservation/container/timeline/tileline-slot-modals/available-slot-modal/available-slot-modal.model.component';
 import { BookedSlotModalModelComponent } from './pages/reservation/container/timeline/tileline-slot-modals/booked-slot-modal/booked-slot-modal.model.component';
 import { PendingSlotModalModelComponent } from './pages/reservation/container/timeline/tileline-slot-modals/pending-slot-modal/pending-slot-modal.model.component';
 import { ReservationBasketModalComponent } from './pages/reservation/container/basket/reservation-basket-modal.component';
+import { PaymentModule, PAYMENT_FEATURE_CONFIG } from '@tennis-time/payment';
 
 @NgModule({
   declarations: [
@@ -58,7 +57,6 @@ import { ReservationBasketModalComponent } from './pages/reservation/container/b
     TimelineSlotModalComponent,
     ReservationBasketComponent,
     ReservationBasketModalComponent,
-    ReservationMockPaymentComponent,
     MineSlotModalModelComponent,
     AvailableSlotModalModelComponent,
     BookedSlotModalModelComponent,
@@ -70,6 +68,7 @@ import { ReservationBasketModalComponent } from './pages/reservation/container/b
     ReservationRoutingModule,
     NgOptimizedImage,
     SharedModule,
+    PaymentModule,
     StoreModule.forFeature('reservation', reservationReducer),
     EffectsModule.forFeature([ReservationEffects])
   ],
@@ -82,7 +81,12 @@ import { ReservationBasketModalComponent } from './pages/reservation/container/b
         useMockPaymentGateway: environment.mockPaymentPageEnabled
       }
     },
-    MockPaymentSessionService,
+    {
+      provide: PAYMENT_FEATURE_CONFIG,
+      useValue: {
+        useMockPaymentGateway: environment.mockPaymentPageEnabled
+      }
+    },
     ReservationCheckoutService
   ]
 })

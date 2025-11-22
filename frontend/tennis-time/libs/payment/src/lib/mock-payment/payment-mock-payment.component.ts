@@ -1,21 +1,19 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Observable, Subject, interval, Subscription, timer } from 'rxjs';
+import { Observable, Subject, Subscription, interval, timer } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
-import { ReservationSummary } from '../../types/reservation-basket.types';
-import { MockPaymentSessionService, MockPaymentSessionData } from '../../services/mock/mock-payment-session.service';
-import { completeMockPayment } from '../../store/reservation.actions';
-import { selectPaymentCompletionError, selectPaymentCompletionLoading, selectPaymentCompletionStatus } from '../../store/reservation.selectors';
+import { PaymentMockSessionData, PaymentSessionReservation } from '../types/payment.types';
+import { MockPaymentSessionService } from '../services/mock/mock-payment-session.service';
 
 @Component({
-  selector: 'app-reservation-mock-payment',
-  templateUrl: './reservation-mock-payment.component.html',
-  styleUrls: ['./reservation-mock-payment.component.scss']
+  selector: 'app-payment-mock-payment',
+  templateUrl: './payment-mock-payment.component.html',
+  styleUrls: ['./payment-mock-payment.component.scss']
 })
-export class ReservationMockPaymentComponent implements OnInit, OnDestroy {
-  session: MockPaymentSessionData | null = null;
-  reservations: ReservationSummary[] = [];
+export class PaymentMockPaymentComponent implements OnInit, OnDestroy {
+  session: PaymentMockSessionData | null = null;
+  reservations: PaymentSessionReservation[] = [];
   completionLoading$: Observable<boolean>;
   completionError$: Observable<string | null>;
   paymentCompleted = false;
@@ -30,8 +28,8 @@ export class ReservationMockPaymentComponent implements OnInit, OnDestroy {
     private readonly route: ActivatedRoute,
     private readonly mockPaymentSession: MockPaymentSessionService
   ) {
-    this.completionLoading$ = this.store.select(selectPaymentCompletionLoading);
-    this.completionError$ = this.store.select(selectPaymentCompletionError);
+    this.completionLoading$ = this.selectReservationState(state => state.paymentCompletionStatus?.loading ?? false);
+    this.completionError$ = this.selectReservationState(state => state.paymentCompletionError ?? null);
   }
 
   ngOnInit(): void {
@@ -47,7 +45,7 @@ export class ReservationMockPaymentComponent implements OnInit, OnDestroy {
     this.session = session;
     this.reservations = session.reservations;
 
-    this.store.select(selectPaymentCompletionStatus)
+    this.selectReservationState(state => state.paymentCompletionStatus ?? { loading: false, loaded: false })
       .pipe(
         filter(status => status.loaded && !status.loading),
         takeUntil(this.destroy$)
@@ -69,7 +67,11 @@ export class ReservationMockPaymentComponent implements OnInit, OnDestroy {
     if (!this.session) {
       return;
     }
-    this.store.dispatch(completeMockPayment());
+    this.store.dispatch({ type: '[Reservation] Complete Mock Payment' });
+  }
+
+  private selectReservationState<T>(selector: (state: any) => T): Observable<T> {
+    return this.store.select(state => selector((state as any).reservation ?? {}));
   }
 
   private startCountdown(): void {

@@ -17,7 +17,6 @@ export class MockPaymentNavigationService {
       try {
         newWindow.opener = null;
       } catch {
-        // ignore if browser prevents assigning opener
       }
       return;
     }

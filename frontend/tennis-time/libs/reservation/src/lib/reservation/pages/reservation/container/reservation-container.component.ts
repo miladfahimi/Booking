@@ -4,14 +4,12 @@ import { combineLatest, Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import * as jalaali from 'jalaali-js';
 import { CoreAuthService } from '@tennis-time/core';
-import { MockPaymentSessionService } from '../../../services/mock/mock-payment-session.service';
-import { MockPaymentNavigationService } from '../../../services/mock/mock-payment-navigation.service';
+import { MockPaymentNavigationService, MockPaymentSessionService, PaymentInitiationResult } from '@tennis-time/payment';
 
 import { addSlotToBasket, checkoutBasket, loadBasket, loadProvidersWithServices, loadSlots, removeSlotFromBasket } from '../../../store/reservation.actions';
 import { selectBasket, selectBasketTotal, selectCheckoutLoading, selectPaymentResult, selectProviders, selectSlotsByService, selectSlotsLoading } from '../../../store/reservation.selectors';
 import { ProviderDTO, ReservationStatus, ServiceDTO, SlotBasketState, SlotDTO } from '../../../types';
 import { ReservationBasketItem } from '../../../types/reservation-basket.types';
-import { PaymentInitiationResult } from '../../../types/reservation-payment.types';
 import { TimelineSlotDetails } from './timeline/tileline-slot-modals/timeline-slot-modals.component';
 
 @Component({

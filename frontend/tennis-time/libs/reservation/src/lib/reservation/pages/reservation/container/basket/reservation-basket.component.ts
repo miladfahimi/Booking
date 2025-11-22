@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { ReservationBasketItem } from '../../../../types/reservation-basket.types';
-import { PaymentInitiationResult } from '../../../../types/reservation-payment.types';
+import { PaymentInitiationResult } from '@tennis-time/payment';
 
 @Component({
   selector: 'app-reservation-basket',

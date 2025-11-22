@@ -13,3 +13,20 @@ export interface PaymentInitiationResult {
   redirectUrl?: string | null;
   referenceNumber?: string | null;
 }
+
+export interface PaymentSessionReservation {
+  id: string;
+  reservationDate: string;
+  startTime: string;
+  endTime: string;
+}
+
+export interface PaymentMockSessionData {
+  paymentId: string;
+  referenceNumber: string | null;
+  redirectUrl: string;
+  providerRedirectUrl: string | null;
+  total: number;
+  reservations: PaymentSessionReservation[];
+  reservationDate: string;
+}

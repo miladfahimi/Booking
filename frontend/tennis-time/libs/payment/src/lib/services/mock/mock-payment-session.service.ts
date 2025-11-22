@@ -1,34 +1,21 @@
 import { Inject, Injectable, Optional } from '@angular/core';
-import { ReservationSummary } from '../../types/reservation-basket.types';
-import { PaymentInitiationResult } from '../../types/reservation-payment.types';
-import { RESERVATION_FEATURE_CONFIG, ReservationFeatureConfig, defaultReservationFeatureConfig } from '../../config/reservation-feature-config.token';
+import { PaymentMockSessionData, PaymentInitiationResult, PaymentSessionReservation } from '../../types/payment.types';
+import { PAYMENT_FEATURE_CONFIG, PaymentFeatureConfig, defaultPaymentFeatureConfig } from '../../config/payment-feature-config.token';
 
-export interface MockPaymentSessionData {
-  paymentId: string;
-  referenceNumber: string | null;
-  redirectUrl: string;
-  providerRedirectUrl: string | null;
-  total: number;
-  reservations: ReservationSummary[];
-  reservationDate: string;
-}
-
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class MockPaymentSessionService {
   private readonly storageKey = 'reservation-mock-payment';
-  private readonly config: ReservationFeatureConfig;
+  private readonly config: PaymentFeatureConfig;
 
-  constructor(
-    @Optional() @Inject(RESERVATION_FEATURE_CONFIG) config?: ReservationFeatureConfig
-  ) {
-    this.config = config ?? defaultReservationFeatureConfig;
+  constructor(@Optional() @Inject(PAYMENT_FEATURE_CONFIG) config?: PaymentFeatureConfig) {
+    this.config = config ?? defaultPaymentFeatureConfig;
   }
 
   isEnabled(): boolean {
     return this.config.useMockPaymentGateway;
   }
 
-  beginSession(params: { payment: PaymentInitiationResult; reservations: ReservationSummary[]; total: number }): PaymentInitiationResult {
+  beginSession(params: { payment: PaymentInitiationResult; reservations: PaymentSessionReservation[]; total: number }): PaymentInitiationResult {
     if (!this.isEnabled() || !params.reservations.length) {
       return params.payment;
     }
@@ -39,7 +26,7 @@ export class MockPaymentSessionService {
     const providerRedirectUrl = params.payment.redirectUrl?.trim()?.length ? params.payment.redirectUrl : null;
     const reservationDate = params.reservations[0].reservationDate;
 
-    const sessionPayload: MockPaymentSessionData = {
+    const sessionPayload: PaymentMockSessionData = {
       paymentId,
       referenceNumber,
       redirectUrl,
@@ -57,7 +44,7 @@ export class MockPaymentSessionService {
     return { ...params.payment, paymentId, redirectUrl };
   }
 
-  loadSession(): MockPaymentSessionData | null {
+  loadSession(): PaymentMockSessionData | null {
     if (!this.isEnabled()) {
       return null;
     }
@@ -73,7 +60,7 @@ export class MockPaymentSessionService {
     }
 
     try {
-      return JSON.parse(raw) as MockPaymentSessionData;
+      return JSON.parse(raw) as PaymentMockSessionData;
     } catch {
       return null;
     }

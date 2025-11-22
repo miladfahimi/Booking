@@ -2,7 +2,7 @@ import { createAction, props } from '@ngrx/store';
 import { ProviderDTO, ServiceDTO } from '../types';
 import { SlotStatusNotification } from '../realtime/slot-status-notification';
 import { ReservationBasketItem, ReservationSummary } from '../types/reservation-basket.types';
-import { PaymentInitiationResult } from '../types/reservation-payment.types';
+import { PaymentInitiationResult } from '@tennis-time/payment';
 
 export const loadSlots = createAction(
   '[Reservation] Load Slots',
