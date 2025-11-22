@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.yourdomain.com',
+  apiUrl: `${window.location.origin}/api/v1`,
   mockPaymentPageEnabled: false
 };
