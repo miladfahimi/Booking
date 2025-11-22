@@ -1,0 +1,14 @@
+<nav class="footer-menu" aria-label="Quick navigation">
+  <ul class="footer-menu__items">
+    <li class="footer-menu__item" *ngFor="let item of menuItems; trackBy: trackByMenuId">
+      <button type="button" class="footer-menu__button" [class.footer-menu__button--active]="isItemActive(item.id)"
+        (click)="setActiveMenu(item.id)" [attr.aria-pressed]="isItemActive(item.id)" [attr.aria-label]="item.label">
+        <span class="footer-menu__icon" [attr.data-icon]="item.id" aria-hidden="true">
+          <img [src]="iconPath(item.icon)" [alt]="item.label" loading="lazy" />
+          <span class="footer-menu__badge" *ngIf="badgeCount(item.id)">{{ badgeCount(item.id) | faDigits }}</span>
+        </span>
+        <span class="footer-menu__label">{{ item.label }}</span>
+      </button>
+    </li>
+  </ul>
+</nav>

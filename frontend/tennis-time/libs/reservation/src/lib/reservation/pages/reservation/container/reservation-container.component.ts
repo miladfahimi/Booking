@@ -297,6 +297,16 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
     this.basketModalOpen = false;
   }
 
+  onFooterMenuSelected(menuId: string): void {
+    if (menuId === 'basket') {
+      this.openBasketModal();
+      return;
+    }
+
+    this.closeBasketModal();
+  }
+
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();

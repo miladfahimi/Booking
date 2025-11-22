@@ -12,33 +12,23 @@
 .footer-menu {
   width: min(420px, 100%);
   padding: 14px 24px;
-  // background: linear-gradient(
-  //   120deg,
-  //   rgba(15, 23, 42, 0.333),
-  //   rgba(50, 254, 77, 0.224),
-  //   rgba(59, 131, 246, 0.223)
-  // );
   background: rgba(255, 255, 255, 0.735);
-  // border: 1px solid rgba(148, 163, 184, 0.8);
   backdrop-filter: blur(3px) saturate(50%);
   -webkit-backdrop-filter: blur(3px) saturate(50%);
   box-shadow: 0 1px 20px rgba(15, 23, 42, 0.331);
   pointer-events: auto;
+  border-radius: 2px;
 }
 
-/* Show only when running as PWA (standalone/app mode) */
 @media (display-mode: standalone) {
-
   :host {
-  left: 0;
-  right: 0;
-  bottom: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
 
-}
   .footer-menu {
-    border-bottom-left-radius: 40px;
-    border-bottom-right-radius: 40px;
-    height: 75px;
+    height: 90px;
   }
 }
 
@@ -56,7 +46,6 @@
   flex: 1;
   display: flex;
   justify-content: center;
-
 }
 
 .footer-menu__button {
@@ -84,12 +73,13 @@
   border: 1px solid transparent;
   position: relative;
   transition: border-color 0.25s ease, background-color 0.25s ease;
+  background-color: rgba(15, 23, 42, 0.12);
 }
 
-.footer-menu__icon svg {
+.footer-menu__icon img {
   width: 22px;
   height: 22px;
-  stroke: currentColor;
+  object-fit: contain;
 }
 
 .footer-menu__badge {
@@ -112,25 +102,26 @@
 .footer-menu__label {
   font-size: 11px;
   white-space: nowrap;
-  color: rgba(226, 232, 240, 0.85);
+  color: rgba(15, 23, 42, 0.75);
 }
 
 .footer-menu__button--active {
-  color: #ffffff;
+  color: #0f172a;
 }
 
 .footer-menu__button--active .footer-menu__icon {
   border-color: rgba(191, 219, 254, 0.95);
-  background-color: rgba(15, 23, 42, 0.35);
+  background-color: rgba(15, 23, 42, 0.2);
 }
 
 .footer-menu__button--active .footer-menu__label {
-  color: #ffffff;
+  color: #0f172a;
+  font-weight: 600;
 }
 
 .footer-menu__button:not(.footer-menu__button--active):hover .footer-menu__icon {
   border-color: rgba(148, 163, 184, 0.6);
-  background-color: rgba(15, 23, 42, 0.25);
+  background-color: rgba(15, 23, 42, 0.18);
 }
 
 @media (min-width: 769px) {

@@ -38,8 +38,9 @@
       }
 
       @if (isMobileView) {
-      <app-reservation-footer-menu-mobile [basketCount]="basketItems.length" [basketActive]="basketModalOpen"
-        (basketSelected)="openBasketModal()"></app-reservation-footer-menu-mobile>
+      <app-footer-menu [badgeByItemId]="{ basket: basketItems.length }"
+        [activeItemIds]="basketModalOpen ? ['basket'] : []"
+        (menuSelected)="onFooterMenuSelected($event)"></app-footer-menu>
       }
 
     </div>

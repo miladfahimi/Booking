@@ -22,9 +22,9 @@
 
 .slot-modal__content {
   position: absolute;
-  left: 13px;
-  right: 13px;
-  bottom: 93px;
+  left: 12px;
+  right: 12px;
+  bottom: 115px;
   background-color: #ffffff5e;
   box-shadow: 0 20px 40px rgba(15, 23, 42, 0.18);
   display: flex;
@@ -32,6 +32,14 @@
   overflow: hidden;
   border-radius: 0;
 }
+
+@media (display-mode: standalone) {
+.slot-modal__content
+  {
+    bottom: 103px;
+  }
+}
+
 
 .slot-modal__header {
   display: flex;
