@@ -1,1 +1,58 @@
-<p>basket works!</p>
+<div class="basket-page">
+  <header class="basket-page__header">
+    <div>
+      <p class="basket-page__eyebrow">جزئیات رزرو</p>
+      <h1 class="basket-page__title">سبد رزرو</h1>
+    </div>
+    <span class="basket-page__badge" *ngIf="badgeCount">{{ badgeCount | faDigits }}</span>
+  </header>
+
+  <section class="basket-card" aria-live="polite">
+    <app-spinner *ngIf="loading" class="basket-card__spinner"></app-spinner>
+
+    <div class="basket-card__error" *ngIf="errorMessage && !loading">
+      <p>{{ errorMessage }}</p>
+      <button type="button" class="basket-card__action" (click)="refresh()">تلاش مجدد</button>
+    </div>
+
+    <ng-container *ngIf="!loading && !errorMessage">
+      <ng-container *ngIf="items.length; else emptyBasket">
+        <div class="basket-card__summary">
+          <span>جمع کل</span>
+          <strong>{{ total | number:'1.0-0' | faDigits }} تومان</strong>
+        </div>
+
+        <ul class="basket-list">
+          <li class="basket-list__item" *ngFor="let item of items; trackBy: trackBySlotId">
+            <div class="basket-list__details">
+              <div class="basket-list__row">
+                <span class="basket-list__service">{{ item.serviceName | faDigits }}</span>
+                <span class="basket-list__chip basket-list__chip--time">{{ item.startTime | faDigits }} ~ {{
+                  item.endTime | faDigits }}</span>
+                <span class="basket-list__chip basket-list__chip--date">{{ item.reservationDate | jalaliDate | faDigits
+                  }}</span>
+              </div>
+            </div>
+            <div class="basket-list__meta">
+              <span class="basket-list__price">{{ item.price | number:'1.0-0' | faDigits }} تومان</span>
+              <button type="button" class="basket-list__remove" (click)="onRemove(item.slotId)">حذف</button>
+            </div>
+          </li>
+        </ul>
+      </ng-container>
+
+      <ng-template #emptyBasket>
+        <div class="basket-card__empty">
+          <p>هنوز زمانی را انتخاب نکرده‌اید.</p>
+          <button type="button" class="basket-card__action" (click)="goToBooking()">انتخاب زمان</button>
+        </div>
+      </ng-template>
+    </ng-container>
+  </section>
+
+  <footer class="basket-footer">
+    <button type="button" class="basket-footer__cta" (click)="goToBooking()">بازگشت به رزرو</button>
+    <app-footer-menu [activeItemId]="'chat'" [badgeByItemId]="{ chat: badgeCount }"
+      (menuSelected)="onFooterMenuSelected($event)"></app-footer-menu>
+  </footer>
+</div>

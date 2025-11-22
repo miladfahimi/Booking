@@ -53,6 +53,10 @@ export class FooterMenuComponent implements OnChanges {
       this.router.navigate(['/reservation/book']);
     }
 
+    if (itemId === 'chat') {
+      this.router.navigate(['/basket']);
+    }
+
     if (this.activeItemId) {
       return;
     }
