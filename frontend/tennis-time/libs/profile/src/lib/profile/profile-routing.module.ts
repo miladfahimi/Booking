@@ -4,13 +4,20 @@ import { WelcomeComponent } from './pages/welcome/welcome.component';
 import { AuthGuard } from '@tennis-time/core';
 import { InitializeComponent } from './pages/initialize/initialize.component';
 import { ProfileInitGuard } from './guards/profile-init.guard';
+import { ProfileContainerComponent } from './profile-container.component';
 
 const routes: Routes = [
-  { path: 'welcome', component: WelcomeComponent, canActivate: [AuthGuard] },
-
-  { path: 'entry', component: WelcomeComponent, canActivate: [AuthGuard, ProfileInitGuard] },
-
-  { path: 'initialize', component: InitializeComponent, canActivate: [AuthGuard] },
+  {
+    path: '',
+    component: ProfileContainerComponent,
+    canActivate: [AuthGuard],
+    children: [
+      { path: 'welcome', component: WelcomeComponent },
+      { path: 'entry', component: WelcomeComponent, canActivate: [ProfileInitGuard] },
+      { path: 'initialize', component: InitializeComponent },
+      { path: '', pathMatch: 'full', redirectTo: 'welcome' }
+    ]
+  }
 ];
 
 @NgModule({

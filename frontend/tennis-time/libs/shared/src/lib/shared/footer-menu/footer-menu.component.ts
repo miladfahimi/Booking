@@ -49,6 +49,10 @@ export class FooterMenuComponent implements OnChanges {
       this.router.navigate(['/welcome/profile']);
     }
 
+    if (itemId === 'calendar') {
+      this.router.navigate(['/reservation/book']);
+    }
+
     if (this.activeItemId) {
       return;
     }

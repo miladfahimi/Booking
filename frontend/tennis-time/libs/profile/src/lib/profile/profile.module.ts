@@ -12,9 +12,11 @@ import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { profileReducer } from './store/profile.reducer';
 import { ProfileEffects } from './store/profile.effects';
+import { ProfileContainerComponent } from './profile-container.component';
 
 @NgModule({
   declarations: [
+    ProfileContainerComponent,
     WelcomeComponent,
     InitializeComponent
   ],
