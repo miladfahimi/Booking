@@ -1,4 +1,5 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
@@ -41,7 +42,8 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
     private readonly store: Store,
     private readonly coreAuthService: CoreAuthService,
     private readonly mockPaymentSession: MockPaymentSessionService,
-    private readonly mockPaymentNavigation: MockPaymentNavigationService
+    private readonly mockPaymentNavigation: MockPaymentNavigationService,
+    private readonly router: Router
   ) {
     this.loading$ = this.store.select(selectSlotsLoading);
     this.basketItems$ = this.store.select(selectBasket);
@@ -90,6 +92,13 @@ export class ReservationContainerComponent implements OnInit, OnDestroy {
 
     this.store.dispatch(loadProvidersWithServices());
     this.dispatchLoadSlotsForDate(this.selectedDate);
+
+    const navigation = this.router.getCurrentNavigation();
+    const shouldOpenBasket = navigation?.extras?.state?.['openBasket'] ?? history.state['openBasket'];
+
+    if (shouldOpenBasket && this.isMobileView) {
+      this.openBasketModal();
+    }
 
     this.store.select(selectProviders)
       .pipe(takeUntil(this.destroy$))

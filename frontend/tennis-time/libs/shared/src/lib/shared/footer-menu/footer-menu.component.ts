@@ -45,6 +45,14 @@ export class FooterMenuComponent implements OnChanges {
   setActiveMenu(itemId: string): void {
     this.menuSelected.emit(itemId);
 
+    if (itemId === 'basket') {
+      const isOnReservationPage = this.router.url.startsWith('/reservation');
+
+      if (!isOnReservationPage) {
+        this.router.navigate(['/reservation/book'], { state: { openBasket: true } });
+      }
+    }
+
     if (itemId === 'profile') {
       this.router.navigate(['/welcome/profile']);
     }

@@ -1,4 +1,5 @@
 <div class="profile-container">
   <router-outlet></router-outlet>
-  <app-footer-menu [activeItemId]="'profile'"></app-footer-menu>
+  @let basketBadge = basketBadgeCount$ | async;
+  <app-footer-menu [activeItemId]="'profile'" [badgeByItemId]="{ basket: basketBadge ?? 0 }"></app-footer-menu>
 </div>
